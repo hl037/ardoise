@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="pal">pal.png</file>
+        <file alias="erase">erase.png</file>
+        <file alias="open">open.png</file>
+        <file alias="save">save.png</file>
+        <file alias="sel">sel.png</file>
+    </qresource>
+</RCC>

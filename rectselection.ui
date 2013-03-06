@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>rectSelection</class>
+ <widget class="QWidget" name="rectSelection">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>453</width>
+    <height>415</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>SizeAllCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="rBouton" name="b5">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>400</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeFDiagCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b4">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>200</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeHorCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b3">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>0</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeBDiagCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b2">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>0</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeVerCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b1">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeFDiagCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b8">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>200</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeHorCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b7">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>400</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeBDiagCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="rBouton" name="b6">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>400</y>
+     <width>15</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>SizeVerCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(29, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="airSelection" name="s">
+   <property name="geometry">
+    <rect>
+     <x>15</x>
+     <y>15</y>
+     <width>426</width>
+     <height>386</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(23, 255, 255, 100);</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>rBouton</class>
+   <extends>QPushButton</extends>
+   <header>rbouton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>airSelection</class>
+   <extends>QFrame</extends>
+   <header>rectselection.h</header>
+   <container>1</container>
+   <slots>
+    <signal>pressed()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>b1</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>sethg()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>10</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>54</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b2</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>seth()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>8</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>37</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b3</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>sethd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>444</x>
+     <y>9</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>37</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b4</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>443</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>233</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b5</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setbd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>443</x>
+     <y>403</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>358</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b6</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setb()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>267</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b7</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setbg()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>6</x>
+     <y>403</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>77</x>
+     <y>356</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b8</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setg()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>6</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>s</sender>
+   <signal>pressed()</signal>
+   <receiver>rectSelection</receiver>
+   <slot>setall()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>9</x>
+     <y>121</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>sethd()</slot>
+  <slot>seth()</slot>
+  <slot>sethg()</slot>
+  <slot>setg()</slot>
+  <slot>setbg()</slot>
+  <slot>setb()</slot>
+  <slot>setbd()</slot>
+  <slot>setd()</slot>
+  <slot>setall()</slot>
+ </slots>
+</ui>
