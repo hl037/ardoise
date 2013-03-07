@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Comment=
+Exec=/usr/bin/ardoise
+GenericName=Unlimited drawing surface for quick diagrams
+GenericName[fr]=Surface dessinable illimitée
+Icon=/usr/share/ardoise/erase.png
+Name=Ardoise
+NoDisplay=false
+Path[$e]=
+StartupNotify=false
+Terminal=0
+TerminalOptions=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
