@@ -1,9 +1,10 @@
 [Desktop Entry]
 Type=Application
-Comment=
+Categories=Qt;Graphics;2DGraphics;RasterGraphics;
+GenericName=drawing surface
 Exec=/usr/bin/ardoise
-GenericName=Unlimited drawing surface for quick diagrams
-GenericName[fr]=Surface dessinable illimitée
+Comment=Unlimited drawing surface for quick diagrams
+Comment[fr]=Surface dessinable illimitée
 Icon=/usr/share/ardoise/erase.png
 Name=Ardoise
 NoDisplay=false
