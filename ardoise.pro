@@ -27,7 +27,8 @@ FORMS += \
     mainwindow.ui \
     rectselection.ui
 OTHER_FILES += COPYING.txt \
-    README.txt
+    README.txt \
+    linux/ardoise.desktop
 RESOURCES += icons.qrc
 RC_FILE = "icon.rc"
 

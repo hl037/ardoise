@@ -1,0 +1,14 @@
+*
+!.gitignore
+!*.cpp
+moc_*
+qrc_*
+!*.h
+ui_*
+!*.pro
+!*.png
+!*.qrc
+!*.txt
+!*.ui
+!*.png
+!linux/*
