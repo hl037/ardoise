@@ -2,13 +2,13 @@
 Type=Application
 Categories=Qt;Graphics;2DGraphics;RasterGraphics;
 GenericName=drawing surface
-Exec=/usr/bin/ardoise
+GenericName[fr]=Surface dessinable
+Exec=ardoise
 Comment=Unlimited drawing surface for quick diagrams
 Comment[fr]=Surface dessinable illimitée
-Icon=/usr/share/ardoise/erase.png
+Icon=ardoise
 Name=Ardoise
 NoDisplay=false
-Path[$e]=
 StartupNotify=false
 Terminal=0
 TerminalOptions=
