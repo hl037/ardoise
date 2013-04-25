@@ -145,6 +145,7 @@ mainWindow::mainWindow(QWidget *parent) :
    f2->addWidget(open);
    f2->addWidget(dispSel);
    f2->addWidget(erase);
+   f2->addWidget(swapMode_pb);
 
    f->addItem(f1);
    f->addItem(f2);
@@ -180,6 +181,8 @@ mainWindow::mainWindow(QWidget *parent) :
       brosses[i].w1 = 0;
       brosses[i].w2 = 0;
    }
+
+   connect(swapMode_pb, SIGNAL(clicked()), air->getArdoise(), SLOT(swapMode()));
    ini();
 }
 

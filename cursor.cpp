@@ -30,12 +30,29 @@ ACursor::ACursor(QWidget *parent) :
 
 void ACursor::paintEvent(QPaintEvent *)
 {
+
+
    QPainter p(this);
-   p.setBrush(QBrush(QColor(0,0,0,0)));
-   p.setPen(p2);
-   p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
-   p.setPen(p1);
-   p.drawEllipse((width()-d1)/2,(height()-d1)/2,d1-1,d1-1);
-   p.setPen(p2);
-   p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
+
+   switch(m)
+   {
+   case ArdoiseGlobal::DRAWING_MODE:
+      p.setBrush(QBrush(QColor(0,0,0,0)));
+      p.setPen(p2);
+      p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
+      p.setPen(p1);
+      p.drawEllipse((width()-d1)/2,(height()-d1)/2,d1-1,d1-1);
+      p.setPen(p2);
+      p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
+      break;
+   case ArdoiseGlobal::TEXT_MODE:
+      QFont f;
+      f.setPixelSize(d1*8);
+      //f.setStretch(d1/2);
+      p.setFont(f);
+      p.setPen(p1);
+      p.drawText(width()/2,height()/2+d1*8, "T");
+      p.drawEllipse((width()-d1)/2,(height()-d1)/2,d1-1,d1-1);
+   }
+
 }

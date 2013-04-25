@@ -25,6 +25,9 @@
 #include <QWidget>
 #include <QPen>
 #include <QPoint>
+#include <QGraphicsScene>
+#include <QGraphicsTextItem>
+#include <QLineEdit>
 #include "cursor.h"
 
 class rectSelection;
@@ -37,6 +40,9 @@ class ardoise : public QWidget
 {
 Q_OBJECT
 public:
+
+   typedef ArdoiseGlobal::Mode Mode;
+
    explicit ardoise(QWidget *parent = 0);
 
    void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
@@ -47,7 +53,16 @@ public:
    const QImage & getImg() const;
    rectSelection * select;
 
+protected:
+   QGraphicsScene * graphicsScene;
 
+
+   Mode mode;
+
+   bool typing;
+   QLineEdit * le;
+   QPoint textPos;
+   QPoint textOffset;
 
 
 protected:
@@ -74,6 +89,7 @@ protected:
    void enterEvent(QEvent *){if(moveCursor) cur->show();}
    void leaveEvent(QEvent *){cur->hide();}
 
+
 public:
    void lineTo(QPoint p, const QPen & pen);
    //TODO : Points de la même largeur que les lignes
@@ -87,6 +103,8 @@ public:
    inline void setPen2(const QPen & newPen)
       {  pen2=newPen;   pen2.setCapStyle(Qt::RoundCap);   pen2.setJoinStyle(Qt::RoundJoin); }
 
+
+   void beginText(const QPoint & pos);
 signals:
 
 public slots:
@@ -94,6 +112,10 @@ public slots:
    void affSelect(bool b);
    void save();
    void open();
+
+   void swapMode();
+
+   void endText();
 };
 
 #endif // ARDOISE_H

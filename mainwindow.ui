@@ -632,7 +632,30 @@
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="swapMode_pb">
+     <property name="geometry">
+      <rect>
+       <x>245</x>
+       <y>10</y>
+       <width>80</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SwapMode</string>
+     </property>
+    </widget>
    </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1001</width>
+     <height>15</height>
+    </rect>
+   </property>
   </widget>
   <zorder>doc</zorder>
  </widget>
@@ -789,5 +812,6 @@
   <slot>setWeight1(double)</slot>
   <slot>setCol2()</slot>
   <slot>setWeight2(double)</slot>
+  <slot>swapMode()</slot>
  </slots>
 </ui>

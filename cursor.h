@@ -24,14 +24,29 @@
 #include <QWidget>
 #include <QPen>
 #include <QMouseEvent>
+namespace ArdoiseGlobal
+{
+
+enum Mode
+{
+   DRAWING_MODE,
+   TEXT_MODE
+};
+
+}
+
 
 class ACursor : public QWidget
 {
 Q_OBJECT
 
+  typedef ArdoiseGlobal::Mode Mode;
+
 protected:
    QPen p1,p2;
    int d1,d2;
+
+   Mode m;
 
 
 public:
@@ -53,6 +68,7 @@ public slots:
    inline void setD2(int d){d2 = (d>=2)? d:2; repaint();}
    inline void setCol2(QColor col){p2 = QPen(QBrush(col),1,Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin); repaint();}
 
+   inline void setMode(Mode _m){m = _m; repaint();}
 };
 
 #endif // CURSOR_H

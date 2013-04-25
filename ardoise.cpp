@@ -32,13 +32,16 @@
 #include <QSize>
 #include <QRect>
 #include <QFileDialog>
+#include <QLabel>
 
 #define FAC 1.25
 #define FAC2 0.8
 
 
 ardoise::ardoise(QWidget *parent) :
-    QWidget(parent)
+   QWidget(parent),
+   mode(ArdoiseGlobal::DRAWING_MODE),
+   textOffset(0,0)
 {
    select = new rectSelection(this);
    select->hide();
@@ -46,11 +49,17 @@ ardoise::ardoise(QWidget *parent) :
    setPen2(QPen(QColor(255,255,255)));
    setMouseTracking(1);
    cur = new ACursor(this);
+   cur->setMode(ArdoiseGlobal::DRAWING_MODE);
    QPixmap p(32,32);
    p.fill(QColor(0,0,0,0));
    hiddenCur = QCursor(p);
    setCursor(hiddenCur);
    moveCursor = 1;
+   le = new QLineEdit(this);
+   le->hide();
+
+   connect(le, SIGNAL(editingFinished()), this, SLOT(endText()));
+   graphicsScene = new QGraphicsScene(this);
    //zoom=1;
 }
 
@@ -92,6 +101,29 @@ void ardoise::pointTo(QPoint p, const QPen &pen)
    update();
 }
 
+void ardoise::beginText(const QPoint &pos)
+{
+   typing = true;
+   textPos = pos+textOffset;
+   QFont f;
+   f.setPixelSize(pen1.width()*8);
+   le->setFont(f);
+   le->move(pos);
+   le->show();
+   le->setFocus();
+}
+
+void ardoise::endText()
+{
+   QFont f;
+   f.setPixelSize(pen1.width()*8);
+   //f.setStretch(pen1.width()/2);
+   QGraphicsTextItem * it = graphicsScene->addText(le->text(), f) ;
+   it->setPos(textPos);
+   it->setDefaultTextColor(pen1.color());
+   le->hide();
+}
+
 void ardoise::resize(int rx, int ry, QPoint pos)
 {
    int nx,ny;
@@ -124,6 +156,7 @@ void ardoise::resize(int rx, int ry, QPoint pos)
    //D("rx="<<rx<<" ry="<<ry<<" pos="<<pos<<" nx="<<nx<<" ny="<<ny<<"  mapX="<<mapX<<" mapY="<<mapY<<"  w="<<width()<<" h="<<height()<<"  x="<<x()<<" y="<<y())/**/
 
    resizeImg(&img,s,QPoint(mapX,mapY));
+   textOffset-=QPoint(mapX,mapY);
    QWidget::resize(s);
    move(QPoint(nx,ny));
    select->move(select->pos()+QPoint(mapX,mapY));
@@ -147,6 +180,7 @@ void ardoise::paintEvent(QPaintEvent * e)
    QPainter painter(this);
    QRect rectangle = e->rect();
    painter.drawImage(rectangle, img, rectangle);
+   graphicsScene->render(&painter, rectangle, rectangle.translated(textOffset));
 }
 
 void ardoise::resizeEvent(QResizeEvent * e)
@@ -165,14 +199,29 @@ void ardoise::resizeEvent(QResizeEvent * e)
 void ardoise::mousePressEvent(QMouseEvent *e)
 {
    QWidget::mousePressEvent(e);
-   if((e->button()==Qt::LeftButton || e->button()==Qt::RightButton) && moveCursor)
+
+   switch(mode)
    {
-      lastPoint=e->pos();
-      pointTo(lastPoint,e->button()==Qt::LeftButton? pen1:pen2);
-      dessin=1;
-      e->accept();
+   case ArdoiseGlobal::DRAWING_MODE:
+      if((e->button()==Qt::LeftButton || e->button()==Qt::RightButton) && moveCursor)
+      {
+         lastPoint=e->pos();
+         pointTo(lastPoint,e->button()==Qt::LeftButton? pen1:pen2);
+         dessin=1;
+         e->accept();
+      }
+      else e->ignore();
+      break;
+   case ArdoiseGlobal::TEXT_MODE:
+      if(e->button()==Qt::LeftButton)
+      {
+         beginText(e->pos());
+         e->accept();
+      }
+      else e->ignore();
    }
-   else e->ignore();
+
+
 }
 
 void ardoise::mouseMoveEvent(QMouseEvent *e)
@@ -217,6 +266,7 @@ void ardoise::clear() //[slot]
    QImage i(size(), QImage::Format_RGB32);
    i.fill(0xFFFFFFFF);
    img=i;
+   graphicsScene->clear();
    update();
 }
 
@@ -254,6 +304,20 @@ void ardoise::open() //[slot]
    QImage loadImg(chemin,0);
    img=loadImg;
    setGeometry(img.rect());
+}
+
+void ardoise::swapMode()
+{
+   if(mode == ArdoiseGlobal::DRAWING_MODE)
+   {
+      mode = ArdoiseGlobal::TEXT_MODE;
+      cur->setMode(ArdoiseGlobal::TEXT_MODE);
+   }
+   else
+   {
+      mode = ArdoiseGlobal::DRAWING_MODE;
+      cur->setMode(ArdoiseGlobal::DRAWING_MODE);
+   }
 }
 
 
