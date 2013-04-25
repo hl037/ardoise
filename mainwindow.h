@@ -23,6 +23,8 @@
 
 #include "ui_mainwindow.h"
 #include "ardoise.h"
+#include <QDir>
+
 typedef struct
 {
    QColor col1;
@@ -31,10 +33,16 @@ typedef struct
    double w2;
 }brosse;
 
+extern QDir home;
 
 class mainWindow : public QMainWindow, private Ui::mainWindow {
     Q_OBJECT
 public:
+
+   static const char dtd[];
+
+   void ini();
+
     mainWindow(QWidget *parent = 0);
     void saveCols(int pos);
     void saveWs(int pos);
@@ -44,6 +52,9 @@ public:
     void erraseCols(void);
     void erraseWs(void);
 
+    void savePal(const QString & path);
+    void openPal(const QString & path);
+
 protected:
    ardoise * scene;
    void changeEvent(QEvent *e);
@@ -52,7 +63,9 @@ protected:
    QColor col1;
    QColor col2;
 
-   brosse brosses[26];
+   brosse brosses[27];
+
+   virtual void closeEvent(QCloseEvent * e);
 
 public slots:
    void setCol1();

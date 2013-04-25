@@ -31,15 +31,15 @@ build() {
       cd "$_gitname" && git pull origin
       msg "The local files are updated."
    else
-      git clone "$_gitroot" "$_gitname" --depth=1
+      git clone "$_gitroot" "$_gitname"
    fi
 
    msg "GIT checkout done or server timeout"
    msg "Starting build..."
 
-   SRC="$srcdir/$_gitname-build"
-   rm -rf "$SRC"
-   git clone "$srcdir/$_gitname" "$SRC"
+   cd "$srcdir"
+   rm -rf "$_gitname-build"
+   git clone "$_gitname" "$_gitname-build"
 
    #
    # BUILD HERE
@@ -64,17 +64,16 @@ build() {
    rm -rf "$BUILD"
    mkdir "$BUILD"
    cd "$BUILD"
-   qmake "$SRC/ardoise.pro" -r -spec $SPEC
+   qmake "$srcdir/$_gitname-build/ardoise.pro" -r -spec $SPEC
    make -w
 }
 
 package() {
    BUILD="$srcdir/build"
-   SRC="$srcdir/$_gitname-build"
    cd "$BUILD"
    install -d "$pkgdir/usr/bin" || return 1
    install -Dm755 ardoise "$pkgdir/usr/bin" || return 1
-   cd "$SRC"
+   cd "$srcdir/$_gitname-build"
    install -d "$pkgdir/usr/share/icons" || return 1
    install -Dm755 erase.png "$pkgdir/usr/share/icons/ardoise.png" || return 1
    cd linux
