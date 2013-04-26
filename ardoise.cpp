@@ -125,6 +125,7 @@ void ardoise::endText()
    {
       QGraphicsTextItem it(le->text());
       it.setFont(f);
+      it.setDefaultTextColor(pen1.color());
       QPainter p(&img);
       p.translate(lastPoint);
       QStyleOptionGraphicsItem opt;
