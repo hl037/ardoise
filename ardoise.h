@@ -105,6 +105,8 @@ public:
 
 
    void beginText(const QPoint & pos);
+
+   inline Mode getMode(){return mode;}
 signals:
 
 public slots:

@@ -74,6 +74,8 @@ public slots:
    void setWeight2(double w);
    void savePal();
    void openPal();
+
+   void swapMode();
 };
 
 #endif // MAINWINDOW_H

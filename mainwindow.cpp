@@ -181,8 +181,8 @@ mainWindow::mainWindow(QWidget *parent) :
       brosses[i].w1 = 0;
       brosses[i].w2 = 0;
    }
-
-   connect(swapMode_pb, SIGNAL(clicked()), air->getArdoise(), SLOT(swapMode()));
+   swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
+   connect(swapMode_pb, SIGNAL(clicked()), this, SLOT(swapMode()));
    ini();
 }
 
@@ -296,6 +296,10 @@ void mainWindow::keyPressEvent(QKeyEvent *e)
       {
          w2->setValue(w2->value()- (w2->value()>=1? 1:0));
       }
+   }
+   if(e->key() == Qt::Key_Space)
+   {
+      swapMode();
    }
 }
 
@@ -672,6 +676,7 @@ void mainWindow::openPal()
    openPal(path);
 }
 
+
 void mainWindow::openPal(const QString & path)
 {
    QString ext = QFileInfo(path).suffix();
@@ -735,4 +740,20 @@ void mainWindow::openPal(const QString & path)
       }
    }
    restore(26);
+}
+
+
+void mainWindow::swapMode()
+{
+   air->getArdoise()->swapMode();
+   switch(air->getArdoise()->getMode())
+   {
+   case ArdoiseGlobal::DRAWING_MODE:
+      swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
+      break;
+   case ArdoiseGlobal::TEXT_MODE:
+      swapMode_pb->setText(tr("Mode texte, changer pour dessin"));
+      break;
+   default: ;
+   }
 }
