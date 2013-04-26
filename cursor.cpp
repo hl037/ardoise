@@ -40,6 +40,7 @@ void ACursor::paintEvent(QPaintEvent *)
    switch(m)
    {
    case ArdoiseGlobal::DRAWING_MODE:
+   {
       p.setBrush(QBrush(QColor(0,0,0,0)));
       p.setPen(p2);
       p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
@@ -48,7 +49,9 @@ void ACursor::paintEvent(QPaintEvent *)
       p.setPen(p2);
       p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
       break;
+   }
    case ArdoiseGlobal::TEXT_MODE:
+   {
       //f.setStretch(d1/2);
       QFont f;
       f.setPixelSize(d1*8);
@@ -57,6 +60,8 @@ void ACursor::paintEvent(QPaintEvent *)
 
       p.translate(width()/2,height()/2);
       t->paint(&p, &opt, 0);
+   }
+   default: ;
    }
 
 }

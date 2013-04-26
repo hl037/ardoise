@@ -31,8 +31,10 @@ namespace ArdoiseGlobal
 
 enum Mode
 {
-   DRAWING_MODE,
-   TEXT_MODE
+   DRAWING_MODE = 1,
+   TEXT_MODE = 2,
+   DRAW_TEXT_MODE = 2,
+   FLOATING_TEXT_MODE = 3
 };
 
 }

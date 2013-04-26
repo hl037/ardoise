@@ -115,12 +115,35 @@ void ardoise::beginText(const QPoint &pos)
 
 void ardoise::endText()
 {
+
    QFont f;
    f.setPixelSize(pen1.width()*8);
-   //f.setStretch(pen1.width()/2);
-   QGraphicsTextItem * it = graphicsScene->addText(le->text(), f) ;
-   it->setPos(textPos);
-   it->setDefaultTextColor(pen1.color());
+
+   switch(mode)
+   {
+   case ArdoiseGlobal::DRAW_TEXT_MODE:
+   {
+      QGraphicsTextItem it(le->text());
+      it.setFont(f);
+      QPainter p(&img);
+      p.translate(lastPoint);
+      QStyleOptionGraphicsItem opt;
+      opt.initFrom(this);
+      it.paint(&p, &opt, 0);
+      p.end();
+      break;
+   }
+   case ArdoiseGlobal::FLOATING_TEXT_MODE:
+   {
+      QGraphicsTextItem * it = graphicsScene->addText(le->text(), f) ;
+      it->setPos(textPos);
+      it->setDefaultTextColor(pen1.color());
+      break;
+   }
+   default: ;
+   }
+
+
    le->hide();
 }
 
@@ -217,10 +240,11 @@ void ardoise::mousePressEvent(QMouseEvent *e)
       }
       else e->ignore();
       break;
-   case ArdoiseGlobal::TEXT_MODE:
+   case ArdoiseGlobal::DRAW_TEXT_MODE:
+   case ArdoiseGlobal::FLOATING_TEXT_MODE:
       if(e->button()==Qt::LeftButton)
       {
-         beginText(e->pos());
+         beginText(lastPoint=e->pos());
          e->accept();
       }
       else e->ignore();
