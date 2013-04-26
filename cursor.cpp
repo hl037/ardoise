@@ -20,17 +20,20 @@
 
 #include "cursor.h"
 #include <QPainter>
+#include <QGraphicsTextItem>
+
 ACursor::ACursor(QWidget *parent) :
-    QWidget(parent)
+   QWidget(parent),
+   t(new QGraphicsTextItem("T"))
 {
    //setWindowFlags(Qt::SubWindow|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint);
    setAttribute(Qt::WA_TranslucentBackground);
    setMouseTracking(1);
+   opt.initFrom(this);
 }
 
 void ACursor::paintEvent(QPaintEvent *)
 {
-
 
    QPainter p(this);
 
@@ -46,13 +49,14 @@ void ACursor::paintEvent(QPaintEvent *)
       p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
       break;
    case ArdoiseGlobal::TEXT_MODE:
+      //f.setStretch(d1/2);
       QFont f;
       f.setPixelSize(d1*8);
-      //f.setStretch(d1/2);
-      p.setFont(f);
-      p.setPen(p1);
-      p.drawText(width()/2,height()/2+d1*8, "T");
-      p.drawEllipse((width()-d1)/2,(height()-d1)/2,d1-1,d1-1);
+      t->setFont(f);
+      t->setDefaultTextColor(p1.color());
+
+      p.translate(width()/2,height()/2);
+      t->paint(&p, &opt, 0);
    }
 
 }

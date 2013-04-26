@@ -165,8 +165,12 @@ void ardoise::resize(int rx, int ry, QPoint pos)
 void ardoise::zoomTo(double fac, QPoint o)
 {
    QPoint p=o+(pos()-o)*fac;
+#ifdef ONLY_FAST_TRANSPHORMATION
+   img=img.scaledToHeight(height()*fac,Qt::FastTransformation);
+#else
    if((height()|width())>5000)img=img.scaledToHeight(height()*fac,Qt::FastTransformation);
    else img=img.scaledToHeight(height()*fac,Qt::SmoothTransformation);
+#endif
    QWidget::resize(size()*fac);
    move(p);
    QPainter painter(this);
@@ -180,7 +184,8 @@ void ardoise::paintEvent(QPaintEvent * e)
    QPainter painter(this);
    QRect rectangle = e->rect();
    painter.drawImage(rectangle, img, rectangle);
-   graphicsScene->render(&painter, rectangle, rectangle.translated(textOffset));
+   QRect rt = rectangle.translated(textOffset);
+   graphicsScene->render(&painter, rectangle, rt);
 }
 
 void ardoise::resizeEvent(QResizeEvent * e)

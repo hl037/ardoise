@@ -24,6 +24,8 @@
 #include <QWidget>
 #include <QPen>
 #include <QMouseEvent>
+#include <QStyleOptionGraphicsItem>
+
 namespace ArdoiseGlobal
 {
 
@@ -35,6 +37,7 @@ enum Mode
 
 }
 
+class QGraphicsTextItem;
 
 class ACursor : public QWidget
 {
@@ -47,6 +50,8 @@ protected:
    int d1,d2;
 
    Mode m;
+   QGraphicsTextItem * t;
+   QStyleOptionGraphicsItem opt;
 
 
 public:
