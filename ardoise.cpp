@@ -38,10 +38,11 @@
 #define FAC2 0.8
 
 
-ardoise::ardoise(QWidget *parent) :
+Ardoise::Ardoise(QWidget *parent) :
    QWidget(parent),
    mode(ArdoiseGlobal::DRAWING_MODE),
-   textOffset(0,0)
+   textOffset(0,0),
+   m_zoomWheel(true)
 {
    select = new rectSelection(this);
    select->hide();
@@ -63,12 +64,12 @@ ardoise::ardoise(QWidget *parent) :
    //zoom=1;
 }
 
-const QImage & ardoise::getImg() const
+const QImage & Ardoise::getImg() const
 {
    return img;
 }
 
-void ardoise::resizeImg(QImage * image, const QSize &newSize, QPoint map)
+void Ardoise::resizeImg(QImage * image, const QSize &newSize, QPoint map)
 //! [19] //! [20]
 {
     if (image->size() == newSize)
@@ -81,7 +82,7 @@ void ardoise::resizeImg(QImage * image, const QSize &newSize, QPoint map)
     *image = newImage;
 }
 
-void ardoise::lineTo(QPoint p, const QPen &pen)
+void Ardoise::lineTo(QPoint p, const QPen &pen)
 {
    QPainter paint(&img);
    paint.setPen(pen);
@@ -92,7 +93,7 @@ void ardoise::lineTo(QPoint p, const QPen &pen)
    lastPoint = p;
 }
 
-void ardoise::pointTo(QPoint p, const QPen &pen)
+void Ardoise::pointTo(QPoint p, const QPen &pen)
 {
    QPainter paint(&img);
    paint.setBrush(pen.brush());
@@ -101,7 +102,7 @@ void ardoise::pointTo(QPoint p, const QPen &pen)
    update();
 }
 
-void ardoise::beginText(const QPoint &pos)
+void Ardoise::beginText(const QPoint &pos)
 {
    typing = true;
    textPos = pos+textOffset;
@@ -113,7 +114,12 @@ void ardoise::beginText(const QPoint &pos)
    le->setFocus();
 }
 
-void ardoise::endText()
+bool Ardoise::zoomWheel() const
+{
+   return m_zoomWheel;
+}
+
+void Ardoise::endText()
 {
 
    QFont f;
@@ -148,7 +154,8 @@ void ardoise::endText()
    le->hide();
 }
 
-void ardoise::resize(int rx, int ry, QPoint pos)
+
+void Ardoise::resize(int rx, int ry, QPoint pos)
 {
    int nx,ny;
    QSize s(width()+qAbs(rx),height()+qAbs(ry));
@@ -186,7 +193,7 @@ void ardoise::resize(int rx, int ry, QPoint pos)
    select->move(select->pos()+QPoint(mapX,mapY));
 }
 
-void ardoise::zoomTo(double fac, QPoint o)
+void Ardoise::zoomTo(double fac, QPoint o)
 {
    QPoint p=o+(pos()-o)*fac;
 #ifdef ONLY_FAST_TRANSPHORMATION
@@ -203,7 +210,7 @@ void ardoise::zoomTo(double fac, QPoint o)
 }
 
 
-void ardoise::paintEvent(QPaintEvent * e)
+void Ardoise::paintEvent(QPaintEvent * e)
 {
    QPainter painter(this);
    QRect rectangle = e->rect();
@@ -212,7 +219,7 @@ void ardoise::paintEvent(QPaintEvent * e)
    graphicsScene->render(&painter, rectangle, rt);
 }
 
-void ardoise::resizeEvent(QResizeEvent * e)
+void Ardoise::resizeEvent(QResizeEvent * e)
 {
    if(width()>img.width() || height()>img.height())
    {
@@ -225,7 +232,7 @@ void ardoise::resizeEvent(QResizeEvent * e)
 }
 
 //BUG : Quand le curseur sort de la zone fenetre de l'application en cours de dessin, il passe en effacement automatiquement
-void ardoise::mousePressEvent(QMouseEvent *e)
+void Ardoise::mousePressEvent(QMouseEvent *e)
 {
    QWidget::mousePressEvent(e);
 
@@ -254,7 +261,7 @@ void ardoise::mousePressEvent(QMouseEvent *e)
 
 }
 
-void ardoise::mouseMoveEvent(QMouseEvent *e)
+void Ardoise::mouseMoveEvent(QMouseEvent *e)
 {
    //cur->setGeometry(QRect(e->globalPos()-QPoint(50,50),e->globalPos()+QPoint(50,50)));
    if(moveCursor) cur->setGeometry(QRect(e->pos()-QPoint(50,50),e->pos()+QPoint(50,50)));
@@ -272,7 +279,7 @@ void ardoise::mouseMoveEvent(QMouseEvent *e)
    e->ignore();
 }
 
-void ardoise::mouseReleaseEvent(QMouseEvent *e)
+void Ardoise::mouseReleaseEvent(QMouseEvent *e)
 {
    QWidget::mouseReleaseEvent(e);
    if(dessin && moveCursor)
@@ -284,14 +291,17 @@ void ardoise::mouseReleaseEvent(QMouseEvent *e)
    e->ignore();
 }
 
-void ardoise::wheelEvent(QWheelEvent *e)
+void Ardoise::wheelEvent(QWheelEvent *e)
 {
-   if(e->delta()>0) zoomTo(FAC,e->pos());
-   else zoomTo(FAC2,e->pos());
-   QWidget::wheelEvent(e);
+   if(m_zoomWheel)
+   {
+      if(e->delta()>0) zoomTo(FAC,e->pos());
+      else zoomTo(FAC2,e->pos());
+      QWidget::wheelEvent(e);
+   }
 }
 
-void ardoise::clear() //[slot]
+void Ardoise::clear() //[slot]
 {
    QImage i(size(), QImage::Format_RGB32);
    i.fill(0xFFFFFFFF);
@@ -300,7 +310,7 @@ void ardoise::clear() //[slot]
    update();
 }
 
-void ardoise::affSelect(bool b) //[slot]
+void Ardoise::affSelect(bool b) //[slot]
 {
    if(b)
    {
@@ -318,7 +328,7 @@ void ardoise::affSelect(bool b) //[slot]
    }
 }
 
-void ardoise::save() //[slot]
+void Ardoise::save() //[slot]
 {
    QString chemin=QFileDialog::getSaveFileName(this, QString("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"));
    QImage saveImg(select->getSelection().size(),QImage::Format_RGB32);
@@ -328,7 +338,7 @@ void ardoise::save() //[slot]
    saveImg.save(chemin,0,80);
 }
 
-void ardoise::open() //[slot]
+void Ardoise::open() //[slot]
 {
    QString chemin=QFileDialog::getOpenFileName(this, QString("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
 
@@ -341,7 +351,7 @@ void ardoise::open() //[slot]
    }
 }
 
-void ardoise::swapMode()
+void Ardoise::swapMode()
 {
    if(mode == ArdoiseGlobal::DRAWING_MODE)
    {
@@ -355,5 +365,8 @@ void ardoise::swapMode()
    }
 }
 
-
+void Ardoise::setZoomWheel(bool activate)
+{
+   m_zoomWheel = activate;
+}
 

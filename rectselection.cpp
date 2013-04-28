@@ -26,7 +26,7 @@
 #include <QColor>
 
 
-rectSelection::rectSelection(ardoise * parent) :
+rectSelection::rectSelection(Ardoise * parent) :
     QWidget(parent)
 {
     a = parent;

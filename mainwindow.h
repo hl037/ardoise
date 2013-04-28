@@ -56,7 +56,7 @@ public:
     void openPal(const QString & path);
 
 protected:
-   ardoise * scene;
+   Ardoise * scene;
    void changeEvent(QEvent *e);
    //void resizeEvent(QResizeEvent *e);
    void keyPressEvent(QKeyEvent *e);

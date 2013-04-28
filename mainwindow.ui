@@ -40,7 +40,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="vue" name="air">
+     <widget class="Vue" name="vue">
       <property name="lineWidth">
        <number>0</number>
       </property>
@@ -645,6 +645,22 @@
       <string>SwapMode</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="zoomWheel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>85</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -653,7 +669,7 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>15</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
@@ -662,7 +678,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>vue</class>
+   <class>Vue</class>
    <extends>QScrollArea</extends>
    <header>vue.h</header>
    <container>1</container>
@@ -671,6 +687,7 @@
     <slot>save()</slot>
     <slot>open()</slot>
     <slot>affSelect(bool)</slot>
+    <slot>setZoomWheel(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -680,7 +697,7 @@
  <connections>
   <connection>
    <sender>couleur1</sender>
-   <signal>clicked()</signal>
+   <signal>clicked(bool)</signal>
    <receiver>mainWindow</receiver>
    <slot>setCol1()</slot>
    <hints>
@@ -689,8 +706,8 @@
      <y>40</y>
     </hint>
     <hint type="destinationlabel">
-     <x>141</x>
-     <y>97</y>
+     <x>500</x>
+     <y>303</y>
     </hint>
    </hints>
   </connection>
@@ -713,7 +730,7 @@
   <connection>
    <sender>erase</sender>
    <signal>clicked()</signal>
-   <receiver>air</receiver>
+   <receiver>vue</receiver>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -761,7 +778,7 @@
   <connection>
    <sender>save</sender>
    <signal>clicked()</signal>
-   <receiver>air</receiver>
+   <receiver>vue</receiver>
    <slot>save()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -777,7 +794,7 @@
   <connection>
    <sender>open</sender>
    <signal>clicked()</signal>
-   <receiver>air</receiver>
+   <receiver>vue</receiver>
    <slot>open()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -793,7 +810,7 @@
   <connection>
    <sender>dispSel</sender>
    <signal>clicked(bool)</signal>
-   <receiver>air</receiver>
+   <receiver>vue</receiver>
    <slot>affSelect(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -803,6 +820,22 @@
     <hint type="destinationlabel">
      <x>378</x>
      <y>232</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomWheel</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>vue</receiver>
+   <slot>setZoomWheel(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>52</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>529</x>
+     <y>312</y>
     </hint>
    </hints>
   </connection>

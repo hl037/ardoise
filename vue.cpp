@@ -28,19 +28,20 @@
 #include <QPoint>
 
 
-vue::vue(QWidget *parent) :
-    QScrollArea(parent)
+Vue::Vue(QWidget *parent) :
+   QScrollArea(parent),
+   m_zoomWheel(true)
 {
    a = NULL;
 }
 
-void vue::setWidget(ardoise * widget)
+void Vue::setWidget(Ardoise * widget)
 {
    a = widget;
    QScrollArea::setWidget(widget);
 }
 
-void vue::mousePressEvent(QMouseEvent *e)
+void Vue::mousePressEvent(QMouseEvent *e)
 {
    if(e->button()==Qt::MidButton)
    {
@@ -50,7 +51,7 @@ void vue::mousePressEvent(QMouseEvent *e)
    }
 }
 
-void vue::fill()
+void Vue::fill()
 {
    int rx=0,ry=0;
    if(a->x()>0) rx=-a->x();
@@ -62,7 +63,12 @@ void vue::fill()
 
 }
 
-void vue::mouseMoveEvent(QMouseEvent *e)
+bool Vue::zoomWheel() const
+{
+   return m_zoomWheel;
+}
+
+void Vue::mouseMoveEvent(QMouseEvent *e)
 {
    //cur->setGeometry(QRect(e->globalPos()-QPoint(50,50),e->globalPos()+QPoint(50,50)));
    //cur->setGeometry(QRect(e->pos()-QPoint(50,50),e->pos()+QPoint(50,50)));
@@ -112,34 +118,43 @@ void vue::mouseMoveEvent(QMouseEvent *e)
    }
 }
 
-void vue::resizeEvent(QResizeEvent *e)
+void Vue::resizeEvent(QResizeEvent *e)
 {
    fill();
    QScrollArea::resizeEvent(e);
 }
 
-void vue::wheelEvent(QWheelEvent *)
+void Vue::wheelEvent(QWheelEvent *)
 {
-   fill();
+   if(m_zoomWheel)
+   {
+      fill();
+   }
 }
 
-void vue::clear() //[slot]
+void Vue::clear() //[slot]
 {
    a->setGeometry(0,0,width(),height());
    a->clear();
 }
 
-void vue::affSelect(bool b) //[slot]
+void Vue::affSelect(bool b) //[slot]
 {
    a->affSelect(b);
 }
 
-void vue::save() //[slot]
+void Vue::save() //[slot]
 {
    a->save();
 }
 
-void vue::open() //[slot]
+void Vue::open() //[slot]
 {
    a->open();
+}
+
+void Vue::setZoomWheel(bool activate)
+{
+   m_zoomWheel = activate;
+   a->setZoomWheel(activate);
 }

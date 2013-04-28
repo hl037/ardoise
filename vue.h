@@ -24,23 +24,26 @@
 #include <QScrollArea>
 #include "cursor.h"
 
-class ardoise;
+class Ardoise;
 class rectSelection;
 class ACursor;
 
-class vue : public QScrollArea
+class Vue : public QScrollArea
 {
-Q_OBJECT
+   Q_OBJECT
+   Q_PROPERTY(bool zoomWheel READ zoomWheel WRITE setZoomWheel)
+
 public:
-   explicit vue(QWidget *parent = 0);
-   void setWidget(ardoise * widget);
+   explicit Vue(QWidget *parent = 0);
+   void setWidget(Ardoise * widget);
 
 
 protected:
-   ardoise * a;
+   Ardoise * a;
    QPoint o;
    QPoint mo;
    bool deplace;
+   bool m_zoomWheel;
 
    void mousePressEvent(QMouseEvent *e);
    void mouseMoveEvent(QMouseEvent *e);
@@ -51,13 +54,17 @@ private:
    void fill();
 
 public:
-   inline ardoise * getArdoise(){return a;}
+   inline Ardoise * getArdoise(){return a;}
+
+   bool zoomWheel() const;
 
 public slots:
    void clear();
    void affSelect(bool b);
    void save();
    void open();
+
+   void setZoomWheel(bool activate);
 
 };
 
