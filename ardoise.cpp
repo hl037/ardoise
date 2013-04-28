@@ -331,9 +331,14 @@ void ardoise::save() //[slot]
 void ardoise::open() //[slot]
 {
    QString chemin=QFileDialog::getOpenFileName(this, QString("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
-   QImage loadImg(chemin,0);
-   img=loadImg;
-   setGeometry(img.rect());
+
+   QFile f(chemin);
+   if(f.exists())
+   {
+      QImage loadImg(chemin,0);
+      img=loadImg;
+      setGeometry(img.rect());
+   }
 }
 
 void ardoise::swapMode()
