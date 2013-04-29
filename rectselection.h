@@ -48,7 +48,7 @@ protected:
 class rectSelection : public QWidget, private Ui::rectSelection {
 Q_OBJECT
 public:
-   rectSelection(ardoise *parent);
+   rectSelection(Ardoise *parent);
 
    void hg();
    void h();
@@ -63,7 +63,7 @@ public:
    inline QRect getSelection() const {return QRect(x()+SIZE_BOUTON,y()+SIZE_BOUTON,width()+SIZE_BOUTONx2,height()+SIZE_BOUTONx2);}
 
 protected:
-   ardoise * a;
+   Ardoise * a;
    void (rectSelection::*proc)();
    bool change;
    QPoint o;

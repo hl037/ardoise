@@ -36,14 +36,16 @@ class rectSelection;
 class QPen;
 class QImage;
 
-class ardoise : public QWidget
+class Ardoise : public QWidget
 {
 Q_OBJECT
+Q_PROPERTY(bool zoomWheel READ zoomWheel WRITE setZoomWheel)
+
 public:
 
    typedef ArdoiseGlobal::Mode Mode;
 
-   explicit ardoise(QWidget *parent = 0);
+   explicit Ardoise(QWidget *parent = 0);
 
    void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
 
@@ -77,6 +79,8 @@ protected:
 
    bool dessin;
 
+   bool m_zoomWheel;
+
    void resizeImg(QImage * image, const QSize &newSize, QPoint map = QPoint(0,0));
 
    void paintEvent(QPaintEvent * e);
@@ -106,6 +110,8 @@ public:
    void beginText(const QPoint & pos);
 
    inline Mode getMode(){return mode;}
+
+   bool zoomWheel() const;
 signals:
 
 public slots:
@@ -117,6 +123,8 @@ public slots:
    void swapMode();
 
    void endText();
+
+   void setZoomWheel(bool activate);
 };
 
 #endif // ARDOISE_H
