@@ -655,7 +655,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>CheckBox</string>
+      <string>Activer le zoom à la molette</string>
      </property>
      <property name="checked">
       <bool>true</bool>
