@@ -95,9 +95,8 @@ void ardoise::lineTo(QPoint p, const QPen &pen)
 void ardoise::pointTo(QPoint p, const QPen &pen)
 {
    QPainter paint(&img);
-   paint.setBrush(pen.brush());
-   paint.setPen(Qt::NoPen);
-   paint.drawEllipse(p,pen.width()/2,pen.width()/2);
+   paint.setPen(pen);
+   paint.drawPoint(p);
    update();
 }
 
@@ -320,7 +319,9 @@ void ardoise::affSelect(bool b) //[slot]
 
 void ardoise::save() //[slot]
 {
-   QString chemin=QFileDialog::getSaveFileName(this, QString("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"));
+   QString filter;
+   QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), tr("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
+   //TODO : Tester Le filstre choisi si le fichier n'a pas d'extension
    QImage saveImg(select->getSelection().size(),QImage::Format_RGB32);
    saveImg.fill(0xFFFFFFFF);
    QPainter p(&saveImg);
@@ -330,7 +331,7 @@ void ardoise::save() //[slot]
 
 void ardoise::open() //[slot]
 {
-   QString chemin=QFileDialog::getOpenFileName(this, QString("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
+   QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), tr("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
    QImage loadImg(chemin,0);
    img=loadImg;
    setGeometry(img.rect());

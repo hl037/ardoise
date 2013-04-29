@@ -92,7 +92,6 @@ protected:
 
 public:
    void lineTo(QPoint p, const QPen & pen);
-   //TODO : Points de la même largeur que les lignes
    void pointTo(QPoint p, const QPen &pen);
    inline const QPen & getPen1() const {return pen1;}
    inline const QPen & getPen2() const {return pen2;}
