@@ -267,9 +267,9 @@ void Ardoise::resizeEvent(QResizeEvent * e)
    QWidget::resizeEvent(e);
 }
 
-//BUG : Quand le curseur sort de la zone fenetre de l'application en cours de dessin, il passe en effacement automatiquement
 void Ardoise::mousePressEvent(QMouseEvent *e)
 {
+   grabMouse();
    QWidget::mousePressEvent(e);
 
    switch(mode)
@@ -317,6 +317,7 @@ void Ardoise::mouseMoveEvent(QMouseEvent *e)
 
 void Ardoise::mouseReleaseEvent(QMouseEvent *e)
 {
+   if(!e->buttons()) releaseMouse();
    QWidget::mouseReleaseEvent(e);
    if(dessin && moveCursor)
    {
