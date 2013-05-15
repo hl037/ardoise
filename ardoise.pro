@@ -15,14 +15,16 @@ SOURCES += main.cpp \
     rectselection.cpp \
     rbouton.cpp \
     cursor.cpp \
-    flowlayout.cpp
+    flowlayout.cpp \
+    textinput.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
     vue.h \
     rectselection.h \
     rbouton.h \
     cursor.h \
-    flowlayout.h
+    flowlayout.h \
+    textinput.h
 FORMS += \
     mainwindow.ui \
     rectselection.ui
