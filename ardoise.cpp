@@ -101,6 +101,8 @@ void Ardoise::pointTo(QPoint p, const QPen &pen)
    update();
 }
 
+//TODO permettre d'annuler avec un appuie de la touche echape
+//TODO ne dessiner qu'une seule fois le texte si on appuie sur entrée
 void Ardoise::beginText(const QPoint &pos)
 {
    typing = true;
