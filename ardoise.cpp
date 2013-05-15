@@ -365,6 +365,7 @@ void Ardoise::affSelect(bool b) //[slot]
    }
 }
 
+#include "../Dbug.h"
 void Ardoise::save() //[slot]
 {
    QString filter;
@@ -373,11 +374,13 @@ void Ardoise::save() //[slot]
    QFileInfo info(chemin);
    QString suffix = info.suffix();
    const char * format = 0;
+   nD("test")
 #ifndef ARDOSIE_AUTO_SUFFIXE
-   if(!suffix.isEmpty())
+   Dvar(suffix.isEmpty())
+   if(suffix.isEmpty())
    {
 #endif
-
+   Dvar(filter == "Bitmap Windows (*.bmp)")
    if( filter == "Bitmap Windows (*.bmp)" )
    {
       format = "BMP";
@@ -452,6 +455,8 @@ void Ardoise::save() //[slot]
 #ifndef ARDOSIE_AUTO_SUFFIXE
    }
 #endif
+   Dvar(format)
+   Dvar(filter)
    QImage saveImg(select->getSelection().size(),QImage::Format_RGB32);
    saveImg.fill(0xFFFFFFFF);
    QPainter p(&saveImg);
