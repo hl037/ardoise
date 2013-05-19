@@ -1,0 +1,20 @@
+
+To make the installer, run
+makensis script.nsi
+
+It needs these file into this directory:
+ardoise.exe
+icudt51.dll
+icuin51.dll
+icuuc51.dll
+libgcc_s_sjlj-1.dll
+libstdc++-6.dll
+libwinpthread-1.dll
+Qt5Core.dll
+Qt5Gui.dll
+Qt5Widgets.dll
+Qt5Xml.dll
+qwindows.dll
+conf/default.xapal
+conf/last.xapal
+

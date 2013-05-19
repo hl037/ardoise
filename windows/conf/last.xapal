@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xapal [
+
+<!ELEMENT xapal (pal)? >
+<!ELEMENT pal (brush)* >
+<!ELEMENT brush (col|weigth)* >
+<!ELEMENT col EMPTY >
+<!ELEMENT weigth EMPTY >
+
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST col i CDATA #REQUIRED>
+<!ATTLIST col r CDATA #REQUIRED>
+<!ATTLIST col g CDATA #REQUIRED>
+<!ATTLIST col b CDATA #REQUIRED>
+
+<!ATTLIST weigth i CDATA #REQUIRED>
+<!ATTLIST weigth w CDATA #REQUIRED>
+
+]>
+<xapal>
+  <pal>
+    <brush key="default">
+      <col i="1" r="0" g="0" b="0"/>
+      <col i="2" r="255" g="255" b="255"/>
+      <weigth i="1" w="2"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="a">
+      <col i="1" r="0" g="0" b="0"/>
+      <col i="2" r="255" g="255" b="255"/>
+    </brush>
+    <brush key="b">
+      <weigth i="1" w="9"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="c">
+      <weigth i="1" w="3.5"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="e">
+      <col i="1" r="0" g="255" b="0"/>
+      <col i="2" r="255" g="255" b="255"/>
+    </brush>
+    <brush key="n">
+      <weigth i="1" w="13"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="q">
+      <weigth i="1" w="13"/>
+      <weigth i="2" w="100"/>
+    </brush>
+    <brush key="r">
+      <col i="1" r="0" g="0" b="255"/>
+      <col i="2" r="255" g="255" b="255"/>
+    </brush>
+    <brush key="v">
+      <weigth i="1" w="5"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="w">
+      <weigth i="1" w="1"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="x">
+      <weigth i="1" w="2"/>
+      <weigth i="2" w="40"/>
+    </brush>
+    <brush key="z">
+      <col i="1" r="255" g="0" b="4"/>
+      <col i="2" r="255" g="255" b="255"/>
+    </brush>
+  </pal>
+</xapal>

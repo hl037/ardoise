@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xapal [
+
+<!ELEMENT xapal (pal)? >
+<!ELEMENT pal (brush)* >
+<!ELEMENT brush (col|weigth)* >
+<!ELEMENT col EMPTY >
+<!ELEMENT weigth EMPTY >
+
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST col i CDATA #REQUIRED>
+<!ATTLIST col r CDATA #REQUIRED>
+<!ATTLIST col g CDATA #REQUIRED>
+<!ATTLIST col b CDATA #REQUIRED>
+
+<!ATTLIST weigth i CDATA #REQUIRED>
+<!ATTLIST weigth w CDATA #REQUIRED>
+
+]>
+<xapal>
+  <pal>
+    <brush key="default">
+      <col i="1" r="0" g="0" b="0"/>
+      <col i="2" r="255" g="255" b="255"/>
+      <weigth i="1" w="5"/>
+      <weigth i="2" w="20"/>
+    </brush>
+  </pal>
+</xapal>

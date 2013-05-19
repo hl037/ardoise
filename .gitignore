@@ -7,10 +7,16 @@ qrc_*
 ui_*
 !*.pro
 !*.png
+!*.ico
 !*.qrc
 !*.txt
 !*.ui
 !*.png
 !linux
 !linux/*
+!windows
+!windows/conf
+!windows/conf/*
+!windows/*.txt
+!windows/*.nsi
 
