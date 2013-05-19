@@ -41,6 +41,7 @@
 Ardoise::Ardoise(QWidget *parent) :
    QWidget(parent),
    mode(ArdoiseGlobal::DRAWING_MODE),
+   typing(false),
    textOffset(0,0),
    m_zoomWheel(true)
 {
@@ -56,10 +57,12 @@ Ardoise::Ardoise(QWidget *parent) :
    hiddenCur = QCursor(p);
    setCursor(hiddenCur);
    moveCursor = 1;
-   le = new QLineEdit(this);
-   le->hide();
+   textInput = new TextInput(this);
+   textInput->hide();
 
-   connect(le, SIGNAL(editingFinished()), this, SLOT(endText()));
+   connect(textInput, SIGNAL(accepted()), this, SLOT(endText()));
+   connect(textInput, SIGNAL(nextLine()), this, SLOT(nextLine()));
+   connect(textInput, SIGNAL(rejected()), this, SLOT(cancelText()));
    graphicsScene = new QGraphicsScene(this);
    //zoom=1;
 }
@@ -70,7 +73,6 @@ const QImage & Ardoise::getImg() const
 }
 
 void Ardoise::resizeImg(QImage * image, const QSize &newSize, QPoint map)
-//! [19] //! [20]
 {
     if (image->size() == newSize)
         return;
@@ -105,14 +107,62 @@ void Ardoise::pointTo(QPoint p, const QPen &pen)
 //TODO ne dessiner qu'une seule fois le texte si on appuie sur entrée
 void Ardoise::beginText(const QPoint &pos)
 {
+   if(typing)
+   {
+      printText();
+   }
+
    typing = true;
-   textPos = pos+textOffset;
+
+   switch(mode)
+   {
+   case ArdoiseGlobal::DRAW_TEXT_MODE:
+      textPos = pos;
+      break;
+   case ArdoiseGlobal::FLOATING_TEXT_MODE:
+      textPos = pos+textOffset;
+      break;
+   default: ;
+   }
+
    QFont f;
    f.setPixelSize(pen1.width()*8);
-   le->setFont(f);
-   le->move(pos);
-   le->show();
-   le->setFocus();
+   textInput->setFont(f);
+   textInput->move(pos);
+   textInput->show();
+   textInput->setFocus();
+   textInput->selectAll();
+}
+
+void Ardoise::printText()
+{
+   QFont f;
+   f.setPixelSize(pen1.width()*8);
+
+   switch(mode)
+   {
+   case ArdoiseGlobal::DRAW_TEXT_MODE:
+   {
+      QGraphicsTextItem it(textInput->text());
+      it.setFont(f);
+      it.setDefaultTextColor(pen1.color());
+      QPainter p(&img);
+      p.translate(textPos);
+      QStyleOptionGraphicsItem opt;
+      opt.initFrom(this);
+      it.paint(&p, &opt, 0);
+      p.end();
+      break;
+   }
+   case ArdoiseGlobal::FLOATING_TEXT_MODE:
+   {
+      QGraphicsTextItem * it = graphicsScene->addText(textInput->text(), f) ;
+      it->setPos(textPos);
+      it->setDefaultTextColor(pen1.color());
+      break;
+   }
+   default: ;
+   }
 }
 
 bool Ardoise::zoomWheel() const
@@ -122,42 +172,27 @@ bool Ardoise::zoomWheel() const
 
 void Ardoise::endText()
 {
+   printText();
+   textInput->hide();
+   typing = false;
+}
 
-   QFont f;
-   f.setPixelSize(pen1.width()*8);
+void Ardoise::nextLine()
+{
+   QPoint offset(0, textInput->lineHeight());
+   beginText(textPos + offset);
+}
 
-   switch(mode)
-   {
-   case ArdoiseGlobal::DRAW_TEXT_MODE:
-   {
-      QGraphicsTextItem it(le->text());
-      it.setFont(f);
-      it.setDefaultTextColor(pen1.color());
-      QPainter p(&img);
-      p.translate(lastPoint);
-      QStyleOptionGraphicsItem opt;
-      opt.initFrom(this);
-      it.paint(&p, &opt, 0);
-      p.end();
-      break;
-   }
-   case ArdoiseGlobal::FLOATING_TEXT_MODE:
-   {
-      QGraphicsTextItem * it = graphicsScene->addText(le->text(), f) ;
-      it->setPos(textPos);
-      it->setDefaultTextColor(pen1.color());
-      break;
-   }
-   default: ;
-   }
-
-
-   le->hide();
+void Ardoise::cancelText()
+{
+   textInput->hide();
+   typing = false;
 }
 
 
 void Ardoise::resize(int rx, int ry, QPoint pos)
 {
+   if(typing) cancelText();
    int nx,ny;
    QSize s(width()+qAbs(rx),height()+qAbs(ry));
    int mapX,mapY;
@@ -232,9 +267,9 @@ void Ardoise::resizeEvent(QResizeEvent * e)
    QWidget::resizeEvent(e);
 }
 
-//BUG : Quand le curseur sort de la zone fenetre de l'application en cours de dessin, il passe en effacement automatiquement
 void Ardoise::mousePressEvent(QMouseEvent *e)
 {
+   grabMouse();
    QWidget::mousePressEvent(e);
 
    switch(mode)
@@ -282,6 +317,7 @@ void Ardoise::mouseMoveEvent(QMouseEvent *e)
 
 void Ardoise::mouseReleaseEvent(QMouseEvent *e)
 {
+   if(!e->buttons()) releaseMouse();
    QWidget::mouseReleaseEvent(e);
    if(dessin && moveCursor)
    {
@@ -338,10 +374,9 @@ void Ardoise::save() //[slot]
    QString suffix = info.suffix();
    const char * format = 0;
 #ifndef ARDOSIE_AUTO_SUFFIXE
-   if(!suffix.isEmpty())
+   if(suffix.isEmpty())
    {
 #endif
-
    if( filter == "Bitmap Windows (*.bmp)" )
    {
       format = "BMP";
@@ -449,6 +484,7 @@ void Ardoise::swapMode()
       mode = ArdoiseGlobal::DRAWING_MODE;
       cur->setMode(ArdoiseGlobal::DRAWING_MODE);
    }
+   typing = false;
 }
 
 void Ardoise::setZoomWheel(bool activate)

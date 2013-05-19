@@ -27,7 +27,7 @@
 #include <QPoint>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
-#include <QLineEdit>
+#include "textinput.h"
 #include "cursor.h"
 
 class rectSelection;
@@ -62,7 +62,7 @@ protected:
    Mode mode;
 
    bool typing;
-   QLineEdit * le;
+   TextInput * textInput;
    QPoint textPos;
    QPoint textOffset;
 
@@ -108,6 +108,7 @@ public:
 
 
    void beginText(const QPoint & pos);
+   void printText();
 
    inline Mode getMode(){return mode;}
 
@@ -123,6 +124,8 @@ public slots:
    void swapMode();
 
    void endText();
+   void nextLine();
+   void cancelText();
 
    void setZoomWheel(bool activate);
 };
