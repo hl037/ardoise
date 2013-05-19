@@ -9,6 +9,7 @@ ui_*
 !*.png
 !*.ico
 !*.qrc
+!*.ts
 !*.txt
 !*.ui
 !*.png
