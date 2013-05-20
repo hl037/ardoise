@@ -36,6 +36,7 @@ class rectSelection;
 class QPen;
 class QImage;
 
+// NOTE : Peut-être agrandir l'ardoise si dessin à l'extérieur pour avoir un comportement uniforme
 class Ardoise : public QWidget
 {
 Q_OBJECT
@@ -108,6 +109,7 @@ public:
 
 
    void beginText(const QPoint & pos);
+   // BUG : la fenêtre n'est pas mise à jour sur tous le text écrit
    void printText();
 
    inline Mode getMode(){return mode;}
@@ -117,6 +119,8 @@ signals:
 
 public slots:
    void clear();
+   // BUG : La sélection peut disparaitre
+   // TODO Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
    void affSelect(bool b);
    void save();
    void open();

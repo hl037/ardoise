@@ -47,7 +47,9 @@ protected:
 
    void mousePressEvent(QMouseEvent *e);
    void mouseMoveEvent(QMouseEvent *e);
+   // BUG : lorsqu'on modifie la taille de la vue, l'ardoise revient systématiquement à l'angle supérieur gauche
    void resizeEvent(QResizeEvent *e);
+   // TODO Changer la philosophie du zoom à la molette
    void wheelEvent(QWheelEvent *e);
 
 private:

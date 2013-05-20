@@ -35,6 +35,9 @@ typedef struct
 
 extern QDir home;
 
+// BUG : sortir de la fenêtre avec le clique gauche pressé puis faire un clique droit engendre l'apparition de la boite de dialogue pour modifier les dockWidgets
+// TODO Empêcher de pouvoir fermer le dockwidget ou laisser la possibilité de le faire réapparaitre
+// TODO Ajouter un bouton pour afficher l'aide
 class mainWindow : public QMainWindow, private Ui::mainWindow {
     Q_OBJECT
 public:
@@ -70,11 +73,13 @@ protected:
 public slots:
    void setCol1();
    void setCol2();
+   // BUG : changer la taille du pinceau en cours d'édition génère un bug dans la taille de la zone de saisie
    void setWeight1(double w);
    void setWeight2(double w);
    void savePal();
    void openPal();
 
+   // BUG : changer de mode durant la saisie du texte engendre que la zone de saisie de se cache pas
    void swapMode();
 };
 
