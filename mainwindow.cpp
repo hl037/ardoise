@@ -136,15 +136,15 @@ mainWindow::mainWindow(QWidget *parent) :
 
 
 
-   f1->addWidget(couleur1);
-   f1->addWidget(w1);
-   f1->addWidget(couleur2);
-   f1->addWidget(w2);
-   f1->addWidget(statut);
-   f2->addWidget(save);
-   f2->addWidget(open);
-   f2->addWidget(dispSel);
-   f2->addWidget(erase);
+   f1->addWidget(couleur1_pb);
+   f1->addWidget(w1_sb);
+   f1->addWidget(couleur2_pb);
+   f1->addWidget(w2_sb);
+   f1->addWidget(statut_lab);
+   f2->addWidget(save_pb);
+   f2->addWidget(open_pb);
+   f2->addWidget(dispSel_pb);
+   f2->addWidget(erase_pb);
    f2->addWidget(swapMode_pb);
    //f2->addWidget(zoomWheel);
 
@@ -170,8 +170,8 @@ mainWindow::mainWindow(QWidget *parent) :
    ardoise->getCursor()->setCol1(col1);
    ardoise->getCursor()->setCol2(col2);
    doc->resize(width(),300);
-   setWeight1(w1->value());
-   setWeight2(w2->value());
+   setWeight1(w1_sb->value());
+   setWeight2(w2_sb->value());
    ardoise->getCursor()->hide();
    for(int i = 0 ; i<26 ; ++i)
    {
@@ -204,20 +204,20 @@ void mainWindow::changeEvent(QEvent *e)
 
 void mainWindow::setCol1()  //[slot]
 {
-   ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1->value()));
+   ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1_sb->value()));
    ardoise->getCursor()->setCol1(col1);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col1.red(),col1.green(),col1.blue());
-   couleur1->setStyleSheet(QString(buf));
+   couleur1_pb->setStyleSheet(QString(buf));
 }
 
 void mainWindow::setCol2()  //[slot]
 {
-   ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2->value()));
+   ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2_sb->value()));
    ardoise->getCursor()->setCol2(col2);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
-   couleur2->setStyleSheet(QString(buf));
+   couleur2_pb->setStyleSheet(QString(buf));
 }
 
 void mainWindow::setWeight1(double w)  //[slot]
@@ -278,22 +278,22 @@ void mainWindow::keyPressEvent(QKeyEvent *e)
    {
       if(e->key()==Qt::Key_Plus)
       {
-         w1->setValue(w1->value()+1);
+         w1_sb->setValue(w1_sb->value()+1);
       }
       else if(e->key()==Qt::Key_Minus)
       {
-         w1->setValue(w1->value()- (w1->value()>=1? 1:0));
+         w1_sb->setValue(w1_sb->value()- (w1_sb->value()>=1? 1:0));
       }
    }
    if(e->modifiers()&Qt::AltModifier)
    {
       if(e->key()==Qt::Key_Plus)
       {
-         w2->setValue(w2->value()+1);
+         w2_sb->setValue(w2_sb->value()+1);
       }
       else if(e->key()==Qt::Key_Minus)
       {
-         w2->setValue(w2->value()- (w2->value()>=1? 1:0));
+         w2_sb->setValue(w2_sb->value()- (w2_sb->value()>=1? 1:0));
       }
    }
    if(e->key() == Qt::Key_Space)
@@ -320,64 +320,64 @@ void mainWindow::saveCols(int pos)
    }
    brosses[pos].col1 = col1;
    brosses[pos].col2 = col2;
-   statut->setText(QString("Couleurs Sauvegardées en [")+('A'+pos)+QString("] "));
+   statut_lab->setText(QString("Couleurs Sauvegardées en [")+('A'+pos)+QString("] "));
 }
 
 void mainWindow::saveWs(int pos)
 {
-   if(brosses[pos].w1 == w1->value() && brosses[pos].w2 == w2->value())
+   if(brosses[pos].w1 == w1_sb->value() && brosses[pos].w2 == w2_sb->value())
    {
       erraseWs(pos);
       return;
    }
-   brosses[pos].w1 = w1->value();
-   brosses[pos].w2 = w2->value();
-   statut->setText(QString("Épaisseurs Sauvegardées en [")+('A'+pos)+QString("] "));
+   brosses[pos].w1 = w1_sb->value();
+   brosses[pos].w2 = w2_sb->value();
+   statut_lab->setText(QString("Épaisseurs Sauvegardées en [")+('A'+pos)+QString("] "));
 }
 
 void mainWindow::restore(int pos)
 {
    if(brosses[pos].w1)
    {
-      w1->setValue(brosses[pos].w1);
+      w1_sb->setValue(brosses[pos].w1);
       ardoise->getCursor()->setD1(brosses[pos].w1);
    }
    if(brosses[pos].w2)
    {
-      w2->setValue(brosses[pos].w2);
+      w2_sb->setValue(brosses[pos].w2);
       ardoise->getCursor()->setD2(brosses[pos].w2);
    }
    char buf[40];
    if(brosses[pos].col1.isValid())
    {
-      ardoise->setPen1(QPen(QBrush(col1 = brosses[pos].col1), w1->value()));
+      ardoise->setPen1(QPen(QBrush(col1 = brosses[pos].col1), w1_sb->value()));
       ardoise->getCursor()->setCol1(col1);
       sprintf(buf,"color: rgb(%i,%i,%i);",col1.red(),col1.green(),col1.blue());
-      couleur1->setStyleSheet(QString(buf));
+      couleur1_pb->setStyleSheet(QString(buf));
    }
    if(brosses[pos].col2.isValid())
    {
-      ardoise->setPen2(QPen(QBrush(col2 = brosses[pos].col2), w2->value()));
+      ardoise->setPen2(QPen(QBrush(col2 = brosses[pos].col2), w2_sb->value()));
       ardoise->getCursor()->setCol2(col2);
       sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
-      couleur2->setStyleSheet(QString(buf));
+      couleur2_pb->setStyleSheet(QString(buf));
    }
 
-   statut->setText(QString("Brosses en [")+('A'+pos)+QString("] restorées"));
+   statut_lab->setText(QString("Brosses en [")+('A'+pos)+QString("] restorées"));
 }
 
 void mainWindow::erraseCols(int pos)
 {
    brosses[pos].col1 = QColor();
    brosses[pos].col2 = QColor();
-   statut->setText(QString("Couleurs en [")+('A'+pos)+QString("] Supprimées"));
+   statut_lab->setText(QString("Couleurs en [")+('A'+pos)+QString("] Supprimées"));
 }
 
 void mainWindow::erraseWs(int pos)
 {
    brosses[pos].w1 = 0;
    brosses[pos].w2 = 0;
-   statut->setText(QString("Épaisseurs en [")+('A'+pos)+QString("] Supprimées"));
+   statut_lab->setText(QString("Épaisseurs en [")+('A'+pos)+QString("] Supprimées"));
 }
 
 void mainWindow::erraseCols(void)
@@ -387,7 +387,7 @@ void mainWindow::erraseCols(void)
       brosses[i].col1 = QColor();
       brosses[i].col2 = QColor();
    }
-   statut->setText(QString("Couleurs supprimées"));
+   statut_lab->setText(QString("Couleurs supprimées"));
 }
 
 void mainWindow::erraseWs(void)
@@ -397,7 +397,7 @@ void mainWindow::erraseWs(void)
       brosses[i].w1 = 0;
       brosses[i].w2 = 0;
    }
-   statut->setText(QString("Épaisseurs supprimées"));
+   statut_lab->setText(QString("Épaisseurs supprimées"));
 }
 
 #include <stdio.h>
@@ -453,8 +453,8 @@ void mainWindow::savePal(const QString & path)
    QString ext = QFileInfo(path).suffix();
 
    //Sauvegarde de la brosse actuelle
-   brosses[26].w1 = w1->value();
-   brosses[26].w2 = w2->value();
+   brosses[26].w1 = w1_sb->value();
+   brosses[26].w2 = w2_sb->value();
    brosses[26].col1 = col1;
    brosses[26].col2 = col2;
 
@@ -741,6 +741,107 @@ void mainWindow::openPal(const QString & path)
    restore(26);
 }
 
+void mainWindow::save() //[slot]
+{
+   QString filter;
+   QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
+   if(chemin.isEmpty()) return;
+   QFileInfo info(chemin);
+   QString suffix = info.suffix();
+   const char * format = 0;
+#ifndef ARDOSIE_AUTO_SUFFIXE
+   if(suffix.isEmpty())
+   {
+#endif
+   if( filter == "Bitmap Windows (*.bmp)" )
+   {
+      format = "BMP";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if(suffix != "bmp" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".bmp";
+      }
+#endif
+   }
+   if( filter == "Joint Photographic Experts Group JPEG (*.jpg *.jpeg)" )
+   {
+      format = "JPG";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "jpg" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".jpg";
+      }
+#endif
+   }
+   if( filter == "Portable Network Graphics PNG (*.png)" )
+   {
+      format = "PNG";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "png" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".png";
+      }
+#endif
+   }
+   if( filter == "Portable Pixmap (*.ppm)" )
+   {
+      format = "PPM";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "ppm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".ppm";
+      }
+#endif
+   }
+   if( filter == "Tagged Image File Format (*.tiff)" )
+   {
+      format = "TIFF";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "tiff" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".tiff";
+      }
+#endif
+   }
+   if( filter == "X11 Bitmap (*.xbm)" )
+   {
+      format = "XBM";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "xbm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".xbm";
+      }
+#endif
+   }
+   if( filter == "X11 Pixmap (*.xpm)" )
+   {
+      format = "XPM";
+#ifdef ARDOSIE_AUTO_SUFFIXE
+      if( suffix != "xpm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
+      {
+         chemin += ".xpm";
+      }
+#endif
+   }
+
+#ifndef ARDOSIE_AUTO_SUFFIXE
+   }
+#endif
+   ardoise->getSelection().save(chemin,format,80);
+}
+
+
+void mainWindow::open() //[slot]
+{
+
+   QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
+
+   QFile f(chemin);
+   if(f.exists())
+   {
+      ardoise->setImage(QImage(chemin,0));
+   }
+}
 
 void mainWindow::swapMode()
 {

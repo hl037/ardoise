@@ -79,6 +79,9 @@ public slots:
    void savePal();
    void openPal();
 
+   void save();
+   void open();
+
    // BUG : changer de mode durant la saisie du texte engendre que la zone de saisie de se cache pas
    void swapMode();
 };

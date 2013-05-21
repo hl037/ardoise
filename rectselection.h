@@ -45,10 +45,10 @@ protected:
 #include "ui_rectselection.h"
 
 
-class rectSelection : public QWidget, private Ui::rectSelection {
+class RectSelection : public QWidget, private Ui::rectSelection {
 Q_OBJECT
 public:
-   rectSelection(Ardoise *parent);
+   RectSelection(Ardoise *parent);
 
    void hg();
    void h();
@@ -60,11 +60,11 @@ public:
    void g();
    void all();
 
-   inline QRect getSelection() const {return QRect(x()+SIZE_BOUTON,y()+SIZE_BOUTON,width()+SIZE_BOUTONx2,height()+SIZE_BOUTONx2);}
+   inline QRect getSelection() const {return QRect(x()+SIZE_BOUTON,y()+SIZE_BOUTON,width()-SIZE_BOUTONx2,height()-SIZE_BOUTONx2);}
 
 protected:
    Ardoise * a;
-   void (rectSelection::*proc)();
+   void (RectSelection::*proc)();
    bool change;
    QPoint o;
    QPoint oo;
@@ -84,31 +84,31 @@ protected:
 
 public slots:
    inline void sethg()
-      {proc=&rectSelection::hg; direction=10;}
+      {proc=&RectSelection::hg; direction=10;}
 
    inline void seth()
-      {proc=&rectSelection::h; direction=8;}
+      {proc=&RectSelection::h; direction=8;}
 
    inline void sethd()
-      {proc=&rectSelection::hd; direction=9;}
+      {proc=&RectSelection::hd; direction=9;}
 
    inline void setd()
-      {proc=&rectSelection::d; direction=1;}
+      {proc=&RectSelection::d; direction=1;}
 
    inline void setbd()
-      {proc=&rectSelection::bd; direction=5;}
+      {proc=&RectSelection::bd; direction=5;}
 
    inline void setb()
-      {proc=&rectSelection::b; direction=4;}
+      {proc=&RectSelection::b; direction=4;}
 
    inline void setbg()
-      {proc=&rectSelection::bg; direction=6;}
+      {proc=&RectSelection::bg; direction=6;}
 
    inline void setg()
-      {proc=&rectSelection::g; direction=2;}
+      {proc=&RectSelection::g; direction=2;}
 
    inline void setall()
-      {proc=&rectSelection::all; direction=0;}
+      {proc=&RectSelection::all; direction=0;}
 
 
 };

@@ -26,14 +26,14 @@
 #include <QColor>
 
 
-rectSelection::rectSelection(Ardoise * parent) :
+RectSelection::RectSelection(Ardoise * parent) :
     QWidget(parent)
 {
     a = parent;
     setupUi(this);
 }
 
-void rectSelection::changeEvent(QEvent *e)
+void RectSelection::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     switch (e->type()) {
@@ -45,7 +45,7 @@ void rectSelection::changeEvent(QEvent *e)
     }
 }
 
-void rectSelection::resizeEvent(QResizeEvent *)
+void RectSelection::resizeEvent(QResizeEvent *)
 {
    b1->move(0,0);
    b2->move((width()-SIZE_BOUTON)/2, 0);
@@ -59,19 +59,19 @@ void rectSelection::resizeEvent(QResizeEvent *)
    //D("***RESIZE EVENT***  x="<<x()<<"  y="<<y()<<"    w="<<width()<<"  h="<<height())
 }
 
-void rectSelection::mouseMoveEvent(QMouseEvent *e)
+void RectSelection::mouseMoveEvent(QMouseEvent *e)
 {
    if(change)
    {
       offset=e->pos()-o;
       o=e->pos();
-      (this->*this->rectSelection::proc)();
+      (this->*this->RectSelection::proc)();
    }
    else e->ignore();
 
 }
 
-void rectSelection::mousePressEvent(QMouseEvent *e)
+void RectSelection::mousePressEvent(QMouseEvent *e)
 {
    if(e->button() == Qt::MiddleButton) e->ignore();
    else
@@ -94,47 +94,47 @@ void rectSelection::leaveEvent(QEvent *e)
    a->setMouseTracking(1);
 }
 */
-void rectSelection::hg()
+void RectSelection::hg()
 {
    setGeometry(o.x()+x(),o.y()+y(),width()-o.x(),height()-o.y());
 }
 
-void rectSelection::h()
+void RectSelection::h()
 {
    setGeometry(x(),o.y()+y(),width(),height()-o.y());
 }
 
-void rectSelection::hd()
+void RectSelection::hd()
 {
    setGeometry(x(),o.y()+y(),width()+offset.x(),height()-o.y());
 }
 
-void rectSelection::d()
+void RectSelection::d()
 {
    setGeometry(x(),y(),width()+offset.x(),height());
 }
 
-void rectSelection::bd()
+void RectSelection::bd()
 {
    setGeometry(x(),y(),width()+offset.x(),height()+offset.y());
 }
 
-void rectSelection::b()
+void RectSelection::b()
 {
    setGeometry(x(),y(),width(),height()+offset.y());
 }
 
-void rectSelection::bg()
+void RectSelection::bg()
 {
    setGeometry(o.x()+x(),y(),width()-o.x(),height()+offset.y());
 }
 
-void rectSelection::g()
+void RectSelection::g()
 {
    setGeometry(o.x()+x(),y(),width()-o.x(),height());
 }
 
-void rectSelection::all()
+void RectSelection::all()
 {
    move(o.x()+x()-oo.x(),o.y()+y()-oo.y());
 }

@@ -32,7 +32,7 @@
 
 #include "../../Dbug.h"
 
-class rectSelection;
+class RectSelection;
 
 
 class QPen;
@@ -57,7 +57,7 @@ public:
    void zoomTo(double fac, QPoint o);
 
    const QImage & getImg() const;
-   rectSelection * select;
+   RectSelection * select;
 
 protected:
    QGraphicsScene * graphicsScene;
@@ -105,6 +105,7 @@ protected:
 
 
 public:
+   void moveViewBy(const QPoint & offset);
    void lineTo(QPoint p, const QPen & pen);
    void pointTo(QPoint p, const QPen &pen);
    inline const QPen & getPen1() const {return pen1;}
@@ -127,7 +128,7 @@ public:
 
    /// Permet d'obtenir l'image contenue dans la sélection
    QImage getSelection();
-   void setImage();
+   void setImage(const QImage & i);
 signals:
 
 public slots:
@@ -135,14 +136,12 @@ public slots:
    // BUG : La sélection peut disparaitre
    // TODO Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
    void affSelect(bool b);
-   void save();
-   void open();
-
-   void swapMode();
 
    void endText();
    void nextLine();
    void cancelText();
+
+   void swapMode();
 
    void setZoomWheel(bool activate);
 };

@@ -20,7 +20,6 @@
 
 #include "ardoise.h"
 #include "rectselection.h"
-#include "vue.h"
 
 #include <QString>
 #include <QImage>
@@ -46,7 +45,7 @@ Ardoise::Ardoise(QWidget *parent) :
    textOffset(0,0),
    m_zoomWheel(true)
 {
-   select = new rectSelection(this);
+   select = new RectSelection(this);
    select->hide();
    setPen1(QPen(QColor(0,0,0)));
    setPen2(QPen(QColor(255,255,255)));
@@ -65,7 +64,7 @@ Ardoise::Ardoise(QWidget *parent) :
    connect(textInput, SIGNAL(nextLine()), this, SLOT(nextLine()));
    connect(textInput, SIGNAL(rejected()), this, SLOT(cancelText()));
    graphicsScene = new QGraphicsScene(this);
-   //zoom=1;
+   fill();
 }
 
 const QImage & Ardoise::getImg() const
@@ -195,6 +194,24 @@ bool Ardoise::zoomWheel() const
    return m_zoomWheel;
 }
 
+QImage Ardoise::getSelection()
+{
+   QImage i(select->getSelection().size(),QImage::Format_RGB32);
+   i.fill(0xFFFFFFFF);
+   QPainter p(&i);
+   p.drawImage(i.rect(),img,select->getSelection().translated(imgOffset));
+   return i;
+}
+
+void Ardoise::setImage(const QImage &i)
+{
+   img = i;
+   QSize s = (i.size()-size())/2;
+   imgOffset.setX(s.width());
+   imgOffset.setY(s.height());
+   fill();
+}
+
 void Ardoise::endText()
 {
    printText();
@@ -282,11 +299,7 @@ void Ardoise::paintEvent(QPaintEvent * e)
 
 void Ardoise::resizeEvent(QResizeEvent * e)
 {
-   QSize s(
-      qMax(e->size().width()-pos().x()-img.width(), 0),
-      qMax(e->size().height()-pos().y()-img.height(), 0) );
-
-   if(!s.isNull()) resizeImg(img.size()+s);
+   fill();
    QWidget::resizeEvent(e);
 }
 
@@ -342,12 +355,8 @@ void Ardoise::mouseMoveEvent(QMouseEvent *e)
    {
       QPoint offset=e->pos()-mo;
       mo = e->pos();
-      imgOffset -= offset;
-
-      fill();
+      moveViewBy(-offset);
    }
-   nDWAI
-   Dvar(img.size())
    e->ignore();
 }
 
@@ -377,6 +386,13 @@ void Ardoise::wheelEvent(QWheelEvent *)
    */
 }
 
+void Ardoise::moveViewBy(const QPoint &offset)
+{
+   imgOffset += offset;
+   fill();
+   select->move(select->pos()-offset);
+}
+
 void Ardoise::clear() //[slot]
 {
    QImage i(size(), QImage::Format_RGB32);
@@ -401,113 +417,6 @@ void Ardoise::affSelect(bool b) //[slot]
       moveCursor = 1;
       cur->show();
       setCursor(hiddenCur);
-   }
-}
-
-void Ardoise::save() //[slot]
-{
-   QString filter;
-   QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
-   if(chemin.isEmpty()) return;
-   QFileInfo info(chemin);
-   QString suffix = info.suffix();
-   const char * format = 0;
-#ifndef ARDOSIE_AUTO_SUFFIXE
-   if(suffix.isEmpty())
-   {
-#endif
-   if( filter == "Bitmap Windows (*.bmp)" )
-   {
-      format = "BMP";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if(suffix != "bmp" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".bmp";
-      }
-#endif
-   }
-   if( filter == "Joint Photographic Experts Group JPEG (*.jpg *.jpeg)" )
-   {
-      format = "JPG";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "jpg" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".jpg";
-      }
-#endif
-   }
-   if( filter == "Portable Network Graphics PNG (*.png)" )
-   {
-      format = "PNG";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "png" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".png";
-      }
-#endif
-   }
-   if( filter == "Portable Pixmap (*.ppm)" )
-   {
-      format = "PPM";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "ppm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".ppm";
-      }
-#endif
-   }
-   if( filter == "Tagged Image File Format (*.tiff)" )
-   {
-      format = "TIFF";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "tiff" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".tiff";
-      }
-#endif
-   }
-   if( filter == "X11 Bitmap (*.xbm)" )
-   {
-      format = "XBM";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "xbm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".xbm";
-      }
-#endif
-   }
-   if( filter == "X11 Pixmap (*.xpm)" )
-   {
-      format = "XPM";
-#ifdef ARDOSIE_AUTO_SUFFIXE
-      if( suffix != "xpm" && ( ( chemin[0]!='"' && chemin[0]!='\'' ) || ( chemin[chemin.size()-1]!='"' && chemin[chemin.size()-1]!='\'' ) ) )
-      {
-         chemin += ".xpm";
-      }
-#endif
-   }
-
-#ifndef ARDOSIE_AUTO_SUFFIXE
-   }
-#endif
-   QImage saveImg(select->getSelection().size(),QImage::Format_RGB32);
-   saveImg.fill(0xFFFFFFFF);
-   QPainter p(&saveImg);
-   p.drawImage(saveImg.rect(),img,select->getSelection());
-   saveImg.save(chemin,format,80);
-}
-
-void Ardoise::open() //[slot]
-{
-
-   QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
-
-   QFile f(chemin);
-   if(f.exists())
-   {
-      QImage loadImg(chemin,0);
-      img=loadImg;
-      setGeometry(img.rect());
    }
 }
 
