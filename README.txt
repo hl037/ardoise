@@ -7,7 +7,7 @@ Notes de version:
 -----------------
 
 
-Fonction à venir :
+Fonctions à venir :
 ==================
 
 -Traduction en Anglais et (peut-être) en Hollandais. (0.3.3.1)
@@ -29,7 +29,7 @@ Fonction à venir :
 v0.3.3.0
 ========
 
-Le programme possède les fonctions de bases, quelques corrections de bug notamment le fait de sortir de la zone de dessin en maintenant le click.
+Le programme possède les fonctions de bases, quelques corrections de bug, notamment le fait de sortir de la zone de dessin en maintenant le click.
 
 
 
@@ -44,7 +44,8 @@ Release notes :
 
 
 
-Funciton coming :
+Functions coming :
+==================
 
 -English and (may be) Dutch tranlations. (0.3.3.1)
 -Possibility to save other parameters like language choice, wheel zoom activation, last openned files and directories, Slate state etc. (0.3.3.1/2)
@@ -58,11 +59,11 @@ Funciton coming :
 -Handle flowchart (0.9)
 -Layers
 
-+add end-user requested function along the developpement.
++add end-user requested functions along the developpement.
 
 
 
 v0.3.3.0
 ========
 
-The program provide the basics functions. There is some bugs fixed like to leave the drawing area pressing mouse button.
+The program provides the basic functions. There is some bugs fixed like to leave the drawing area pressing mouse button.
