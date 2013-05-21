@@ -34,7 +34,8 @@ OTHER_FILES += COPYING.txt \
     windows/INSTALL.txt \
     windows/script.nsi \
     windows/conf/last.xapal \
-    windows/conf/default.xapal
+    windows/conf/default.xapal \
+    DevLine.txt
 
 RESOURCES += icons.qrc
 RC_FILE = "icon.rc"

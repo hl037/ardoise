@@ -1,0 +1,7 @@
+Fusion des classes ardoise et vue
+
+-tout d'abord, save doit prendre en paramètre un painter sur lequel la sélection va être painte
+-la sélection doit être transphérée sur l'ardoise
+-Le zoom doit être supprimé temporairement
+-gestion des changements de taille dans l'ardoise
+-Ajouter des offsets à toutes les inputs, ainsi que décaler le paint event.
