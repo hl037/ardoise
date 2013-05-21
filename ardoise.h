@@ -30,6 +30,8 @@
 #include "textinput.h"
 #include "cursor.h"
 
+#include "../../Dbug.h"
+
 class rectSelection;
 
 
@@ -48,7 +50,8 @@ public:
 
    explicit Ardoise(QWidget *parent = 0);
 
-   void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
+   //void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
+
 
    //TODO ne pas modifier l'image originale lors du Zoom
    void zoomTo(double fac, QPoint o);
@@ -59,6 +62,7 @@ public:
 protected:
    QGraphicsScene * graphicsScene;
 
+   QPoint imgOffset;
 
    Mode mode;
 
@@ -75,6 +79,7 @@ protected:
    QPen pen2;
    QImage img;
    QPoint lastPoint;
+   QPoint mo;
 
    bool moveCursor;
 
@@ -82,7 +87,9 @@ protected:
 
    bool m_zoomWheel;
 
-   void resizeImg(QImage * image, const QSize &newSize, QPoint map = QPoint(0,0));
+   /// retaille l'image : map = position (coordonnée de la nouvelle image) à laquelle sera dessinée l'ancienne image.
+   void resizeImg(const QSize &newSize, QPoint map = QPoint(0,0));
+   void fill();
 
    void paintEvent(QPaintEvent * e);
    void resizeEvent(QResizeEvent * e);
@@ -93,6 +100,8 @@ protected:
 
    void enterEvent(QEvent *){if(moveCursor) cur->show();}
    void leaveEvent(QEvent *){cur->hide();}
+
+   inline QPoint getImgPoint(QPoint p){ return p+imgOffset; }
 
 
 public:
@@ -115,6 +124,10 @@ public:
    inline Mode getMode(){return mode;}
 
    bool zoomWheel() const;
+
+   /// Permet d'obtenir l'image contenue dans la sélection
+   QImage getSelection();
+   void setImage();
 signals:
 
 public slots:

@@ -146,7 +146,7 @@ mainWindow::mainWindow(QWidget *parent) :
    f2->addWidget(dispSel);
    f2->addWidget(erase);
    f2->addWidget(swapMode_pb);
-   f2->addWidget(zoomWheel);
+   //f2->addWidget(zoomWheel);
 
    f->addItem(f1);
    f->addItem(f2);
@@ -165,16 +165,14 @@ mainWindow::mainWindow(QWidget *parent) :
 
    doc->widget()->setLayout(f);
 
-   scene = new Ardoise(vue);
-   vue->setWidget(scene);
    col1=QColor(0,0,0);
    col2=QColor(255,255,255);
-   vue->getArdoise()->getCursor()->setCol1(col1);
-   vue->getArdoise()->getCursor()->setCol2(col2);
+   ardoise->getCursor()->setCol1(col1);
+   ardoise->getCursor()->setCol2(col2);
    doc->resize(width(),300);
    setWeight1(w1->value());
    setWeight2(w2->value());
-   vue->getArdoise()->getCursor()->hide();
+   ardoise->getCursor()->hide();
    for(int i = 0 ; i<26 ; ++i)
    {
       brosses[i].col1 = QColor();
@@ -206,8 +204,8 @@ void mainWindow::changeEvent(QEvent *e)
 
 void mainWindow::setCol1()  //[slot]
 {
-   vue->getArdoise()->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1->value()));
-   vue->getArdoise()->getCursor()->setCol1(col1);
+   ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1->value()));
+   ardoise->getCursor()->setCol1(col1);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col1.red(),col1.green(),col1.blue());
    couleur1->setStyleSheet(QString(buf));
@@ -215,8 +213,8 @@ void mainWindow::setCol1()  //[slot]
 
 void mainWindow::setCol2()  //[slot]
 {
-   vue->getArdoise()->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2->value()));
-   vue->getArdoise()->getCursor()->setCol2(col2);
+   ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2->value()));
+   ardoise->getCursor()->setCol2(col2);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
    couleur2->setStyleSheet(QString(buf));
@@ -224,14 +222,14 @@ void mainWindow::setCol2()  //[slot]
 
 void mainWindow::setWeight1(double w)  //[slot]
 {
-   vue->getArdoise()->setPen1(QPen(QBrush(col1),w));
-   vue->getArdoise()->getCursor()->setD1(w);
+   ardoise->setPen1(QPen(QBrush(col1),w));
+   ardoise->getCursor()->setD1(w);
 }
 
 void mainWindow::setWeight2(double w)  //[slot]
 {
-   vue->getArdoise()->setPen2(QPen(QBrush(col2),w));
-   vue->getArdoise()->getCursor()->setD2(w);
+   ardoise->setPen2(QPen(QBrush(col2),w));
+   ardoise->getCursor()->setD2(w);
 }
 
 void mainWindow::keyPressEvent(QKeyEvent *e)
@@ -342,25 +340,25 @@ void mainWindow::restore(int pos)
    if(brosses[pos].w1)
    {
       w1->setValue(brosses[pos].w1);
-      vue->getArdoise()->getCursor()->setD1(brosses[pos].w1);
+      ardoise->getCursor()->setD1(brosses[pos].w1);
    }
    if(brosses[pos].w2)
    {
       w2->setValue(brosses[pos].w2);
-      vue->getArdoise()->getCursor()->setD2(brosses[pos].w2);
+      ardoise->getCursor()->setD2(brosses[pos].w2);
    }
    char buf[40];
    if(brosses[pos].col1.isValid())
    {
-      vue->getArdoise()->setPen1(QPen(QBrush(col1 = brosses[pos].col1), w1->value()));
-      vue->getArdoise()->getCursor()->setCol1(col1);
+      ardoise->setPen1(QPen(QBrush(col1 = brosses[pos].col1), w1->value()));
+      ardoise->getCursor()->setCol1(col1);
       sprintf(buf,"color: rgb(%i,%i,%i);",col1.red(),col1.green(),col1.blue());
       couleur1->setStyleSheet(QString(buf));
    }
    if(brosses[pos].col2.isValid())
    {
-      vue->getArdoise()->setPen2(QPen(QBrush(col2 = brosses[pos].col2), w2->value()));
-      vue->getArdoise()->getCursor()->setCol2(col2);
+      ardoise->setPen2(QPen(QBrush(col2 = brosses[pos].col2), w2->value()));
+      ardoise->getCursor()->setCol2(col2);
       sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
       couleur2->setStyleSheet(QString(buf));
    }
@@ -746,8 +744,8 @@ void mainWindow::openPal(const QString & path)
 
 void mainWindow::swapMode()
 {
-   vue->getArdoise()->swapMode();
-   switch(vue->getArdoise()->getMode())
+   ardoise->swapMode();
+   switch(ardoise->getMode())
    {
    case ArdoiseGlobal::DRAWING_MODE:
       swapMode_pb->setText(tr("Mode dessin, changer pour texte"));

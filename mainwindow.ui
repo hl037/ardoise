@@ -22,44 +22,7 @@
   <property name="Licence" stdset="0">
    <string notr="true" extracomment="Licence">This file is part of Foobar.      Foobar is free software: you can redistribute it and/or modify     it under the terms of the GNU General Public License as published by     the Free Software Foundation, either version 3 of the License, or     (at your option) any later version.      Foobar is distributed in the hope that it will be useful,     but WITHOUT ANY WARRANTY; without even the implied warranty of     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     GNU General Public License for more details.      You should have received a copy of the GNU General Public License     along with Foobar.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
   </property>
-  <widget class="QWidget" name="surface">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="Vue" name="vue">
-      <property name="lineWidth">
-       <number>0</number>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="widgetResizable">
-       <bool>false</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+  <widget class="Ardoise" name="ardoise"/>
   <widget class="QDockWidget" name="doc">
    <property name="enabled">
     <bool>true</bool>
@@ -645,22 +608,6 @@
       <string notr="true">SwapMode</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="zoomWheel">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>85</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Activer le zoom à la molette</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -669,7 +616,7 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>15</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
@@ -678,17 +625,10 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>Vue</class>
-   <extends>QScrollArea</extends>
-   <header>vue.h</header>
+   <class>Ardoise</class>
+   <extends>QWidget</extends>
+   <header>ardoise.h</header>
    <container>1</container>
-   <slots>
-    <slot>clear()</slot>
-    <slot>save()</slot>
-    <slot>open()</slot>
-    <slot>affSelect(bool)</slot>
-    <slot>setZoomWheel(bool)</slot>
-   </slots>
   </customwidget>
  </customwidgets>
  <resources>
@@ -728,22 +668,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>erase</sender>
-   <signal>clicked()</signal>
-   <receiver>vue</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>689</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>689</x>
-     <y>357</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>couleur2</sender>
    <signal>clicked()</signal>
    <receiver>mainWindow</receiver>
@@ -772,70 +696,6 @@
     <hint type="destinationlabel">
      <x>533</x>
      <y>122</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>save</sender>
-   <signal>clicked()</signal>
-   <receiver>vue</receiver>
-   <slot>save()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>79</x>
-     <y>77</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>66</x>
-     <y>283</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>open</sender>
-   <signal>clicked()</signal>
-   <receiver>vue</receiver>
-   <slot>open()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>198</x>
-     <y>86</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>289</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dispSel</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>vue</receiver>
-   <slot>affSelect(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>366</x>
-     <y>83</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>378</x>
-     <y>232</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>zoomWheel</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>vue</receiver>
-   <slot>setZoomWheel(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>52</x>
-     <y>57</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>529</x>
-     <y>312</y>
     </hint>
    </hints>
   </connection>

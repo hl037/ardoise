@@ -40,6 +40,7 @@
 
 Ardoise::Ardoise(QWidget *parent) :
    QWidget(parent),
+   imgOffset(0,0),
    mode(ArdoiseGlobal::DRAWING_MODE),
    typing(false),
    textOffset(0,0),
@@ -72,16 +73,39 @@ const QImage & Ardoise::getImg() const
    return img;
 }
 
-void Ardoise::resizeImg(QImage * image, const QSize &newSize, QPoint map)
+void Ardoise::resizeImg(const QSize &newSize, QPoint map)
 {
-    if (image->size() == newSize)
+    if (img.size() == newSize)
         return;
 
     QImage newImage(newSize, QImage::Format_RGB32);
     newImage.fill(qRgb(255, 255, 255));
     QPainter painter(&newImage);
-    painter.drawImage(map, *image);
-    *image = newImage;
+    painter.drawImage(map, img);
+    img = newImage;
+}
+
+void Ardoise::fill()
+{
+   QSize s(img.size());
+   QPoint p(0,0);
+   if(imgOffset.x()<0) // <-- est négatif!
+   {
+      s.rwidth()-=imgOffset.x();
+      p.rx()-=imgOffset.x();
+      imgOffset.setX(0);
+   }
+   if(imgOffset.y()<0)
+   {
+      s.rheight()-=imgOffset.y();
+      p.ry()-=imgOffset.y();
+      imgOffset.setY(0);
+   }
+   s.rwidth() += qMax(0, width()+imgOffset.x()-img.width());
+   s.rheight() += qMax(0, height()+imgOffset.y()-img.height());
+
+   resizeImg(s, p);
+   update();
 }
 
 void Ardoise::lineTo(QPoint p, const QPen &pen)
@@ -100,6 +124,7 @@ void Ardoise::pointTo(QPoint p, const QPen &pen)
    QPainter paint(&img);
    paint.setPen(pen);
    paint.drawPoint(p);
+   lastPoint = p;
    update();
 }
 
@@ -128,7 +153,7 @@ void Ardoise::beginText(const QPoint &pos)
    QFont f;
    f.setPixelSize(pen1.width()*8);
    textInput->setFont(f);
-   textInput->move(pos);
+   textInput->move(pos-imgOffset);
    textInput->show();
    textInput->setFocus();
    textInput->selectAll();
@@ -189,7 +214,7 @@ void Ardoise::cancelText()
    typing = false;
 }
 
-
+/*
 void Ardoise::resize(int rx, int ry, QPoint pos)
 {
    if(typing) cancelText();
@@ -220,14 +245,14 @@ void Ardoise::resize(int rx, int ry, QPoint pos)
    }
    else { ny=y()+pos.y() ; mapY=0; }
 
-   //D("rx="<<rx<<" ry="<<ry<<" pos="<<pos<<" nx="<<nx<<" ny="<<ny<<"  mapX="<<mapX<<" mapY="<<mapY<<"  w="<<width()<<" h="<<height()<<"  x="<<x()<<" y="<<y())/**/
+   //D("rx="<<rx<<" ry="<<ry<<" pos="<<pos<<" nx="<<nx<<" ny="<<ny<<"  mapX="<<mapX<<" mapY="<<mapY<<"  w="<<width()<<" h="<<height()<<"  x="<<x()<<" y="<<y())
 
    resizeImg(&img,s,QPoint(mapX,mapY));
    textOffset-=QPoint(mapX,mapY);
    QWidget::resize(s);
    move(QPoint(nx,ny));
    select->move(select->pos()+QPoint(mapX,mapY));
-}
+}*/
 
 void Ardoise::zoomTo(double fac, QPoint o)
 {
@@ -250,20 +275,18 @@ void Ardoise::paintEvent(QPaintEvent * e)
 {
    QPainter painter(this);
    QRect rectangle = e->rect();
-   painter.drawImage(rectangle, img, rectangle);
+   painter.drawImage(rectangle, img, rectangle.translated(imgOffset));
    QRect rt = rectangle.translated(textOffset);
    graphicsScene->render(&painter, rectangle, rt);
 }
 
 void Ardoise::resizeEvent(QResizeEvent * e)
 {
-   if(width()>img.width() || height()>img.height())
-   {
-      int newWidth = qMax(width() + 128, img.width());
-      int newHeight = qMax(height() + 128, img.height());
-      resizeImg(&img, QSize(newWidth, newHeight));
-      update();
-   }
+   QSize s(
+      qMax(e->size().width()-pos().x()-img.width(), 0),
+      qMax(e->size().height()-pos().y()-img.height(), 0) );
+
+   if(!s.isNull()) resizeImg(img.size()+s);
    QWidget::resizeEvent(e);
 }
 
@@ -272,13 +295,14 @@ void Ardoise::mousePressEvent(QMouseEvent *e)
    grabMouse();
    QWidget::mousePressEvent(e);
 
+   QPoint imgPoint = getImgPoint(e->pos());
+
    switch(mode)
    {
    case ArdoiseGlobal::DRAWING_MODE:
       if((e->button()==Qt::LeftButton || e->button()==Qt::RightButton) && moveCursor)
       {
-         lastPoint=e->pos();
-         pointTo(lastPoint,e->button()==Qt::LeftButton? pen1:pen2);
+         pointTo(imgPoint,e->button()==Qt::LeftButton? pen1:pen2);
          dessin=1;
          e->accept();
       }
@@ -288,11 +312,12 @@ void Ardoise::mousePressEvent(QMouseEvent *e)
    case ArdoiseGlobal::FLOATING_TEXT_MODE:
       if(e->button()==Qt::LeftButton)
       {
-         beginText(lastPoint=e->pos());
+         beginText(imgPoint);
          e->accept();
       }
       else e->ignore();
    }
+   mo=e->pos();
 
 
 }
@@ -301,17 +326,28 @@ void Ardoise::mouseMoveEvent(QMouseEvent *e)
 {
    //cur->setGeometry(QRect(e->globalPos()-QPoint(50,50),e->globalPos()+QPoint(50,50)));
    if(moveCursor) cur->setGeometry(QRect(e->pos()-QPoint(50,50),e->pos()+QPoint(50,50)));
+   QPoint imgPoint = getImgPoint(e->pos());
    if(dessin && moveCursor)
    {
       if((e->buttons() & Qt::LeftButton))
       {
-         lineTo(e->pos(),pen1);
+         lineTo(imgPoint,pen1);
       }
       else
       {
-         lineTo(e->pos(),pen2);
+         lineTo(imgPoint,pen2);
       }
    }
+   else if(e->buttons() & Qt::MiddleButton)
+   {
+      QPoint offset=e->pos()-mo;
+      mo = e->pos();
+      imgOffset -= offset;
+
+      fill();
+   }
+   nDWAI
+   Dvar(img.size())
    e->ignore();
 }
 
@@ -319,23 +355,26 @@ void Ardoise::mouseReleaseEvent(QMouseEvent *e)
 {
    if(!e->buttons()) releaseMouse();
    QWidget::mouseReleaseEvent(e);
+   QPoint imgPoint = getImgPoint(e->pos());
    if(dessin && moveCursor)
    {
-      if(e->button()==Qt::LeftButton)  lineTo(e->pos(),pen1);
-      else                             lineTo(e->pos(),pen2);
+      if(e->button()==Qt::LeftButton)  lineTo(imgPoint,pen1);
+      else                             lineTo(imgPoint,pen2);
       dessin=0;
    }
    e->ignore();
 }
 
-void Ardoise::wheelEvent(QWheelEvent *e)
+void Ardoise::wheelEvent(QWheelEvent *)
 {
+   /* Temporary disabled, to provide a better zoom way
    if(m_zoomWheel)
    {
       if(e->delta()>0) zoomTo(FAC,e->pos());
       else zoomTo(FAC2,e->pos());
       QWidget::wheelEvent(e);
    }
+   */
 }
 
 void Ardoise::clear() //[slot]

@@ -11,7 +11,6 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     ardoise.cpp \
-    vue.cpp \
     rectselection.cpp \
     rbouton.cpp \
     cursor.cpp \
@@ -19,7 +18,6 @@ SOURCES += main.cpp \
     textinput.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
-    vue.h \
     rectselection.h \
     rbouton.h \
     cursor.h \
