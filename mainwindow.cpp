@@ -252,6 +252,8 @@ void mainWindow::closeEvent(QCloseEvent *e)
    }
 }
 
+#include "../../Dbug.h"
+
 bool mainWindow::eventFilter(QObject * o, QEvent *ev)
 {
    if(ev->type() != QEvent::KeyPress) return false;
@@ -259,7 +261,7 @@ bool mainWindow::eventFilter(QObject * o, QEvent *ev)
 
    bool b = false;
 
-   if(!isActiveWindow() || o->inherits("QLineEdit") || o->inherits("QDialog") || o->inherits("QAbstractSpinBox")) return false;
+   if(!isActiveWindow() || o->inherits("QWidgetWindow") || o->inherits("QLineEdit") || o->inherits("QDialog") || o->inherits("QAbstractSpinBox")) return false;
 
    //Palette
    if(e->key()>=Qt::Key_A && e->key()<=Qt::Key_Z)
