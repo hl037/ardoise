@@ -30,6 +30,7 @@ RectSelection::RectSelection(Ardoise * parent) :
     QWidget(parent)
 {
     a = parent;
+    setMinimumSize(SIZE_BOUTONx2+1,SIZE_BOUTONx2+1);
     setupUi(this);
 }
 
@@ -45,18 +46,38 @@ void RectSelection::changeEvent(QEvent *e)
     }
 }
 
-void RectSelection::resizeEvent(QResizeEvent *)
+void RectSelection::resizeEvent(QResizeEvent * e)
 {
+   if(e->size().width()<SIZE_BOUTONx3)
+   {
+      b2->hide();
+      b6->hide();
+   }
+   else
+   {
+      b2->move((width()-SIZE_BOUTON)/2, 0);
+      b2->show();
+      b6->move((width()-SIZE_BOUTON)/2,height()-SIZE_BOUTON);
+      b6->show();
+   }
+   if(e->size().height()<SIZE_BOUTONx3)
+   {
+
+      b4->hide();
+      b8->hide();
+   }
+   else
+   {
+      b4->move(width()-SIZE_BOUTON,(height()-SIZE_BOUTON)/2);
+      b4->show();
+      b8->move(0,(height()-SIZE_BOUTON)/2);
+      b8->show();
+   }
    b1->move(0,0);
-   b2->move((width()-SIZE_BOUTON)/2, 0);
    b3->move(width()-SIZE_BOUTON,0);
-   b4->move(width()-SIZE_BOUTON,(height()-SIZE_BOUTON)/2);
    b5->move(width()-SIZE_BOUTON,height()-SIZE_BOUTON);
-   b6->move((width()-SIZE_BOUTON)/2,height()-SIZE_BOUTON);
    b7->move(0,height()-SIZE_BOUTON);
-   b8->move(0,(height()-SIZE_BOUTON)/2);
    s->setGeometry(SIZE_BOUTON,SIZE_BOUTON,width()-SIZE_BOUTON*2,height()-SIZE_BOUTON*2);
-   //D("***RESIZE EVENT***  x="<<x()<<"  y="<<y()<<"    w="<<width()<<"  h="<<height())
 }
 
 void RectSelection::mouseMoveEvent(QMouseEvent *e)

@@ -4,7 +4,9 @@
 
 
 Notes de version:
+=================
 -----------------
+
 
 
 Fonctions à venir :
@@ -25,6 +27,14 @@ Fonctions à venir :
 +ajout de fonctions demandées par des les utilisateurs tout au long du développement.
 
 
+v0.3.4.0
+========
+
+Bug Fixés:
+- Si on passait du mode text au mode dessin en cours de saisie, la zone de saisie ne disparaissait pas.
+- La zone de sélection pouvait totalement disparaître en la redimensionnant trop petite.
+- Changer la taille du pinceau en cours de saisie ne mettait pas à jour la taille de la zone.
+
 
 v0.3.3.0
 ========
@@ -40,6 +50,7 @@ Le programme possède les fonctions de bases, quelques corrections de bug, notam
 
 
 Release notes :
+===============
 ---------------
 
 
@@ -60,6 +71,14 @@ Functions coming :
 -Layers
 
 +add end-user requested functions along the developpement.
+
+v0.3.4.0
+========
+
+Fixed bug:
+- When swap mode typing, the input area didn't hide.
+- Text input area diseapered definitively when resize it to 0
+- Text input area size didn't update when change pen size when typing
 
 
 

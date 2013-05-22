@@ -23,6 +23,7 @@
 
 #define SIZE_BOUTON 15
 #define SIZE_BOUTONx2 30
+#define SIZE_BOUTONx3 45
 
 #include <QFrame>
 #include <QRect>

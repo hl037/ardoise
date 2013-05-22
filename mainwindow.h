@@ -73,7 +73,6 @@ protected:
 public slots:
    void setCol1();
    void setCol2();
-   // BUG : changer la taille du pinceau en cours d'édition génère un bug dans la taille de la zone de saisie
    void setWeight1(double w);
    void setWeight2(double w);
    void savePal();
@@ -82,7 +81,6 @@ public slots:
    void save();
    void open();
 
-   // BUG : changer de mode durant la saisie du texte engendre que la zone de saisie de se cache pas
    void swapMode();
 };
 

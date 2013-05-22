@@ -103,6 +103,8 @@ protected:
 
    inline QPoint getImgPoint(QPoint p){ return p+imgOffset; }
 
+   void updateTIFont();
+
 
 public:
    void moveViewBy(const QPoint & offset);
@@ -113,13 +115,13 @@ public:
    inline ACursor * getCursor(){return cur;}
 
    inline void setPen1(const QPen & newPen)
-      {  pen1=newPen;   pen1.setCapStyle(Qt::RoundCap);   pen1.setJoinStyle(Qt::RoundJoin); }
+   {  pen1=newPen;   pen1.setCapStyle(Qt::RoundCap);   pen1.setJoinStyle(Qt::RoundJoin); updateTIFont();}
    inline void setPen2(const QPen & newPen)
       {  pen2=newPen;   pen2.setCapStyle(Qt::RoundCap);   pen2.setJoinStyle(Qt::RoundJoin); }
 
 
    void beginText(const QPoint & pos);
-   // BUG : la fenêtre n'est pas mise à jour sur tous le text écrit
+   // BUG : la fenêtre n'est pas mise à jour sur tout le text écrit
    void printText();
 
    inline Mode getMode(){return mode;}
@@ -133,7 +135,6 @@ signals:
 
 public slots:
    void clear();
-   // BUG : La sélection peut disparaitre
    // TODO Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
    void affSelect(bool b);
 

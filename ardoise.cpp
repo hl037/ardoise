@@ -42,6 +42,7 @@ Ardoise::Ardoise(QWidget *parent) :
    imgOffset(0,0),
    mode(ArdoiseGlobal::DRAWING_MODE),
    typing(false),
+   textInput(new TextInput(this)),
    textOffset(0,0),
    m_zoomWheel(true)
 {
@@ -57,7 +58,6 @@ Ardoise::Ardoise(QWidget *parent) :
    hiddenCur = QCursor(p);
    setCursor(hiddenCur);
    moveCursor = 1;
-   textInput = new TextInput(this);
    textInput->hide();
 
    connect(textInput, SIGNAL(accepted()), this, SLOT(endText()));
@@ -127,8 +127,6 @@ void Ardoise::pointTo(QPoint p, const QPen &pen)
    update();
 }
 
-//TODO permettre d'annuler avec un appuie de la touche echape
-//TODO ne dessiner qu'une seule fois le texte si on appuie sur entrée
 void Ardoise::beginText(const QPoint &pos)
 {
    if(typing)
@@ -149,13 +147,18 @@ void Ardoise::beginText(const QPoint &pos)
    default: ;
    }
 
-   QFont f;
-   f.setPixelSize(pen1.width()*8);
-   textInput->setFont(f);
    textInput->move(pos-imgOffset);
    textInput->show();
    textInput->setFocus();
    textInput->selectAll();
+}
+
+void Ardoise::updateTIFont()
+{
+   QFont f;
+   f.setPixelSize(pen1.width()*8);
+   textInput->setFont(f);
+   textInput->resize(textInput->sizeHint());
 }
 
 void Ardoise::printText()
@@ -426,11 +429,13 @@ void Ardoise::swapMode()
    {
       mode = ArdoiseGlobal::TEXT_MODE;
       cur->setMode(ArdoiseGlobal::TEXT_MODE);
+      textInput->hide();
    }
    else
    {
       mode = ArdoiseGlobal::DRAWING_MODE;
       cur->setMode(ArdoiseGlobal::DRAWING_MODE);
+      textInput->hide();
    }
    typing = false;
 }
