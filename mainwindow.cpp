@@ -118,7 +118,6 @@ void mainWindow::ini()
 #warning "This build won't support palette recovery"
 #endif
 }
-#include "../../Dbug.h"
 void mainWindow::setShortcuts()
 {
    new QShortcut(QKeySequence(QString("Ctrl+S")), this, SLOT(save()), 0, Qt::ApplicationShortcut);

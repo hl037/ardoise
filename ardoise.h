@@ -30,8 +30,6 @@
 #include "textinput.h"
 #include "cursor.h"
 
-#include "../../Dbug.h"
-
 class RectSelection;
 
 
