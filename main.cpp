@@ -28,7 +28,6 @@
 //BUG : quand on clique sur un bouton dans le dock widget, la barre d'espace agit sur ce bouton au lieu de servir pour le mode
 
 
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

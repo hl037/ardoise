@@ -67,8 +67,10 @@ protected:
 
    brosse brosses[27];
 
+   bool block;
+
    virtual void closeEvent(QCloseEvent * e);
-   bool eventFilter(QObject *, QEvent *ev);
+   bool eventFilter(QObject *o, QEvent *ev);
 
    bool confirm(const QString &t, const QString & s);
 

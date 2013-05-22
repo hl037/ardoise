@@ -127,7 +127,8 @@ void mainWindow::setShortcuts()
 }
 
 mainWindow::mainWindow(QWidget *parent) :
-    QMainWindow(parent)
+   QMainWindow(parent),
+   block(false)
 {
    setupUi(this);
    FlowLayout * f1 = new FlowLayout;
@@ -251,14 +252,14 @@ void mainWindow::closeEvent(QCloseEvent *e)
    }
 }
 
-bool mainWindow::eventFilter(QObject *, QEvent *ev)
+bool mainWindow::eventFilter(QObject * o, QEvent *ev)
 {
    if(ev->type() != QEvent::KeyPress) return false;
    QKeyEvent * e = static_cast<QKeyEvent*>(ev);
 
    bool b = false;
 
-   if(ardoise->isTyping()) return false;
+   if(!isActiveWindow() || o->inherits("QLineEdit") || o->inherits("QDialog") || o->inherits("QAbstractSpinBox")) return false;
 
    //Palette
    if(e->key()>=Qt::Key_A && e->key()<=Qt::Key_Z)
