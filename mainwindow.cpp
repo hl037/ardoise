@@ -252,8 +252,6 @@ void mainWindow::closeEvent(QCloseEvent *e)
    }
 }
 
-#include "../../Dbug.h"
-
 bool mainWindow::eventFilter(QObject * o, QEvent *ev)
 {
    if(ev->type() != QEvent::KeyPress) return false;
