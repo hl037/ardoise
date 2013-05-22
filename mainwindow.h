@@ -45,6 +45,7 @@ public:
    static const char dtd[];
 
    void ini();
+   void setShortcuts();
 
     mainWindow(QWidget *parent = 0);
     void saveCols(int pos);
@@ -61,14 +62,15 @@ public:
 protected:
    Ardoise * scene;
    void changeEvent(QEvent *e);
-   //void resizeEvent(QResizeEvent *e);
-   void keyPressEvent(QKeyEvent *e);
    QColor col1;
    QColor col2;
 
    brosse brosses[27];
 
    virtual void closeEvent(QCloseEvent * e);
+   bool eventFilter(QObject *, QEvent *ev);
+
+   bool confirm(const QString &t, const QString & s);
 
 public slots:
    void setCol1();

@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     mainWindow w;
+    a.installEventFilter(&w);
     w.show();
     return a.exec();
 }

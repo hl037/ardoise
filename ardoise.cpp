@@ -179,6 +179,7 @@ void Ardoise::printText()
       opt.initFrom(this);
       it.paint(&p, &opt, 0);
       p.end();
+      repaint(QRect(textPos-imgOffset, it.boundingRect().size().toSize()));
       break;
    }
    case ArdoiseGlobal::FLOATING_TEXT_MODE:

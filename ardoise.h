@@ -107,6 +107,7 @@ protected:
 
 
 public:
+   inline bool isTyping() { return typing; }
    void moveViewBy(const QPoint & offset);
    void lineTo(QPoint p, const QPen & pen);
    void pointTo(QPoint p, const QPen &pen);

@@ -32,6 +32,8 @@
 #include "flowlayout.h"
 #include <QXmlDefaultHandler>
 #include <QXmlSimpleReader>
+#include <QMessageBox>
+#include <QShortcut>
 #include <QStack>
 #include <QDir>
 #include <iostream>
@@ -116,6 +118,14 @@ void mainWindow::ini()
 #warning "This build won't support palette recovery"
 #endif
 }
+#include "../../Dbug.h"
+void mainWindow::setShortcuts()
+{
+   new QShortcut(QKeySequence(QString("Ctrl+S")), this, SLOT(save()), 0, Qt::ApplicationShortcut);
+   new QShortcut(QKeySequence(QString("Ctrl+O")), this, SLOT(open()), 0, Qt::ApplicationShortcut);
+   new QShortcut(QKeySequence(Qt::Key_1), this, SLOT(setCol1()), 0, Qt::ApplicationShortcut);
+   new QShortcut(QKeySequence(Qt::Key_2), this, SLOT(setCol2()), 0, Qt::ApplicationShortcut);
+}
 
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -183,6 +193,7 @@ mainWindow::mainWindow(QWidget *parent) :
    swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
    connect(swapMode_pb, SIGNAL(clicked()), this, SLOT(swapMode()));
    ini();
+   setShortcuts();
 }
 
 void mainWindow::changeEvent(QEvent *e)
@@ -232,35 +243,59 @@ void mainWindow::setWeight2(double w)  //[slot]
    ardoise->getCursor()->setD2(w);
 }
 
-void mainWindow::keyPressEvent(QKeyEvent *e)
+void mainWindow::closeEvent(QCloseEvent *e)
 {
+   QMainWindow::closeEvent(e);
+   if(e->isAccepted() && supportPalRecov)
+   {
+      savePal(home.absoluteFilePath("last.xapal"));
+   }
+}
+
+bool mainWindow::eventFilter(QObject *, QEvent *ev)
+{
+   if(ev->type() != QEvent::KeyPress) return false;
+   QKeyEvent * e = static_cast<QKeyEvent*>(ev);
+
+   bool b = false;
+
+   if(ardoise->isTyping()) return false;
+
+   //Palette
    if(e->key()>=Qt::Key_A && e->key()<=Qt::Key_Z)
    {
       if(e->modifiers() & Qt::AltModifier && e->modifiers() & Qt::ControlModifier && e->key()==Qt::Key_S)
       {
          savePal();
-         return;
+         return true;
       }
 
       if(e->modifiers() & Qt::AltModifier && e->modifiers() & Qt::ControlModifier && e->key()==Qt::Key_O)
       {
          openPal();
-         return;
+         return true;
       }
 
       if(!e->modifiers())
       {
          restore(e->key()-Qt::Key_A);
-         return;
+         return true;
       }
 
-      if(e->modifiers() & Qt::AltModifier) saveCols(e->key()-Qt::Key_A);
-
-      if(e->modifiers() & Qt::ShiftModifier) saveWs(e->key()-Qt::Key_A);
-
-      return;
+      if(e->modifiers() & Qt::AltModifier)
+      {
+         saveCols(e->key()-Qt::Key_A);
+         b = true;
+      }
+      if(e->modifiers() & Qt::ShiftModifier)
+      {
+         saveWs(e->key()-Qt::Key_A);
+         b = true;
+      }
+      if(b) return true;
    }
 
+   //Palette Resets
    if(e->key()==Qt::Key_Backspace || e->key()==Qt::Key_Delete)
    {
       if(e->modifiers() & Qt::AltModifier)
@@ -271,18 +306,28 @@ void mainWindow::keyPressEvent(QKeyEvent *e)
       {
          erraseWs();
       }
-      return;
+      return true;
    }
 
+   //SwapMode
+   if(e->key() == Qt::Key_Space)
+   {
+      swapMode();
+      return true;
+   }
+
+   //Pinceau
    if(e->modifiers()&Qt::ControlModifier)
    {
       if(e->key()==Qt::Key_Plus)
       {
          w1_sb->setValue(w1_sb->value()+1);
+         b = true;
       }
       else if(e->key()==Qt::Key_Minus)
       {
          w1_sb->setValue(w1_sb->value()- (w1_sb->value()>=1? 1:0));
+         b = true;
       }
    }
    if(e->modifiers()&Qt::AltModifier)
@@ -290,25 +335,20 @@ void mainWindow::keyPressEvent(QKeyEvent *e)
       if(e->key()==Qt::Key_Plus)
       {
          w2_sb->setValue(w2_sb->value()+1);
+         b = true;
       }
       else if(e->key()==Qt::Key_Minus)
       {
          w2_sb->setValue(w2_sb->value()- (w2_sb->value()>=1? 1:0));
+         b = true;
       }
    }
-   if(e->key() == Qt::Key_Space)
-   {
-      swapMode();
-   }
+   return b;
 }
 
-void mainWindow::closeEvent(QCloseEvent *e)
+bool mainWindow::confirm(const QString & t, const QString &s)
 {
-   QMainWindow::closeEvent(e);
-   if(e->isAccepted() && supportPalRecov)
-   {
-      savePal(home.absoluteFilePath("last.xapal"));
-   }
+   return QMessageBox::warning(this, t, s, QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok;
 }
 
 void mainWindow::saveCols(int pos)
@@ -320,7 +360,7 @@ void mainWindow::saveCols(int pos)
    }
    brosses[pos].col1 = col1;
    brosses[pos].col2 = col2;
-   statut_lab->setText(QString("Couleurs Sauvegardées en [")+('A'+pos)+QString("] "));
+   statut_lab->setText(tr("Couleurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
 void mainWindow::saveWs(int pos)
@@ -332,7 +372,7 @@ void mainWindow::saveWs(int pos)
    }
    brosses[pos].w1 = w1_sb->value();
    brosses[pos].w2 = w2_sb->value();
-   statut_lab->setText(QString("Épaisseurs Sauvegardées en [")+('A'+pos)+QString("] "));
+   statut_lab->setText(tr("Épaisseurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
 void mainWindow::restore(int pos)
@@ -362,42 +402,43 @@ void mainWindow::restore(int pos)
       sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
       couleur2_pb->setStyleSheet(QString(buf));
    }
-
-   statut_lab->setText(QString("Brosses en [")+('A'+pos)+QString("] restorées"));
+   statut_lab->setText(tr("Brosses en %1 restorées").arg(QString("[")+('A'+pos)+']'));
 }
 
 void mainWindow::erraseCols(int pos)
 {
    brosses[pos].col1 = QColor();
    brosses[pos].col2 = QColor();
-   statut_lab->setText(QString("Couleurs en [")+('A'+pos)+QString("] Supprimées"));
+   statut_lab->setText(tr("Couleurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
 void mainWindow::erraseWs(int pos)
 {
    brosses[pos].w1 = 0;
    brosses[pos].w2 = 0;
-   statut_lab->setText(QString("Épaisseurs en [")+('A'+pos)+QString("] Supprimées"));
+   statut_lab->setText(tr("Épaisseurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
 void mainWindow::erraseCols(void)
 {
+   if(!confirm(tr("Réinitialiser les couleurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
    {
       brosses[i].col1 = QColor();
       brosses[i].col2 = QColor();
    }
-   statut_lab->setText(QString("Couleurs supprimées"));
+   statut_lab->setText(tr("Couleurs supprimées"));
 }
 
 void mainWindow::erraseWs(void)
 {
+   if(!confirm(tr("Réinitialiser les épaisseurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
    {
       brosses[i].w1 = 0;
       brosses[i].w2 = 0;
    }
-   statut_lab->setText(QString("Épaisseurs supprimées"));
+   statut_lab->setText(tr("Épaisseurs supprimées"));
 }
 
 #include <stdio.h>
@@ -444,8 +485,8 @@ static QString br2xml(const brosse & b)
 
 void mainWindow::savePal()
 {
-   QString path=QFileDialog::getSaveFileName(this, QString("Enregistrer la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoisee Palette(*.xapal)"));
-   savePal(path);
+   QString path=QFileDialog::getSaveFileName(this, tr("Enregistrer la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal)"));
+   if(!path.isEmpty()) savePal(path);
 }
 
 void mainWindow::savePal(const QString & path)
@@ -671,7 +712,7 @@ public:
 
 void mainWindow::openPal()
 {
-   QString path=QFileDialog::getOpenFileName(this, QString("Ouvrir la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoisee Palette(*.xapal);;Ardoise Palette ayant une autre extension (*.*)"));
+   QString path=QFileDialog::getOpenFileName(this, tr("Ouvrir la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal);;Ardoise Palette ayant une autre extension (*.*)"));
    openPal(path);
 }
 
@@ -693,7 +734,7 @@ void mainWindow::openPal(const QString & path)
       FILE * f = fopen(path.toStdString().c_str(), "rb");
       if(fgetc(f)!='A' || fgetc(f)!='P' || fgetc(f)!='A' || fgetc(f)!='L')
       {
-         QMessageBox::critical(this, QString("Format inconnu"), QString("Le fichier ne correspond pas à une 'Ardoise Palette' valide."));
+         QMessageBox::critical(this, tr("Format inconnu"), tr("Le fichier ne correspond pas à une 'Ardoise Palette' valide."));
          return;
       }
       int tmp;
