@@ -5,14 +5,12 @@
 <context>
     <name>Ardoise</name>
     <message>
-        <location filename="ardoise.cpp" line="335"/>
         <source>Enregistrer l&apos;image</source>
-        <translation>Save image</translation>
+        <translation type="obsolete">Save image</translation>
     </message>
     <message>
-        <location filename="ardoise.cpp" line="429"/>
         <source>Ouvrir l&apos;image</source>
-        <translation>Open image</translation>
+        <translation type="obsolete">Open image</translation>
     </message>
 </context>
 <context>
@@ -23,48 +21,132 @@
         <translation>Ardoise (Slate)</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="174"/>
+        <location filename="mainwindow.ui" line="137"/>
         <source>Ouvrir</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="266"/>
+        <location filename="mainwindow.ui" line="226"/>
         <source>Réinitialiser</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="330"/>
+        <location filename="mainwindow.ui" line="287"/>
         <source>Afficher la selection</source>
         <translation>Show selection area</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="391"/>
+        <location filename="mainwindow.ui" line="348"/>
         <source>Enregistrer</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="502"/>
+        <location filename="mainwindow.ui" line="456"/>
         <source>Couleur 1</source>
         <translation>1st Color</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="613"/>
+        <location filename="mainwindow.ui" line="564"/>
         <source>Couleur 2</source>
         <translation>2nd Color</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="658"/>
         <source>Activer le zoom à la molette</source>
-        <translation>Activate wheel zoom</translation>
+        <translation type="obsolete">Activate wheel zoom</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="185"/>
-        <location filename="mainwindow.cpp" line="753"/>
+        <location filename="mainwindow.cpp" line="192"/>
+        <location filename="mainwindow.cpp" line="892"/>
         <source>Mode dessin, changer pour texte</source>
         <translation>Drawing mode, switch to text mode</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="756"/>
+        <location filename="mainwindow.cpp" line="362"/>
+        <source>Couleurs Sauvegardées %1</source>
+        <translation>Current colors saved in %1</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="374"/>
+        <source>Épaisseurs Sauvegardées %1</source>
+        <translation>Curent brush thickness saved in %1</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="404"/>
+        <source>Brosses en %1 restorées</source>
+        <translation>%1 Brush retored</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="411"/>
+        <source>Couleurs en %1 Supprimées</source>
+        <translation>Colors of brush %1 removed</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="418"/>
+        <source>Épaisseurs en %1 Supprimées</source>
+        <translation>Thicknesses in brush %1 removed</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="423"/>
+        <source>Réinitialiser les couleurs de la palette</source>
+        <translation>Reset all palette colors</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="423"/>
+        <source>Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?</source>
+        <translation>Are you sure to reset all palette colors?</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="429"/>
+        <source>Couleurs supprimées</source>
+        <translation>Colors resetted</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="434"/>
+        <source>Réinitialiser les épaisseurs de la palette</source>
+        <translation>Reset all palette brush thicknesses</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="434"/>
+        <source>Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?</source>
+        <translation>Are you sure to reset all palette brush thicknesses?</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="440"/>
+        <source>Épaisseurs supprimées</source>
+        <translation>Thicknesses resetted</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="487"/>
+        <source>Enregistrer la palette</source>
+        <translation>Save the palette</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="714"/>
+        <source>Ouvrir la palette</source>
+        <translation>Open the palette</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="736"/>
+        <source>Format inconnu</source>
+        <translation>Unknown format</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="736"/>
+        <source>Le fichier ne correspond pas à une &apos;Ardoise Palette&apos; valide.</source>
+        <translation>This file is not a valid &apos;Ardoise Palette&apos;.</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="787"/>
+        <source>Enregistrer l&apos;image</source>
+        <translation>Save image</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="877"/>
+        <source>Ouvrir l&apos;image</source>
+        <translation>Open image</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="895"/>
         <source>Mode texte, changer pour dessin</source>
         <translation>Text mode, switch to drawing mode</translation>
     </message>

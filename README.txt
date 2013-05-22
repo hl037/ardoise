@@ -34,6 +34,7 @@ Bug Fixés:
 - Si on passait du mode text au mode dessin en cours de saisie, la zone de saisie ne disparaissait pas.
 - La zone de sélection pouvait totalement disparaître en la redimensionnant trop petite.
 - Changer la taille du pinceau en cours de saisie ne mettait pas à jour la taille de la zone.
+- La zone de dessin n'était pas complètement mise à jour lors d'une saisie plus longue que la zone de saisie
 
 
 v0.3.3.0
@@ -79,6 +80,7 @@ Fixed bug:
 - When swap mode typing, the input area didn't hide.
 - Text input area diseapered definitively when resize it to 0
 - Text input area size didn't update when change pen size when typing
+- Drawing zone was not fully updated when print text longer than text input area
 
 
 

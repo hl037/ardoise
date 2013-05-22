@@ -120,7 +120,6 @@ public:
 
 
    void beginText(const QPoint & pos);
-   // BUG : la fenêtre n'est pas mise à jour sur tout le text écrit
    void printText();
 
    inline Mode getMode(){return mode;}
