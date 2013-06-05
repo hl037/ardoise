@@ -25,8 +25,6 @@
 //TODO Rajouter la possibilité de dessiner des forme géométrique
 //TODO faire un nouveau sélecteur de mode avec un truc du genre Alt+tab
 //TODO Rajouter dans le fichier de sauvegarde l'état du zoommolette ainsi que le mode
-//BUG : quand on clique sur un bouton dans le dock widget, la barre d'espace agit sur ce bouton au lieu de servir pour le mode
-
 
 int main(int argc, char *argv[])
 {

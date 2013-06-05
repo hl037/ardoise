@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-08-25T13:40:51
 # -------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,14 +15,16 @@ SOURCES += main.cpp \
     rbouton.cpp \
     cursor.cpp \
     flowlayout.cpp \
-    textinput.cpp
+    textinput.cpp \
+    json/ljsonp.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
     rectselection.h \
     rbouton.h \
     cursor.h \
     flowlayout.h \
-    textinput.h
+    textinput.h \
+    json/ljsonp.hpp
 FORMS += \
     mainwindow.ui \
     rectselection.ui

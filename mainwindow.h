@@ -24,6 +24,7 @@
 #include "ui_mainwindow.h"
 #include "ardoise.h"
 #include <QDir>
+#include <QSet>
 
 typedef struct
 {
@@ -34,6 +35,11 @@ typedef struct
 }brosse;
 
 extern QDir home;
+
+class QNetworkAccessManager;
+class QNetworkReply;
+
+class Version;
 
 // BUG : sortir de la fenêtre avec le clique gauche pressé puis faire un clique droit engendre l'apparition de la boite de dialogue pour modifier les dockWidgets
 // TODO Empêcher de pouvoir fermer le dockwidget ou laisser la possibilité de le faire réapparaitre
@@ -47,17 +53,21 @@ public:
    void ini();
    void setShortcuts();
 
-    mainWindow(QWidget *parent = 0);
-    void saveCols(int pos);
-    void saveWs(int pos);
-    void restore(int pos);
-    void erraseCols(int pos);
-    void erraseWs(int pos);
-    void erraseCols(void);
-    void erraseWs(void);
+   mainWindow(QWidget *parent = 0);
+   void saveCols(int pos);
+   void saveWs(int pos);
+   void restore(int pos);
+   void erraseCols(int pos);
+   void erraseWs(int pos);
+   void erraseCols(void);
+   void erraseWs(void);
 
-    void savePal(const QString & path);
-    void openPal(const QString & path);
+   void savePal(const QString & path);
+   void openPal(const QString & path);
+
+   void saveConf(const QString & path);
+   void openConf(const QString & path);
+
 
 protected:
    Ardoise * scene;
@@ -74,6 +84,16 @@ protected:
 
    bool confirm(const QString &t, const QString & s);
 
+   void notifUpdate(const Version & v);
+
+   QNetworkAccessManager * netManager;
+   int reqRemaining;
+
+   QWidget * helpW;
+
+public:
+   QStringList checkUrls;
+
 public slots:
    void setCol1();
    void setCol2();
@@ -86,6 +106,13 @@ public slots:
    void open();
 
    void swapMode();
+
+   void showHelp();
+
+   void fetchUpdates();
+
+protected slots:
+   void checkUpdates(QNetworkReply * r);
 };
 
 #endif // MAINWINDOW_H
