@@ -24,6 +24,7 @@ HEADERS += mainwindow.h \
     cursor.h \
     flowlayout.h \
     textinput.h \
+    version.h \
     json/ljsonp.hpp
 FORMS += \
     mainwindow.ui \

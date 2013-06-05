@@ -97,6 +97,10 @@ void mainWindow::ini()
    {
       openPal(home.absoluteFilePath("last.xapal"));
    }
+   if(home.exists("conf.json"))
+   {
+      openConf(home.absoluteFilePath("conf.json"));
+   }
    supportPalRecov = true;
 #elif defined _WIN32
    home = QDir::current();
@@ -165,6 +169,7 @@ mainWindow::mainWindow(QWidget *parent) :
    f2->addWidget(dispSel_pb);
    f2->addWidget(erase_pb);
    f2->addWidget(swapMode_pb);
+   f2->addWidget(update_pb);
    f2->addWidget(help_pb);
    //f2->addWidget(zoomWheel);
 
@@ -924,7 +929,6 @@ void mainWindow::showHelp()
    helpW->show();
 }
 
-
 void mainWindow::openConf(const QString &path)
 {
    using namespace std;
@@ -940,7 +944,7 @@ void mainWindow::openConf(const QString &path)
    {
       Object * o = root->get<Object*>(&ok);
       if(!ok) goto FAIL;
-      Array * a = o->getAttr<Array*>("Ardoise", &ok);
+      Array * a = o->getAttr<Array*>("check-urls", &ok);
       if(!ok) goto FAIL;
       for(Value * v : *a)
       {
@@ -965,10 +969,11 @@ struct Version
    QString install;
    bool operator<(const Version & v)
    {
-      return n[0]<v.n[0] ? true :
-      n[1]<v.n[1] ? true :
-      n[2]<v.n[2] ? true :
-      n[3]<v.n[3];
+      for(int i=0 ; i<3 ; ++i)
+      {
+         if(n[i] != v.n[i]) return n[i]<v.n[i];
+      }
+      return n[3]<v.n[3];
    }
 
    Version(QString id, const QString & _desc = QString(), const QString & _install = QString()) :
@@ -1015,8 +1020,10 @@ struct Version
    static Version self;
 };
 
-Version Version::self(QString("v0.3.4.0"));
+#include "version.h"
 
+Version Version::self(QString(VERSION));
+#define SYSTEM "win32"
 #ifndef SYSTEM
 
 #if defined(_WIN32)
@@ -1043,75 +1050,79 @@ void mainWindow::fetchUpdates()
 void mainWindow::checkUpdates(QNetworkReply * r)
 {
 
-   using namespace std;
-   using namespace ljsoncpp;
-
-   stringstream stream(r->readAll().data());
-
-
-   //Pour l'instant, on cherche juste la dernière versiondiponible
-
-   Value * root = Parser::parse(stream);
-   bool ok;
    static Version max = Version::self;
-   for(QString s : checkUrls)
+   if(r->error() == QNetworkReply::NoError)
    {
-      //assignement root
-      Object * o = root->get<Object*>(&ok);
-      if(ok)
+      using namespace std;
+      using namespace ljsoncpp;
+
+      QByteArray data = r->readAll();
+      stringstream stream(QString(data).toStdString());
+
+
+      //Pour l'instant, on cherche juste la dernière versiondiponible
+
+      Value * root = Parser::parse(stream);
+      bool ok;
+      for(QString s : checkUrls)
       {
-         Array * versions = o->getAttr<Array*>("Ardoise", &ok);
+         //assignement root
+         Object * o = root->get<Object*>(&ok);
          if(ok)
          {
-            for(Value * v : *versions)
+            Array * versions = o->getAttr<Array*>("Ardoise", &ok);
+            if(ok)
             {
-               o = v->get<Object*>(&ok);
-               if(ok)
+               for(Value * v : *versions)
                {
-                  string id = o->getAttr<string>("id", &ok);
+                  o = v->get<Object*>(&ok);
                   if(ok)
                   {
-                     Object * o2 = o->getAttr<Object*>("desc");
-                     QString desc = o2 ? QString(o2->getAttr<string>(tr("fr").toStdString()).c_str()) : QString("");
-                     QString install = "";
-
-                     o2 = o->getAttr<Object*>("dl", &ok);
+                     string id = o->getAttr<string>("id", &ok);
                      if(ok)
                      {
-                        Array * dls = o2->getAttr<Array*>(SYSTEM, &ok);
+                        Object * o2 = o->getAttr<Object*>("desc");
+                        QString desc = o2 ? QString(o2->getAttr<string>(tr("fr").toStdString()).c_str()) : QString("");
+                        QString install = "";
+
+                        o2 = o->getAttr<Object*>("dl", &ok);
                         if(ok)
                         {
-                           for(Value * vdl : *dls)
+                           Array * dls = o2->getAttr<Array*>(SYSTEM, &ok);
+                           if(ok)
                            {
-                              Object * dl = vdl->get<Object*>(&ok);
-                              if(!ok) continue;
-                              string way = dl->getAttr<string>("way", &ok);
-                              if(!ok) continue;
-                              if(way == "installer")
+                              for(Value * vdl : *dls)
                               {
-                                 Array * urls = dl->getAttr<Array*>("urls", &ok);
-                                 install += tr("Installateurs : \n");
-                                 for(Value * url : *urls)
+                                 Object * dl = vdl->get<Object*>(&ok);
+                                 if(!ok) continue;
+                                 string way = dl->getAttr<string>("way", &ok);
+                                 if(!ok) continue;
+                                 if(way == "installer")
                                  {
-                                    string str = url->get<string>(&ok);
-                                    if(ok) install = install + "   " + str.c_str() + "\n";
+                                    Array * urls = dl->getAttr<Array*>("urls", &ok);
+                                    install += tr("<h3>Installateurs : </h3><p>");
+                                    for(Value * url : *urls)
+                                    {
+                                       string urlstr = url->get<string>(&ok);
+                                       QString str(urlstr.c_str());
+                                       QFileInfo info(str);
+                                       if(ok) install = install + "   <a href =\"" + str + "\">"+info.fileName()+"</a><br/>";
+                                    }
+                                    install += "</p>";
                                  }
                               }
                            }
                         }
+                        Version v(QString(id.c_str()), desc, install);
+                        if(max<v) max = v;
                      }
-                     Version v(QString(id.c_str()), desc, install);
-                     if(max<v) max = v;
                   }
                }
             }
          }
       }
    }
-
-   --reqRemaining;
-
-   if(!reqRemaining && max != Version::self)
+   if(!--reqRemaining && max != Version::self)
    {
       notifUpdate(max);
    }
@@ -1122,9 +1133,13 @@ void mainWindow::notifUpdate(const Version &v)
    QDialog d(this);
    d.setWindowTitle(tr("Une mise à jour est disponible"));
    QVBoxLayout * l = new QVBoxLayout;
-   QLabel * lab = new QLabel(tr("Mise à jour disponible : version %1\n\nLiens :\n\n%2\n\nDescription :\n%3").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])).arg(v.install).arg(v.desc));
+   QLabel * txt = new QLabel();
+   txt->setTextFormat(Qt::RichText);
+   txt->setOpenExternalLinks(true);
 
-   l->addWidget(lab);
+   txt->setText(tr("<h1>Mise à jour disponible : version %1</h1> <h2>Liens :</h2><p>%2</p><h2>Description :</h2><p>%3</p>").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])).arg(v.install).arg(v.desc));
+
+   l->addWidget(txt);
    d.setLayout(l);
    d.exec();
 }
