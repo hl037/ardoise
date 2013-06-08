@@ -16,7 +16,9 @@ SOURCES += main.cpp \
     cursor.cpp \
     flowlayout.cpp \
     textinput.cpp \
-    json/ljsonp.cpp
+    json/ljsonp.cpp \
+    options.cpp \
+    optionswidget.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
     rectselection.h \
@@ -25,10 +27,13 @@ HEADERS += mainwindow.h \
     flowlayout.h \
     textinput.h \
     version.h \
-    json/ljsonp.hpp
+    json/ljsonp.hpp \
+    options.h \
+    optionswidget.h
 FORMS += \
     mainwindow.ui \
-    rectselection.ui
+    rectselection.ui \
+    optionswidget.ui
 OTHER_FILES += COPYING.txt \
     README.txt \
     linux/ardoise.desktop \
@@ -38,7 +43,8 @@ OTHER_FILES += COPYING.txt \
     windows/conf/default.xapal \
     DevLine.txt
 
-RESOURCES += icons.qrc
+RESOURCES += icons.qrc \
+    translations.qrc
 RC_FILE = "icon.rc"
 
 CONFIG += c++11

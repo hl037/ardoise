@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>mainWindow</class>
- <widget class="QMainWindow" name="mainWindow">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -652,7 +652,7 @@
   <connection>
    <sender>couleur1_pb</sender>
    <signal>clicked(bool)</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>setCol1()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -668,7 +668,7 @@
   <connection>
    <sender>w1_sb</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>setWeight1(double)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -684,7 +684,7 @@
   <connection>
    <sender>couleur2_pb</sender>
    <signal>clicked()</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>setCol2()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -700,7 +700,7 @@
   <connection>
    <sender>w2_sb</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>setWeight2(double)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -716,7 +716,7 @@
   <connection>
    <sender>save_pb</sender>
    <signal>clicked()</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>save()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -732,7 +732,7 @@
   <connection>
    <sender>open_pb</sender>
    <signal>clicked()</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>open()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -764,7 +764,7 @@
   <connection>
    <sender>help_pb</sender>
    <signal>clicked()</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>showHelp()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -780,7 +780,7 @@
   <connection>
    <sender>update_pb</sender>
    <signal>clicked()</signal>
-   <receiver>mainWindow</receiver>
+   <receiver>MainWindow</receiver>
    <slot>fetchUpdates()</slot>
    <hints>
     <hint type="sourcelabel">

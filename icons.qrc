@@ -5,6 +5,7 @@
         <file alias="open">open.png</file>
         <file alias="save">save.png</file>
         <file alias="sel">sel.png</file>
-        <file>help_fr.html</file>
+        <file>help.html</file>
     </qresource>
+    <qresource prefix="/new/prefix1" lang="fr"/>
 </RCC>

@@ -38,43 +38,78 @@
 #include <QShortcut>
 #include <QStack>
 #include <QDir>
+#include <QSpacerItem>
 #include <iostream>
 #include <fstream>
 #include "json/ljsonp.hpp"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include "options.h"
+MainWindow *MainWindow::mainWindow = nullptr;
 
-const char mainWindow::dtd[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<!DOCTYPE xapal [\n"
-"\n"
-"<!ELEMENT xapal (pal)? >\n"
-"<!ELEMENT pal (brush)* >\n"
-"<!ELEMENT brush (col|weigth)* >\n"
-"<!ELEMENT col EMPTY >\n"
-"<!ELEMENT weigth EMPTY >\n"
-"\n"
-"\n"
-"<!ATTLIST brush key CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST brush key CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST col i CDATA #REQUIRED>\n"
-"<!ATTLIST col r CDATA #REQUIRED>\n"
-"<!ATTLIST col g CDATA #REQUIRED>\n"
-"<!ATTLIST col b CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST weigth i CDATA #REQUIRED>\n"
-"<!ATTLIST weigth w CDATA #REQUIRED>\n"
-"\n"
-"]>\n";
+MainWindow *MainWindow::instance()
+{
+   if(!mainWindows) throw "no MainWindows instance";
+   return mainWindow;
+}
+
+void *MainWindow::operator new(std::size_t s)
+{
+   if(mainWindow != nullptr) throw "a MainWindows instance already exists";
+   return mainWindow = ::operator  new (s);
+}
+
+
+void displayWidget(const QString & title, QWidget * w, QWidget * parent = 0)
+{
+   QDialog d(parent);
+   w->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+   d.setWindowTitle(title);
+   QVBoxLayout * vl = new QVBoxLayout;
+   QHBoxLayout * hl = new QHBoxLayout;
+   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
+   QPushButton * b = new QPushButton(QObject::tr("Fermer"));
+   b->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+   hl->addWidget(b);
+   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
+   vl->addWidget(w);
+   vl->addLayout(hl);
+   QObject::connect(b, SIGNAL(clicked()), &d, SLOT(accept()));
+   d.setLayout(vl);
+   d.exec();
+}
+
+const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE xapal [
+
+<!ELEMENT xapal (pal)? >
+<!ELEMENT pal (brush)* >
+<!ELEMENT brush (col|weigth)* >
+<!ELEMENT col EMPTY >
+<!ELEMENT weigth EMPTY >
+
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST col i CDATA #REQUIRED>
+<!ATTLIST col r CDATA #REQUIRED>
+<!ATTLIST col g CDATA #REQUIRED>
+<!ATTLIST col b CDATA #REQUIRED>
+
+<!ATTLIST weigth i CDATA #REQUIRED>
+<!ATTLIST weigth w CDATA #REQUIRED>
+
+]>)";
 
 bool supportPalRecov;
 
 QDir home;
 
-void mainWindow::ini()
+void MainWindow::ini()
 {
+   Options::create();
    supportPalRecov = false;
 #if defined __linux__
    home = QDir::home();
@@ -128,7 +163,7 @@ void mainWindow::ini()
 #warning "This build won't support palette recovery"
 #endif
 }
-void mainWindow::setShortcuts()
+void MainWindow::setShortcuts()
 {
    new QShortcut(QKeySequence(QString("Ctrl+S")), this, SLOT(save()), 0, Qt::ApplicationShortcut);
    new QShortcut(QKeySequence(QString("Ctrl+O")), this, SLOT(open()), 0, Qt::ApplicationShortcut);
@@ -136,12 +171,12 @@ void mainWindow::setShortcuts()
    new QShortcut(QKeySequence(Qt::Key_2), this, SLOT(setCol2()), 0, Qt::ApplicationShortcut);
 }
 
-mainWindow::mainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
    QMainWindow(parent),
    block(false),
    netManager(new QNetworkAccessManager(this)),
    reqRemaining(0),
-   helpW(new QWidget)
+   help(new QTextBrowser)
 {
    setupUi(this);
    FlowLayout * f1 = new FlowLayout;
@@ -211,16 +246,17 @@ mainWindow::mainWindow(QWidget *parent) :
    ini();
    setShortcuts();
 
-   QVBoxLayout * la = new QVBoxLayout;
-   QTextBrowser * help = new QTextBrowser();
    QResource r( ":/help_fr.html" );
    QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
    help->setText(QString(b));
-   la->addWidget(help);
-   helpW->setLayout(la);
 }
 
-void mainWindow::changeEvent(QEvent *e)
+MainWindow::~MainWindow()
+{
+   Options::destroy();
+}
+
+void MainWindow::changeEvent(QEvent *e)
 {
    QMainWindow::changeEvent(e);
    switch (e->type()) {
@@ -237,7 +273,7 @@ void mainWindow::changeEvent(QEvent *e)
 //   air->setGeometry(2,2,surface->width()-4,surface->height()-4);
 //}
 
-void mainWindow::setCol1()  //[slot]
+void MainWindow::setCol1()  //[slot]
 {
    ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1_sb->value()));
    ardoise->getCursor()->setCol1(col1);
@@ -246,7 +282,7 @@ void mainWindow::setCol1()  //[slot]
    couleur1_pb->setStyleSheet(QString(buf));
 }
 
-void mainWindow::setCol2()  //[slot]
+void MainWindow::setCol2()  //[slot]
 {
    ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2_sb->value()));
    ardoise->getCursor()->setCol2(col2);
@@ -255,19 +291,19 @@ void mainWindow::setCol2()  //[slot]
    couleur2_pb->setStyleSheet(QString(buf));
 }
 
-void mainWindow::setWeight1(double w)  //[slot]
+void MainWindow::setWeight1(double w)  //[slot]
 {
    ardoise->setPen1(QPen(QBrush(col1),w));
    ardoise->getCursor()->setD1(w);
 }
 
-void mainWindow::setWeight2(double w)  //[slot]
+void MainWindow::setWeight2(double w)  //[slot]
 {
    ardoise->setPen2(QPen(QBrush(col2),w));
    ardoise->getCursor()->setD2(w);
 }
 
-void mainWindow::closeEvent(QCloseEvent *e)
+void MainWindow::closeEvent(QCloseEvent *e)
 {
    QMainWindow::closeEvent(e);
    if(e->isAccepted() && supportPalRecov)
@@ -276,7 +312,7 @@ void mainWindow::closeEvent(QCloseEvent *e)
    }
 }
 
-bool mainWindow::eventFilter(QObject * o, QEvent *ev)
+bool MainWindow::eventFilter(QObject * o, QEvent *ev)
 {
    if(ev->type() != QEvent::KeyPress) return false;
    QKeyEvent * e = static_cast<QKeyEvent*>(ev);
@@ -370,11 +406,11 @@ bool mainWindow::eventFilter(QObject * o, QEvent *ev)
    return b;
 }
 
-bool mainWindow::confirm(const QString & t, const QString &s)
+bool MainWindow::confirm(const QString & t, const QString &s)
 {
    return QMessageBox::warning(this, t, s, QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok;
 }
-void mainWindow::saveCols(int pos)
+void MainWindow::saveCols(int pos)
 {
    if(brosses[pos].col1 == col1 && brosses[pos].col2 == col2)
    {
@@ -386,7 +422,7 @@ void mainWindow::saveCols(int pos)
    statut_lab->setText(tr("Couleurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::saveWs(int pos)
+void MainWindow::saveWs(int pos)
 {
    if(brosses[pos].w1 == w1_sb->value() && brosses[pos].w2 == w2_sb->value())
    {
@@ -398,7 +434,7 @@ void mainWindow::saveWs(int pos)
    statut_lab->setText(tr("Épaisseurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::restore(int pos)
+void MainWindow::restore(int pos)
 {
    if(brosses[pos].w1)
    {
@@ -428,21 +464,21 @@ void mainWindow::restore(int pos)
    statut_lab->setText(tr("Brosses en %1 restorées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseCols(int pos)
+void MainWindow::erraseCols(int pos)
 {
    brosses[pos].col1 = QColor();
    brosses[pos].col2 = QColor();
    statut_lab->setText(tr("Couleurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseWs(int pos)
+void MainWindow::erraseWs(int pos)
 {
    brosses[pos].w1 = 0;
    brosses[pos].w2 = 0;
    statut_lab->setText(tr("Épaisseurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseCols(void)
+void MainWindow::erraseCols(void)
 {
    if(!confirm(tr("Réinitialiser les couleurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
@@ -453,7 +489,7 @@ void mainWindow::erraseCols(void)
    statut_lab->setText(tr("Couleurs supprimées"));
 }
 
-void mainWindow::erraseWs(void)
+void MainWindow::erraseWs(void)
 {
    if(!confirm(tr("Réinitialiser les épaisseurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
@@ -506,13 +542,13 @@ static QString br2xml(const brosse & b)
    return s;
 }
 
-void mainWindow::savePal()
+void MainWindow::savePal()
 {
    QString path=QFileDialog::getSaveFileName(this, tr("Enregistrer la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal)"));
    if(!path.isEmpty()) savePal(path);
 }
 
-void mainWindow::savePal(const QString & path)
+void MainWindow::savePal(const QString & path)
 {
    QString ext = QFileInfo(path).suffix();
 
@@ -733,14 +769,14 @@ public:
 
 };
 
-void mainWindow::openPal()
+void MainWindow::openPal()
 {
    QString path=QFileDialog::getOpenFileName(this, tr("Ouvrir la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal);;Ardoise Palette ayant une autre extension (*.*)"));
    openPal(path);
 }
 
 
-void mainWindow::openPal(const QString & path)
+void MainWindow::openPal(const QString & path)
 {
    QFileInfo info(path);
    if(!info.exists()) return;
@@ -807,7 +843,7 @@ void mainWindow::openPal(const QString & path)
    restore(26);
 }
 
-void mainWindow::save() //[slot]
+void MainWindow::save() //[slot]
 {
    QString filter;
    QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
@@ -897,7 +933,7 @@ void mainWindow::save() //[slot]
 }
 
 
-void mainWindow::open() //[slot]
+void MainWindow::open() //[slot]
 {
 
    QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
@@ -909,7 +945,7 @@ void mainWindow::open() //[slot]
    }
 }
 
-void mainWindow::swapMode()
+void MainWindow::swapMode()
 {
    ardoise->swapMode();
    switch(ardoise->getMode())
@@ -924,12 +960,12 @@ void mainWindow::swapMode()
    }
 }
 
-void mainWindow::showHelp()
+void MainWindow::showHelp()
 {
-   helpW->show();
+   displayWidget(tr("Aide Ardoise"), help);
 }
 
-void mainWindow::openConf(const QString &path)
+void MainWindow::openConf(const QString &path)
 {
    using namespace std;
    using namespace ljsoncpp;
@@ -1036,7 +1072,7 @@ Version Version::self(QString(VERSION));
 #endif
 
 
-void mainWindow::fetchUpdates()
+void MainWindow::fetchUpdates()
 {
    if(reqRemaining) return;
    reqRemaining = checkUrls.size();
@@ -1047,7 +1083,7 @@ void mainWindow::fetchUpdates()
 }
 
 
-void mainWindow::checkUpdates(QNetworkReply * r)
+void MainWindow::checkUpdates(QNetworkReply * r)
 {
 
    static Version max = Version::self;
@@ -1128,19 +1164,13 @@ void mainWindow::checkUpdates(QNetworkReply * r)
    }
 }
 
-void mainWindow::notifUpdate(const Version &v)
+void MainWindow::notifUpdate(const Version &v)
 {
-   QDialog d(this);
-   d.setWindowTitle(tr("Une mise à jour est disponible"));
-   QVBoxLayout * l = new QVBoxLayout;
    QLabel * txt = new QLabel();
    txt->setTextFormat(Qt::RichText);
    txt->setOpenExternalLinks(true);
-
    txt->setText(tr("<h1>Mise à jour disponible : version %1</h1> <h2>Liens :</h2><p>%2</p><h2>Description :</h2><p>%3</p>").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])).arg(v.install).arg(v.desc));
-
-   l->addWidget(txt);
-   d.setLayout(l);
-   d.exec();
+   displayWidget(tr("Une mise à jour est disponible"), txt, this);
 }
+
 
