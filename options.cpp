@@ -5,12 +5,14 @@
 #include <QFormLayout>
 #include <QComboBox>
 
+#include "json/ljsonp.hpp"
+
 
 Option::Option(const QString &_name, QVariant _value, char * _text, char * _desc, const QString &_path) :
 QObject(),
-name(_name),
-path(_path),
-text(_text),
+m_name(_name),
+m_path(_path),
+m_text(_text),
 desc(_desc),
 value(_value)
 {
@@ -48,6 +50,7 @@ QWidget *Option::modifier()
       w = sb;
       break;
    }
+   default: ;
    }
    w->setToolTip(tr(desc));
    return w;
@@ -55,7 +58,32 @@ QWidget *Option::modifier()
 
 QLabel *Option::label()
 {
-   return new QLabel(tr(text));
+   if(!*m_text) return null;
+   return new QLabel(text());
+}
+
+QString Option::text()
+{
+   return tr(m_text);
+}
+
+bool Option::applyModifier(QWidget *w)
+{
+   switch(value.Type)
+   {
+   case QMetaType::Bool:
+   {
+      QCheckBox * cb = static_cast<QCheckBox*>(w);
+      return setValue(QVariant(cb->isChecked()));
+   }
+   case QMetaType::Int:
+   {
+      QSpinBox * sb = static_cast<QSpinBox*(w);
+      return setValue(sb->value());
+   }
+   default :
+      return false;
+   }
 }
 
 static Options * Options::options = nullptr;
@@ -78,10 +106,10 @@ QObject()
    app->installTranslator(&translator);
 }
 
-void Options::create(int ind)
+void Options::create()
 {
    if(options) throw "two instances of singleton Options";
-   options = new Options(ind);
+   options = new Options();
 }
 
 void Options::destroy()
@@ -94,6 +122,91 @@ Options *Options::instance()
 {
    if(!options) throw "no instance of Options";
    return options;;
+}
+
+OptionsWidget *Options::optionsWidget()
+{
+}
+
+bool Options::addOption(Option *opt)
+{
+   auto it = optionList.find(opt->name());
+   if(it == optionList.end())
+   {
+      optonList[opt->name()] = opt;
+   }
+   else
+   {
+      return it.value() == opt ? true : (delete opt, false);
+   }
+   return true;
+}
+
+QVariant Options::get(const QString &key)
+{
+   auto it = optionList.find(key);
+   if(it == optionList.end()) return QVariant();
+   return it.value()->getValue();
+}
+
+bool Options::set(const QString &key, QVariant value)
+{
+   auto it = optionList.find(key);
+   if(it == optionList.end())
+   {
+      Option * opt = new Option(key, value, "");
+      optionList[key] = opt;
+      return true;
+   }
+   else
+   {
+      return it.value()->setValue(value);
+   }
+}
+
+static inline QVariant value2variant(ljsoncpp::Value * v)
+{
+   using namespace std;
+   using namespace ljsoncpp;
+   switch(v->type())
+   {
+   case NUMBER:
+   {
+      long double val = v->get<long double>();
+      int val2 = val;
+      if(val == (long double) val2)
+      {
+         return QVariant(val2);
+      }
+      else return QVariant(val);
+   }
+   case STRING:
+      return QVariant(QString(v->get<string>().c_str()));
+   case BOOL:
+      return QVariant(v->get<bool>());
+   default:
+      return QVariant();
+   }
+}
+
+void Options::readConf(std::istream &in)
+{
+   using namespace std;
+   using namespace ljsoncpp;
+   bool ok;
+   Value * v = Parser::parse(in);
+   if(!v) goto FAIL;
+   Object * root = v->get<Object*>(&ok);
+   if(!ok) goto FAIL;
+   for(Object::iterator it : *root)
+   {
+      set(QString(it->first.c_str()), value2variant(it->second));
+   }
+}
+
+void Options::saveConf(std::ostream &out)
+{
+   //TODO need json writter
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,6 +248,13 @@ QWidget *ComboOption::modifier()
    QComboBox * cb = new QComboBox();
    cb->addItems(choices);
    return cb;
+}
+
+bool ComboOption::applyModifier(QWidget *w)
+{
+   QComboBox * cb = qobject_cast<QComboBox *>(w);
+   if(!cb) return false;
+   return setValue(cb->currentIndex());
 }
 
 void ComboOption::changeValue(int ind)

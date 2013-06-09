@@ -17,18 +17,24 @@ class Option : public QObject
 {
    Q_OBJECT
 protected:
-   QString name;
-   QString path;
-   const char * text;
+   QString m_name;
+   QString m_path;
+   const char * m_text;
    const char * desc;
    QVariant value;
 
 public:
-   Option(const QString & name, QVariant value, const char * text, const char * desc = "", const QString & path = "general");
+   Option(const QString & m_name, QVariant value, const char * m_text, const char * desc = "", const QString & m_path = "general");
    inline QMetaType type(){return value.type();}
+   virtual QVariant getValue() { return value; }
    virtual bool setValue(const QVariant & value);
    virtual QWidget * modifier();//Transpher ownership!!
    virtual QLabel * label();//Transpher ownership!!
+   virtual QString text();//Transpher ownership!!
+   virtual bool applyModifier(QWidget * w);
+
+   inline QString name(){return m_name;}
+   inline QString path(){return m_path;}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,6 +45,7 @@ class Options : public QObject
 protected:
 
    Options();
+   static QHash<QString, Option*> optionList;
 
    static Options * options;
 
@@ -46,8 +53,14 @@ public:
    static void create();
    static void destroy();
    static Options * instance();
-   static const char * const * const langs;
    static OptionsWidget * optionsWidget();//Transpher ownership!!
+
+   static bool addOption(Option* opt);
+   static QVariant get(const QString & key);
+   static bool set(const QString & key, QVariant value);
+
+   static void readConf(std::istream & in);
+   static void saveConf(std::ostream & out);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,12 +73,13 @@ protected:
    QStringList choices;
 
 public:
-   ComboOption(const QString & name, int defaultValue, const QStringList & choices, const char * text, const char * desc = "", const QString & path = "general");
+   ComboOption(const QString & m_name, int defaultValue, const QStringList & choices, const char * m_text, const char * desc = "", const QString & m_path = "general");
 
    virtual bool setValue(const QVariant & value);
    virtual bool setValue(const QString &str);
    virtual bool setValue(int ind);
    virtual QWidget * modifier();//Transpher ownership!!
+   virtual bool applyModifier(QWidget * w);
 
 public slots:
    void changeValue(int ind);
@@ -83,7 +97,7 @@ protected:
    QList<char*> choices;
    static QStringList csl2sl(const QList<char*> & l1);
 public:
-   ComboOption(const QString & name, int defaultValue, const QList<char*> & choices, const char * text, const char * desc = "", const QString & path = "general");
+   ComboOption(const QString & m_name, int defaultValue, const QList<char*> & choices, const char * m_text, const char * desc = "", const QString & m_path = "general");
    virtual QWidget * modifier();//Transpher ownership!!
 };
 
@@ -96,7 +110,7 @@ protected:
    QStringList languages;
 
 public:
-   LanguageOption(const QString & name, int defaultValue, const QStringList & dispLangugages, const QStringList languages, const char * text, const char * desc = "", const QString & path = "general");
+   LanguageOption(const QString & m_name, int defaultValue, const QStringList & dispLangugages, const QStringList languages, const char * m_text, const char * desc = "", const QString & m_path = "general");
    virtual bool setValue(int ind);
 };
 
