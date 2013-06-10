@@ -19,6 +19,7 @@
  ********************************************/
 
 #include <QtWidgets/QApplication>
+#include <QTranslator>
 #include "mainwindow.h"
 
 
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
    QTranslator t;
    translator = &t;
    QApplication a(argc, argv);
+   a.installTranslator(translator);
    MainWindow w;
    a.installEventFilter(&w);
    w.show();

@@ -39,24 +39,26 @@
 #include <QStack>
 #include <QDir>
 #include <QSpacerItem>
+#include <QLocale>
 #include <iostream>
 #include <fstream>
 #include "json/ljsonp.hpp"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include "options.h"
+#include "optionswidget.h"
 MainWindow *MainWindow::mainWindow = nullptr;
 
 MainWindow *MainWindow::instance()
 {
-   if(!mainWindows) throw "no MainWindows instance";
+   if(!mainWindow) throw "no MainWindows instance";
    return mainWindow;
 }
 
 void *MainWindow::operator new(std::size_t s)
 {
    if(mainWindow != nullptr) throw "a MainWindows instance already exists";
-   return mainWindow = ::operator  new (s);
+   return mainWindow = static_cast<MainWindow*>(::operator  new (s));
 }
 
 
@@ -77,6 +79,7 @@ void displayWidget(const QString & title, QWidget * w, QWidget * parent = 0)
    QObject::connect(b, SIGNAL(clicked()), &d, SLOT(accept()));
    d.setLayout(vl);
    d.exec();
+   w->setParent(0);//indispensable pour éviter que le widget soit détruit via Dialog::~Dialog()
 }
 
 const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -109,7 +112,31 @@ QDir home;
 
 void MainWindow::ini()
 {
+   //========================
+   //    Options
+   //========================
    Options::create();
+   //------------------------
+   //    Buit-in langugaes
+   //------------------------
+   LanguageOption * langs = new LanguageOption("lang", 0,
+      QList<QLocale>{QLocale("fr"), QLocale("en")},
+      QT_TRANSLATE_NOOP("OptionsWidget", "Langage"),
+      QT_TRANSLATE_NOOP("OptionsWidget", "Langage dans lequel sera l'interface, ainsi que l'aide."),
+      "general");
+   Options::addOption(langs);
+   //------------------------
+   //    Auto-updates
+   //------------------------
+   Option * autoCheckUpdates = new Option("auto-check-updates", true,
+      QT_TRANSLATE_NOOP("OptionsWidget", "Vérification des mise à jour au démarrage"),
+      QT_TRANSLATE_NOOP("OptionsWidget", "À chaque démarrage, l'ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c'est le cas."),
+      "general");
+   Options::addOption(autoCheckUpdates);
+
+
+
+
    supportPalRecov = false;
 #if defined __linux__
    home = QDir::home();
@@ -136,6 +163,7 @@ void MainWindow::ini()
    {
       openConf(home.absoluteFilePath("conf.json"));
    }
+   if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
    supportPalRecov = true;
 #elif defined _WIN32
    home = QDir::current();
@@ -178,6 +206,7 @@ MainWindow::MainWindow(QWidget *parent) :
    reqRemaining(0),
    help(new QTextBrowser)
 {
+
    setupUi(this);
    FlowLayout * f1 = new FlowLayout;
    FlowLayout * f2 = new FlowLayout;
@@ -206,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
    f2->addWidget(swapMode_pb);
    f2->addWidget(update_pb);
    f2->addWidget(help_pb);
+   f2->addWidget(showOpts_pb);
    //f2->addWidget(zoomWheel);
 
    f->addItem(f1);
@@ -245,10 +275,6 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkUpdates(QNetworkReply*)));
    ini();
    setShortcuts();
-
-   QResource r( ":/help_fr.html" );
-   QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
-   help->setText(QString(b));
 }
 
 MainWindow::~MainWindow()
@@ -261,8 +287,8 @@ void MainWindow::changeEvent(QEvent *e)
    QMainWindow::changeEvent(e);
    switch (e->type()) {
    case QEvent::LanguageChange:
-       retranslateUi(this);
-       break;
+      retranslateUi(this);
+      break;
    default:
       break;
    }
@@ -962,40 +988,34 @@ void MainWindow::swapMode()
 
 void MainWindow::showHelp()
 {
+   QResource r(QString(":/help_%1.html")
+      .arg(static_cast<const LanguageOption*>(
+      Options::getOption("lang"))->currentLocale().name().split("_").at(0))
+      );
+   if(r.isValid())
+   {
+      QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
+      help->setText(QString(b));
+   }
+   else
+   {
+      QResource r(QString(":/help.html"));
+      QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
+      help->setText(QString(b));
+   }
    displayWidget(tr("Aide Ardoise"), help);
+}
+
+void MainWindow::showOpts()
+{
+   OptionsWidget * opts = Options::optionsWidget();
+   opts->exec();
 }
 
 void MainWindow::openConf(const QString &path)
 {
-   using namespace std;
-   using namespace ljsoncpp;
-   bool ok;
-   ifstream f(path.toStdString(), ios_base::in );
-   Value * root = Parser::parse(f);
-   if(!root)
-   {
-      //Error
-      return;
-   }
-   {
-      Object * o = root->get<Object*>(&ok);
-      if(!ok) goto FAIL;
-      Array * a = o->getAttr<Array*>("check-urls", &ok);
-      if(!ok) goto FAIL;
-      for(Value * v : *a)
-      {
-         string s = v->get<string>(&ok);
-         if(ok) checkUrls<<QString(s.c_str());
-      }
-      if(o->getAttr<bool>("auto-check-updates"))
-      {
-         fetchUpdates();
-      }
-
-      //Other conf
-   }
-   FAIL:
-   delete root;
+   std::ifstream f(path.toStdString(), std::ios_base::in);
+   Options::readConf(f);
 }
 
 struct Version
@@ -1136,7 +1156,7 @@ void MainWindow::checkUpdates(QNetworkReply * r)
                                  if(way == "installer")
                                  {
                                     Array * urls = dl->getAttr<Array*>("urls", &ok);
-                                    install += tr("<h3>Installateurs : </h3><p>");
+                                    install += QString("<h3>%1</h3><p>").arg(tr("Installateurs :"));
                                     for(Value * url : *urls)
                                     {
                                        string urlstr = url->get<string>(&ok);
@@ -1169,7 +1189,12 @@ void MainWindow::notifUpdate(const Version &v)
    QLabel * txt = new QLabel();
    txt->setTextFormat(Qt::RichText);
    txt->setOpenExternalLinks(true);
-   txt->setText(tr("<h1>Mise à jour disponible : version %1</h1> <h2>Liens :</h2><p>%2</p><h2>Description :</h2><p>%3</p>").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])).arg(v.install).arg(v.desc));
+   txt->setText(QString("<h1>%1</h1> <h2>%2</h2><p>%3</p> <h2>%4</h2><p>%5</p>")
+      .arg(tr("Mise à jour disponible : version %1").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])))
+      .arg(tr("Liens :"))
+      .arg(v.install)
+      .arg(tr("Description :"))
+      .arg(v.desc));
    displayWidget(tr("Une mise à jour est disponible"), txt, this);
 }
 

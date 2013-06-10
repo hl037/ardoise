@@ -45,7 +45,7 @@ class Version;
 // BUG : sortir de la fenêtre avec le clique gauche pressé puis faire un clique droit engendre l'apparition de la boite de dialogue pour modifier les dockWidgets
 // TODO Empêcher de pouvoir fermer le dockwidget ou laisser la possibilité de le faire réapparaitre
 
-class MainWindow : public QMainWindow, private Ui::mainWindow {
+class MainWindow : public QMainWindow, private Ui::MainWindow {
     Q_OBJECT
 protected:
    static MainWindow * mainWindow;
@@ -90,7 +90,7 @@ protected:
    bool block;
 
    virtual void closeEvent(QCloseEvent * e);
-   bool eventFilter(QObject *o, QEvent *ev);
+   virtual bool eventFilter(QObject *o, QEvent *ev);
 
    bool confirm(const QString &t, const QString & s);
 
@@ -118,6 +118,7 @@ public slots:
    void swapMode();
 
    void showHelp();
+   void showOpts();
 
    void fetchUpdates();
 

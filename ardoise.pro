@@ -29,7 +29,8 @@ HEADERS += mainwindow.h \
     version.h \
     json/ljsonp.hpp \
     options.h \
-    optionswidget.h
+    optionswidget.h \
+    stringtotranslate.h
 FORMS += \
     mainwindow.ui \
     rectselection.ui \
@@ -41,7 +42,10 @@ OTHER_FILES += COPYING.txt \
     windows/script.nsi \
     windows/conf/last.xapal \
     windows/conf/default.xapal \
-    DevLine.txt
+    DevLine.txt \
+    help_fr.html \
+    help_en.html \
+    help.html
 
 RESOURCES += icons.qrc \
     translations.qrc

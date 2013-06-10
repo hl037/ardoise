@@ -18,6 +18,12 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************/
 
-#ifndef VERSION
-#define VERSION "0.3.3.1"
-#endif
+#error this file shuold not be included, it's just to make lupdate to considerate some strings that are not directely put in the sources
+
+#include <QtGlobal>
+
+constexpr const struct { const char* const source, comment; } * const stringToTranslate = {
+
+QT_TRANSLATE_NOOP3("OptionsWidget", "general", "Onglet général du widget de configuration")
+
+};

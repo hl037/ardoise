@@ -1,19 +1,42 @@
+/*******************************************
+ *
+ * Copyright © 2013 Léo Flaventin Hauchecorne
+ *
+ * This file is part of Ardoise.
+ *
+ * Ardoise is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Ardoise is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ ********************************************/
+
 #include "options.h"
 #include <QCoreApplication>
+#include <QLabel>
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QFormLayout>
 #include <QComboBox>
+#include <QLocale>
 
 #include "json/ljsonp.hpp"
+#include "optionswidget.h"
 
 
-Option::Option(const QString &_name, QVariant _value, char * _text, char * _desc, const QString &_path) :
+Option::Option(const QString &name, const QVariant & _value, const char * text, const char * desc, const QString &path) :
 QObject(),
-m_name(_name),
-m_path(_path),
-m_text(_text),
-desc(_desc),
+m_name(name),
+m_path(path),
+m_text(text),
+m_desc(desc),
 value(_value)
 {
 }
@@ -25,16 +48,10 @@ bool Option::setValue(const QVariant &_value)
    return true;
 }
 
-QWidget *Option::modWithLab(QWidget *mod)
+QWidget *Option::modifier() const
 {
-   QWidget * w;
-
-}
-
-QWidget *Option::modifier()
-{
-   QWidget * w;
-   switch(value.Type)
+   QWidget * w = nullptr;
+   switch(value.type())
    {
    case QMetaType::Bool:
    {
@@ -52,24 +69,42 @@ QWidget *Option::modifier()
    }
    default: ;
    }
-   w->setToolTip(tr(desc));
+   w->setToolTip(desc());
    return w;
 }
 
-QLabel *Option::label()
+void Option::retranslateModifier(QWidget *mod) const
 {
-   if(!*m_text) return null;
-   return new QLabel(text());
+   mod->setToolTip(desc());
 }
 
-QString Option::text()
+QLabel *Option::label() const
 {
-   return tr(m_text);
+   if(!*m_text) return nullptr;
+   QLabel * lab = new QLabel(text());
+   lab->setToolTip(desc());
+   return lab;
+}
+
+void Option::retranslateLabel(QLabel *lab) const
+{
+   lab->setText(text());
+   lab->setToolTip(desc());
+}
+
+QString Option::text() const
+{
+   return QCoreApplication::translate("OptionsWidget", m_text);
+}
+
+QString Option::desc() const
+{
+   return QCoreApplication::translate("OptionsWidget", m_desc);
 }
 
 bool Option::applyModifier(QWidget *w)
 {
-   switch(value.Type)
+   switch(value.type())
    {
    case QMetaType::Bool:
    {
@@ -78,84 +113,83 @@ bool Option::applyModifier(QWidget *w)
    }
    case QMetaType::Int:
    {
-      QSpinBox * sb = static_cast<QSpinBox*(w);
+      QSpinBox * sb = static_cast<QSpinBox*>(w);
       return setValue(sb->value());
    }
    default :
       return false;
    }
+   return false;
 }
-
-static Options * Options::options = nullptr;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Options::Options(int ind) :
-QObject()
-{
-   changeLanguage(ind);
-   QCoreApplication * app = QCoreApplication::instance();
-   app->installTranslator(translator);
-}
-
-Options::Options(const QString &locale) :
-QObject()
-{
-   changeLanguage(locale);
-   QCoreApplication * app = QCoreApplication::instance();
-   app->installTranslator(&translator);
-}
+bool Options::m_created = false;
+QHash<QString, Option*> Options::optionTable;
+QList<Option*> Options::optionList;
 
 void Options::create()
 {
-   if(options) throw "two instances of singleton Options";
-   options = new Options();
+   if(m_created) throw "Options already created";
+   m_created = true;
 }
 
 void Options::destroy()
 {
-   delete options;
-   options = nullptr;
-}
-
-Options *Options::instance()
-{
-   if(!options) throw "no instance of Options";
-   return options;;
+   m_created = false;
+   auto it = optionList.begin(), end = optionList.end();
+   for(; it!=end; ++it)
+   {
+      delete *it;
+   }
+   optionTable.clear();
+   optionList.clear();
 }
 
 OptionsWidget *Options::optionsWidget()
 {
+   return new OptionsWidget(optionList);
 }
 
 bool Options::addOption(Option *opt)
 {
-   auto it = optionList.find(opt->name());
-   if(it == optionList.end())
+   auto it = optionTable.find(opt->name());
+   if(it == optionTable.end())
    {
-      optonList[opt->name()] = opt;
+      optionTable[opt->name()] = opt;
+      optionList.push_back(opt);
+      return true;
    }
-   else
+   if(it.value() == opt)
    {
-      return it.value() == opt ? true : (delete opt, false);
+      optionList.append(optionList.takeAt(optionList.indexOf(opt))); // NOTE : possibilité d'obtenir l'index en l'enregistrant dans Option
+      return true;
    }
-   return true;
+   delete opt;
+   return false;
 }
 
 QVariant Options::get(const QString &key)
 {
-   auto it = optionList.find(key);
-   if(it == optionList.end()) return QVariant();
+   auto it = optionTable.find(key);
+   if(it == optionTable.end()) return QVariant();
    return it.value()->getValue();
+}
+
+const Option *Options::getOption(const QString &key)
+{
+   auto it = optionTable.find(key);
+   if(it == optionTable.end()) return nullptr;
+   return it.value();
 }
 
 bool Options::set(const QString &key, QVariant value)
 {
-   auto it = optionList.find(key);
-   if(it == optionList.end())
+   auto it = optionTable.find(key);
+   if(it == optionTable.end())
    {
       Option * opt = new Option(key, value, "");
-      optionList[key] = opt;
+      optionTable[key] = opt;
       return true;
    }
    else
@@ -178,7 +212,7 @@ static inline QVariant value2variant(ljsoncpp::Value * v)
       {
          return QVariant(val2);
       }
-      else return QVariant(val);
+      else return QVariant((qreal) val);
    }
    case STRING:
       return QVariant(QString(v->get<string>().c_str()));
@@ -195,13 +229,16 @@ void Options::readConf(std::istream &in)
    using namespace ljsoncpp;
    bool ok;
    Value * v = Parser::parse(in);
+   Object * root;
    if(!v) goto FAIL;
-   Object * root = v->get<Object*>(&ok);
+   root = v->get<Object*>(&ok);
    if(!ok) goto FAIL;
-   for(Object::iterator it : *root)
+   for(Object::iterator it = root->begin(), end = root->end(); it!=end ;++it)
    {
       set(QString(it->first.c_str()), value2variant(it->second));
    }
+   FAIL:
+   delete v;
 }
 
 void Options::saveConf(std::ostream &out)
@@ -211,8 +248,8 @@ void Options::saveConf(std::ostream &out)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ComboOption::ComboOption(const QString &_name, int defaultValue, const QStringList &_choices, const char *_text, const char *_desc, const QString &_path) :
-Option(_name, defaultValue, _text, _desc, _path),
+ComboOption::ComboOption(const QString &name, int defaultValue, const QStringList &_choices, const char *text, const char *desc, const QString &path) :
+Option(name, defaultValue, text, desc, path),
 value(defaultValue),
 choices(_choices)
 {
@@ -226,8 +263,9 @@ bool ComboOption::setValue(const QVariant &_value)
    }
    else if(_value.type() == QMetaType::Int)
    {
-      return setValue(_value.toInt())
+      return setValue(_value.toInt());
    }
+   return false;
 }
 
 bool ComboOption::setValue(const QString & str)
@@ -243,10 +281,11 @@ bool ComboOption::setValue(int ind)
    return true;
 }
 
-QWidget *ComboOption::modifier()
+QWidget *ComboOption::modifier() const
 {
    QComboBox * cb = new QComboBox();
    cb->addItems(choices);
+   cb->setCurrentIndex(value);
    return cb;
 }
 
@@ -267,27 +306,27 @@ void ComboOption::changeValue(int ind)
 QStringList ComboOptionTr::csl2sl(const QList<char *> &l1)
 {
    QStringList l2;
-   for(char * entry : choices)
+   for(char * entry : l1)
    {
       l2<<QString(entry);
    }
    return l2;
 }
 
-ComboOptionTr::ComboOption(const QString &_name, int _defaultValue, const QList<char *> &_choices, const char *_text, const char *_desc, const QString &_path) :
-ComboOption(_name, _defaultValue, csl2sl(_choices), _text, _desc, _path)
+ComboOptionTr::ComboOptionTr(const QString & name, int _defaultValue, const QList<char *> & _choices, const char *_text, const char *_desc, const QString &_path) :
+ComboOption(name, _defaultValue, csl2sl(_choices), _text, _desc, _path)
 {
 }
 
-QWidget *ComboOptionTr::modifier()
+QWidget *ComboOptionTr::modifier() const
 {
    QStringList ch2;
    for(char * entry : choices)
    {
-      ch2<<tr(entry);
+      ch2<<QCoreApplication::translate("OptionsWidget", entry);
    }
    QComboBox * cb = new QComboBox();
-   cb->addItems(choices);
+   cb->addItems(ch2);
    return cb;
 }
 
@@ -295,15 +334,29 @@ QWidget *ComboOptionTr::modifier()
 
 extern QTranslator * translator;
 
-LanguageOption::LanguageOption(const QString &_name, int _defaultValue, const QStringList & dispLangugages, const QStringList _languages, const char *_text, const char *_desc, const QString &_path) :
-ComboOption(_name, _defaultValue, dispLangugages, _text, _desc, _path),
-languages(_languages)
+static QStringList nativeLangNames(const QList<QLocale> &locales)
+{
+   QStringList l;
+   for(auto it = locales.begin(), end = locales.end() ; it!=end ; ++it)
+   {
+      l<<it->nativeLanguageName();
+   }
+   return l;
+}
+
+LanguageOption::LanguageOption(const QString &name, int defaultValue, const QList<QLocale> &locales, const char *text, const char *desc, const QString &path) :
+ComboOption(name, defaultValue, nativeLangNames(locales), text, desc, path),
+m_locales(locales)
 {
 }
 
 bool LanguageOption::setValue(int ind)
 {
    if(!ComboOption::setValue(ind)) return false;
-   translator->load("ardoise", ":/translations/", QString(), languages[ind]);
+   translator->load(m_locales[value], "ardoise",  "_", ":/translations/");
    return true;
+}
+QLocale LanguageOption::currentLocale() const
+{
+   return m_locales[value];
 }
