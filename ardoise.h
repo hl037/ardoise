@@ -82,7 +82,7 @@ protected:
 
    bool moveCursor;
 
-   bool dessin;
+   bool drawing;
 
    bool m_zoomWheel;
 

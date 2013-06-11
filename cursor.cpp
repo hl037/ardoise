@@ -32,6 +32,7 @@ ACursor::ACursor(QWidget *parent) :
    setAttribute(Qt::WA_TranslucentBackground);
    setMouseTracking(1);
    opt.initFrom(this);
+   updateCursor();//needed on windows
 }
 
 ACursor::~ACursor()
