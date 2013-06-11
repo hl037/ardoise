@@ -21,4 +21,5 @@ ui_*
 !windows/*.txt
 !windows/*.nsi
 !version.sh
+!ardoise.json
 

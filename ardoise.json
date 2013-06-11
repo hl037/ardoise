@@ -1,0 +1,82 @@
+{
+   "Ardoise" :
+   [
+      {
+         "id" : "v0.4.0.0",
+         "dl" : {
+            "linux" : [
+               {
+                  "way" : "git",
+                  "repo" : [
+                     "https://git.gitorious.org/ljsoncppp/ljsoncppp.git",
+                     "git://gitorious.org/ljsoncppp/ljsoncppp.git"
+                  ],
+                  "tag" : "v0.3.4.0"
+               }
+            ],
+            "archlinux" : [
+               {
+                  "way" : "aur",
+                  "package" : "ardoise-git"
+               }
+            ],
+            "win32" : [
+               {
+                  "way" : "installer",
+                  "urls" : [
+                     "http://surfnet.dl.sourceforge.net/project/ama-ardoise/ardoise_win_mingw_x86_offline_installer.exe",
+                     "http://surfnet.dl.sourceforge.net/project/ama-ardoise/ardoise_v0.4.0.0_win_mingw_x86_offline_installer.exe"
+                  ]
+               }
+            ]
+         },
+         "desc" : {
+            "fr" : "Ajouts:\n-Système d'options\n-Vérification des mises à jour\n\n",
+            "en" : "Adds:\n-Options system\n-updates checker\n\n"
+         }
+      },
+   
+   
+      {
+         "id" : "v0.3.3.1",
+         "dl" : {
+            "linux" : [
+               {
+                  "way" : "git",
+                  "repo" : [
+                     "https://git.gitorious.org/ljsoncppp/ljsoncppp.git",
+                     "git://gitorious.org/ljsoncppp/ljsoncppp.git"
+                  ],
+                  "tag" : "v0.3.3.1"
+               }
+            ]
+         },
+         "desc" : {
+            "fr" : "Bugs Fixés:\n- Si on passait du mode text au mode dessin en cours de saisie, la zone de saisie ne disparaissait pas.\n- La zone de sélection pouvait totalement disparaître en la redimensionnant trop petite.\n- Changer la taille du pinceau en cours de saisie ne mettait pas à jour la taille de la zone.\n- La zone de dessin n'était pas complètement mise à jour lors d'une saisie plus longue que la zone de saisie",
+            "en" : "Fixed bugs:\n- When swap mode typing, the input area didn't hide.\n- Text input area diseapered definitively when resize it to 0\n- Text input area size didn't update when change pen size when typing\n- Drawing zone was not fully updated when print text longer than text input area"
+         }
+      },
+      
+      
+      {
+         "id" : "v0.3.3.0",
+         "dl" : {
+            "linux" : [
+               {
+                  "way" : "git",
+                  "repo" : [
+                     "https://git.gitorious.org/ljsoncppp/ljsoncppp.git",
+                     "git://gitorious.org/ljsoncppp/ljsoncppp.git"
+                  ],
+                  "tag" : "v0.3.3.0"
+               }
+            ]
+         },
+         "desc" : {
+            "fr" : "Le programme possède les fonctions de bases, quelques corrections de bug, notamment le fait de sortir de la zone de dessin en maintenant le click.",
+            "en" : "The program provides the basic functions. There is some bugs fixed like to leave the drawing area pressing mouse button."
+         }
+      }
+   ]
+}
+
