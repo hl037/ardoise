@@ -5,5 +5,8 @@
         <file alias="open">open.png</file>
         <file alias="save">save.png</file>
         <file alias="sel">sel.png</file>
+        <file>help.html</file>
+        <file>help_fr.html</file>
+        <file>help_en.html</file>
     </qresource>
 </RCC>

@@ -24,6 +24,7 @@
 #include "ui_mainwindow.h"
 #include "ardoise.h"
 #include <QDir>
+#include <QSet>
 
 typedef struct
 {
@@ -35,11 +36,23 @@ typedef struct
 
 extern QDir home;
 
+class QNetworkAccessManager;
+class QNetworkReply;
+class QTextBrowser;
+
+class Version;
+
 // BUG : sortir de la fenêtre avec le clique gauche pressé puis faire un clique droit engendre l'apparition de la boite de dialogue pour modifier les dockWidgets
 // TODO Empêcher de pouvoir fermer le dockwidget ou laisser la possibilité de le faire réapparaitre
-// TODO Ajouter un bouton pour afficher l'aide
-class mainWindow : public QMainWindow, private Ui::mainWindow {
+
+class MainWindow : public QMainWindow, private Ui::MainWindow {
     Q_OBJECT
+protected:
+   static MainWindow * mainWindow;
+public:
+   static MainWindow * instance();
+   void * operator new(std::size_t s);
+
 public:
 
    static const char dtd[];
@@ -47,21 +60,29 @@ public:
    void ini();
    void setShortcuts();
 
-    mainWindow(QWidget *parent = 0);
-    void saveCols(int pos);
-    void saveWs(int pos);
-    void restore(int pos);
-    void erraseCols(int pos);
-    void erraseWs(int pos);
-    void erraseCols(void);
-    void erraseWs(void);
+   MainWindow(QWidget *parent = 0);
+   ~MainWindow();
+   void saveCols(int pos);
+   void saveWs(int pos);
+   void restore(int pos);
+   void erraseCols(int pos);
+   void erraseWs(int pos);
+   void erraseCols(void);
+   void erraseWs(void);
 
-    void savePal(const QString & path);
-    void openPal(const QString & path);
+   void savePal(const QString & path);
+   void openPal(const QString & path);
+
+   void saveConf(const QString & path);
+   void openConf(const QString & path);
+
+
+
 
 protected:
    Ardoise * scene;
    void changeEvent(QEvent *e);
+   QString modeText();
    QColor col1;
    QColor col2;
 
@@ -70,9 +91,16 @@ protected:
    bool block;
 
    virtual void closeEvent(QCloseEvent * e);
-   bool eventFilter(QObject *o, QEvent *ev);
+   virtual bool eventFilter(QObject *o, QEvent *ev);
 
    bool confirm(const QString &t, const QString & s);
+
+   void notifUpdate(const Version & v);
+
+   QNetworkAccessManager * netManager;
+   int reqRemaining;
+
+   QTextBrowser * help;
 
 public slots:
    void setCol1();
@@ -86,6 +114,14 @@ public slots:
    void open();
 
    void swapMode();
+
+   void showHelp();
+   void showOpts();
+
+   void fetchUpdates();
+
+protected slots:
+   void checkUpdates(QNetworkReply * r);
 };
 
 #endif // MAINWINDOW_H

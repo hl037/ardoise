@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/translations">
+        <file>ardoise_en.qm</file>
+        <file>ardoise_fr.qm</file>
+    </qresource>
+</RCC>

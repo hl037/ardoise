@@ -103,7 +103,6 @@ protected:
 
    void updateTIFont();
 
-
 public:
    inline bool isTyping() { return typing; }
    void moveViewBy(const QPoint & offset);

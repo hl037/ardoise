@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-08-25T13:40:51
 # -------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,17 +15,26 @@ SOURCES += main.cpp \
     rbouton.cpp \
     cursor.cpp \
     flowlayout.cpp \
-    textinput.cpp
+    textinput.cpp \
+    json/ljsonp.cpp \
+    options.cpp \
+    optionswidget.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
     rectselection.h \
     rbouton.h \
     cursor.h \
     flowlayout.h \
-    textinput.h
+    textinput.h \
+    version.h \
+    json/ljsonp.hpp \
+    options.h \
+    optionswidget.h \
+    stringtotranslate.h
 FORMS += \
     mainwindow.ui \
-    rectselection.ui
+    rectselection.ui \
+    optionswidget.ui
 OTHER_FILES += COPYING.txt \
     README.txt \
     linux/ardoise.desktop \
@@ -33,9 +42,13 @@ OTHER_FILES += COPYING.txt \
     windows/script.nsi \
     windows/conf/last.xapal \
     windows/conf/default.xapal \
-    DevLine.txt
+    DevLine.txt \
+    help_fr.html \
+    help_en.html \
+    help.html
 
-RESOURCES += icons.qrc
+RESOURCES += icons.qrc \
+    translations.qrc
 RC_FILE = "icon.rc"
 
 CONFIG += c++11

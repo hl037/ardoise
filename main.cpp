@@ -19,20 +19,24 @@
  ********************************************/
 
 #include <QtWidgets/QApplication>
+#include <QTranslator>
 #include "mainwindow.h"
 
 
 //TODO Rajouter la possibilité de dessiner des forme géométrique
 //TODO faire un nouveau sélecteur de mode avec un truc du genre Alt+tab
-//TODO Rajouter dans le fichier de sauvegarde l'état du zoommolette ainsi que le mode
-//BUG : quand on clique sur un bouton dans le dock widget, la barre d'espace agit sur ce bouton au lieu de servir pour le mode
 
+
+QTranslator * translator;
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    mainWindow w;
-    a.installEventFilter(&w);
-    w.show();
-    return a.exec();
+   QTranslator t;
+   translator = &t;
+   QApplication a(argc, argv);
+   a.installTranslator(translator);
+   MainWindow w;
+   a.installEventFilter(&w);
+   w.show();
+   return a.exec();
 }

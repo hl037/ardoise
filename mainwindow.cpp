@@ -28,6 +28,8 @@
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QTextBrowser>
+#include <QResource>
 #include <limits.h>
 #include "flowlayout.h"
 #include <QXmlDefaultHandler>
@@ -36,40 +38,113 @@
 #include <QShortcut>
 #include <QStack>
 #include <QDir>
+#include <QSpacerItem>
+#include <QLocale>
 #include <iostream>
+#include <fstream>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include "json/ljsonp.hpp"
+#include "options.h"
+#include "optionswidget.h"
+MainWindow *MainWindow::mainWindow = nullptr;
 
-const char mainWindow::dtd[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<!DOCTYPE xapal [\n"
-"\n"
-"<!ELEMENT xapal (pal)? >\n"
-"<!ELEMENT pal (brush)* >\n"
-"<!ELEMENT brush (col|weigth)* >\n"
-"<!ELEMENT col EMPTY >\n"
-"<!ELEMENT weigth EMPTY >\n"
-"\n"
-"\n"
-"<!ATTLIST brush key CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST brush key CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST col i CDATA #REQUIRED>\n"
-"<!ATTLIST col r CDATA #REQUIRED>\n"
-"<!ATTLIST col g CDATA #REQUIRED>\n"
-"<!ATTLIST col b CDATA #REQUIRED>\n"
-"\n"
-"<!ATTLIST weigth i CDATA #REQUIRED>\n"
-"<!ATTLIST weigth w CDATA #REQUIRED>\n"
-"\n"
-"]>\n";
+MainWindow *MainWindow::instance()
+{
+   if(!mainWindow) throw "no MainWindows instance";
+   return mainWindow;
+}
 
-bool supportPalRecov;
+void *MainWindow::operator new(std::size_t s)
+{
+   if(mainWindow != nullptr) throw "a MainWindows instance already exists";
+   return mainWindow = static_cast<MainWindow*>(::operator  new (s));
+}
+
+
+void displayWidget(const QString & title, QWidget * w, QWidget * parent = 0)
+{
+   QDialog d(parent);
+   w->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+   d.setWindowTitle(title);
+   QVBoxLayout * vl = new QVBoxLayout;
+   QHBoxLayout * hl = new QHBoxLayout;
+   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
+   QPushButton * b = new QPushButton(QObject::tr("Fermer"));
+   b->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+   hl->addWidget(b);
+   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
+   vl->addWidget(w);
+   vl->addLayout(hl);
+   QObject::connect(b, SIGNAL(clicked()), &d, SLOT(accept()));
+   d.setLayout(vl);
+   d.exec();
+   w->setParent(0);//indispensable pour éviter que le widget soit détruit via Dialog::~Dialog()
+}
+
+const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE xapal [
+
+<!ELEMENT xapal (pal)? >
+<!ELEMENT pal (brush)* >
+<!ELEMENT brush (col|weigth)* >
+<!ELEMENT col EMPTY >
+<!ELEMENT weigth EMPTY >
+
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST brush key CDATA #REQUIRED>
+
+<!ATTLIST col i CDATA #REQUIRED>
+<!ATTLIST col r CDATA #REQUIRED>
+<!ATTLIST col g CDATA #REQUIRED>
+<!ATTLIST col b CDATA #REQUIRED>
+
+<!ATTLIST weigth i CDATA #REQUIRED>
+<!ATTLIST weigth w CDATA #REQUIRED>
+
+]>)";
+
+bool supportOptionsFiles;
 
 QDir home;
 
-void mainWindow::ini()
+void MainWindow::ini()
 {
-   supportPalRecov = false;
+   //========================
+   //    Options
+   //========================
+   Options::create();
+   //------------------------
+   //    Buit-in langugaes
+   //------------------------
+   LanguageOption * langs = new LanguageOption("lang", 0,
+      QList<QLocale>{QLocale("fr"), QLocale("en")},
+      QT_TRANSLATE_NOOP("OptionsWidget", "Langage"),
+      QT_TRANSLATE_NOOP("OptionsWidget", "Langage dans lequel sera l'interface, ainsi que l'aide."),
+      "general");
+   Options::addOption(langs);
+   //------------------------
+   //    Auto-updates
+   //------------------------
+   Option * autoCheckUpdates = new Option("auto-check-updates", true,
+      QT_TRANSLATE_NOOP("OptionsWidget", "Vérification des mise à jour au démarrage"),
+      QT_TRANSLATE_NOOP("OptionsWidget", "À chaque démarrage, l'ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c'est le cas."),
+      "general");
+   Options::addOption(autoCheckUpdates);
+   //------------------------
+   //    Repos-Check-updates
+   //------------------------
+   StringListOption * checkUrls = new StringListOption("check-urls",
+   QVariant(QStringList{}),
+      "",
+      "Liste des urls où on peut trouver ardoise.json",
+      "general");
+   Options::addOption(checkUrls);
+
+
+   supportOptionsFiles = false;
 #if defined __linux__
    home = QDir::home();
    home.mkpath(".config/ardoise");
@@ -91,7 +166,12 @@ void mainWindow::ini()
    {
       openPal(home.absoluteFilePath("last.xapal"));
    }
-   supportPalRecov = true;
+   if(home.exists("conf.json"))
+   {
+      openConf(home.absoluteFilePath("conf.json"));
+   }
+   if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
+   supportOptionsFiles = true;
 #elif defined _WIN32
    home = QDir::current();
    home.mkpath("conf");
@@ -113,12 +193,16 @@ void mainWindow::ini()
    {
       openPal(home.absoluteFilePath("last.xapal"));
    }
+   if(home.exists("conf.json"))
+   {
+      openConf(home.absoluteFilePath("conf.json"));
+   }
    supportPalRecov = true;
 #else
 #warning "This build won't support palette recovery"
 #endif
 }
-void mainWindow::setShortcuts()
+void MainWindow::setShortcuts()
 {
    new QShortcut(QKeySequence(QString("Ctrl+S")), this, SLOT(save()), 0, Qt::ApplicationShortcut);
    new QShortcut(QKeySequence(QString("Ctrl+O")), this, SLOT(open()), 0, Qt::ApplicationShortcut);
@@ -126,10 +210,14 @@ void mainWindow::setShortcuts()
    new QShortcut(QKeySequence(Qt::Key_2), this, SLOT(setCol2()), 0, Qt::ApplicationShortcut);
 }
 
-mainWindow::mainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
    QMainWindow(parent),
-   block(false)
+   block(false),
+   netManager(new QNetworkAccessManager(this)),
+   reqRemaining(0),
+   help(new QTextBrowser)
 {
+
    setupUi(this);
    FlowLayout * f1 = new FlowLayout;
    FlowLayout * f2 = new FlowLayout;
@@ -156,6 +244,9 @@ mainWindow::mainWindow(QWidget *parent) :
    f2->addWidget(dispSel_pb);
    f2->addWidget(erase_pb);
    f2->addWidget(swapMode_pb);
+   f2->addWidget(update_pb);
+   f2->addWidget(help_pb);
+   f2->addWidget(showOpts_pb);
    //f2->addWidget(zoomWheel);
 
    f->addItem(f1);
@@ -192,19 +283,40 @@ mainWindow::mainWindow(QWidget *parent) :
    }
    swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
    connect(swapMode_pb, SIGNAL(clicked()), this, SLOT(swapMode()));
+   connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkUpdates(QNetworkReply*)));
    ini();
    setShortcuts();
 }
 
-void mainWindow::changeEvent(QEvent *e)
+MainWindow::~MainWindow()
+{
+   Options::destroy();
+}
+
+void MainWindow::changeEvent(QEvent *e)
 {
    QMainWindow::changeEvent(e);
    switch (e->type()) {
    case QEvent::LanguageChange:
-       retranslateUi(this);
-       break;
+      retranslateUi(this);
+      swapMode_pb->setText(modeText());
+      break;
    default:
       break;
+   }
+}
+
+QString MainWindow::modeText()
+{
+   switch(ardoise->getMode())
+   {
+   case ArdoiseGlobal::DRAWING_MODE:
+      return tr("Mode dessin, changer pour texte");
+      break;
+   case ArdoiseGlobal::TEXT_MODE:
+      return tr("Mode texte, changer pour dessin");
+      break;
+   default: ;
    }
 }
 
@@ -213,7 +325,7 @@ void mainWindow::changeEvent(QEvent *e)
 //   air->setGeometry(2,2,surface->width()-4,surface->height()-4);
 //}
 
-void mainWindow::setCol1()  //[slot]
+void MainWindow::setCol1()  //[slot]
 {
    ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1_sb->value()));
    ardoise->getCursor()->setCol1(col1);
@@ -222,7 +334,7 @@ void mainWindow::setCol1()  //[slot]
    couleur1_pb->setStyleSheet(QString(buf));
 }
 
-void mainWindow::setCol2()  //[slot]
+void MainWindow::setCol2()  //[slot]
 {
    ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2_sb->value()));
    ardoise->getCursor()->setCol2(col2);
@@ -231,28 +343,28 @@ void mainWindow::setCol2()  //[slot]
    couleur2_pb->setStyleSheet(QString(buf));
 }
 
-void mainWindow::setWeight1(double w)  //[slot]
+void MainWindow::setWeight1(double w)  //[slot]
 {
    ardoise->setPen1(QPen(QBrush(col1),w));
    ardoise->getCursor()->setD1(w);
 }
 
-void mainWindow::setWeight2(double w)  //[slot]
+void MainWindow::setWeight2(double w)  //[slot]
 {
    ardoise->setPen2(QPen(QBrush(col2),w));
    ardoise->getCursor()->setD2(w);
 }
 
-void mainWindow::closeEvent(QCloseEvent *e)
+void MainWindow::closeEvent(QCloseEvent *e)
 {
    QMainWindow::closeEvent(e);
-   if(e->isAccepted() && supportPalRecov)
+   if(e->isAccepted() && supportOptionsFiles)
    {
       savePal(home.absoluteFilePath("last.xapal"));
    }
 }
 
-bool mainWindow::eventFilter(QObject * o, QEvent *ev)
+bool MainWindow::eventFilter(QObject * o, QEvent *ev)
 {
    if(ev->type() != QEvent::KeyPress) return false;
    QKeyEvent * e = static_cast<QKeyEvent*>(ev);
@@ -346,12 +458,11 @@ bool mainWindow::eventFilter(QObject * o, QEvent *ev)
    return b;
 }
 
-bool mainWindow::confirm(const QString & t, const QString &s)
+bool MainWindow::confirm(const QString & t, const QString &s)
 {
    return QMessageBox::warning(this, t, s, QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok;
 }
-
-void mainWindow::saveCols(int pos)
+void MainWindow::saveCols(int pos)
 {
    if(brosses[pos].col1 == col1 && brosses[pos].col2 == col2)
    {
@@ -363,7 +474,7 @@ void mainWindow::saveCols(int pos)
    statut_lab->setText(tr("Couleurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::saveWs(int pos)
+void MainWindow::saveWs(int pos)
 {
    if(brosses[pos].w1 == w1_sb->value() && brosses[pos].w2 == w2_sb->value())
    {
@@ -375,7 +486,7 @@ void mainWindow::saveWs(int pos)
    statut_lab->setText(tr("Épaisseurs Sauvegardées %1").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::restore(int pos)
+void MainWindow::restore(int pos)
 {
    if(brosses[pos].w1)
    {
@@ -405,21 +516,21 @@ void mainWindow::restore(int pos)
    statut_lab->setText(tr("Brosses en %1 restorées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseCols(int pos)
+void MainWindow::erraseCols(int pos)
 {
    brosses[pos].col1 = QColor();
    brosses[pos].col2 = QColor();
    statut_lab->setText(tr("Couleurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseWs(int pos)
+void MainWindow::erraseWs(int pos)
 {
    brosses[pos].w1 = 0;
    brosses[pos].w2 = 0;
    statut_lab->setText(tr("Épaisseurs en %1 Supprimées").arg(QString("[")+('A'+pos)+']'));
 }
 
-void mainWindow::erraseCols(void)
+void MainWindow::erraseCols(void)
 {
    if(!confirm(tr("Réinitialiser les couleurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
@@ -430,7 +541,7 @@ void mainWindow::erraseCols(void)
    statut_lab->setText(tr("Couleurs supprimées"));
 }
 
-void mainWindow::erraseWs(void)
+void MainWindow::erraseWs(void)
 {
    if(!confirm(tr("Réinitialiser les épaisseurs de la palette"), tr("Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?"))) return;
    for(uint i = 0 ; i<26 ; ++i)
@@ -483,13 +594,13 @@ static QString br2xml(const brosse & b)
    return s;
 }
 
-void mainWindow::savePal()
+void MainWindow::savePal()
 {
    QString path=QFileDialog::getSaveFileName(this, tr("Enregistrer la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal)"));
    if(!path.isEmpty()) savePal(path);
 }
 
-void mainWindow::savePal(const QString & path)
+void MainWindow::savePal(const QString & path)
 {
    QString ext = QFileInfo(path).suffix();
 
@@ -710,15 +821,17 @@ public:
 
 };
 
-void mainWindow::openPal()
+void MainWindow::openPal()
 {
    QString path=QFileDialog::getOpenFileName(this, tr("Ouvrir la palette"), QString(), QString("Ardoise Palette (*.apal);;XML Ardoise Palette(*.xapal);;Ardoise Palette ayant une autre extension (*.*)"));
    openPal(path);
 }
 
 
-void mainWindow::openPal(const QString & path)
+void MainWindow::openPal(const QString & path)
 {
+   QFileInfo info(path);
+   if(!info.exists()) return;
    QString ext = QFileInfo(path).suffix();
 
    if(ext == "xapal")
@@ -782,7 +895,7 @@ void mainWindow::openPal(const QString & path)
    restore(26);
 }
 
-void mainWindow::save() //[slot]
+void MainWindow::save() //[slot]
 {
    QString filter;
    QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
@@ -872,7 +985,7 @@ void mainWindow::save() //[slot]
 }
 
 
-void mainWindow::open() //[slot]
+void MainWindow::open() //[slot]
 {
 
    QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
@@ -884,17 +997,249 @@ void mainWindow::open() //[slot]
    }
 }
 
-void mainWindow::swapMode()
+void MainWindow::swapMode()
 {
    ardoise->swapMode();
-   switch(ardoise->getMode())
+   swapMode_pb->setText(modeText());
+}
+
+void MainWindow::showHelp()
+{
+   QResource r(QString(":/help_%1.html")
+      .arg(Options::getOption_cast<LanguageOption>("lang")->currentLang())
+      );
+   if(r.isValid())
    {
-   case ArdoiseGlobal::DRAWING_MODE:
-      swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
-      break;
-   case ArdoiseGlobal::TEXT_MODE:
-      swapMode_pb->setText(tr("Mode texte, changer pour dessin"));
-      break;
-   default: ;
+      QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
+      help->setText(QString(b));
+   }
+   else
+   {
+      QResource r(QString(":/help.html"));
+      QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
+      help->setText(QString(b));
+   }
+   displayWidget(tr("Aide Ardoise"), help);
+}
+
+void MainWindow::showOpts()
+{
+   OptionsWidget * opts = Options::optionsWidget();
+   opts->exec();
+   if(supportOptionsFiles)
+   {
+      QFile f(home.filePath("conf.json"));
+      if(f.open(QFile::WriteOnly))
+      {
+         f.write(Options::saveConf());
+      }
+      f.close();
    }
 }
+
+void MainWindow::openConf(const QString &path)
+{
+   QFile f(path);
+   if(f.open(QFile::ReadOnly))
+   {
+      Options::readConf(f.readAll());
+      f.close();
+   }
+}
+
+struct Version
+{
+   int n[4];
+   QString desc;
+   QString install;
+   bool operator<(const Version & v)
+   {
+      for(int i=0 ; i<3 ; ++i)
+      {
+         if(n[i] != v.n[i]) return n[i]<v.n[i];
+      }
+      return n[3]<v.n[3];
+   }
+
+   Version(QString id, const QString & _desc = QString(), const QString & _install = QString()) :
+   n{0,0,0,0},
+   desc(_desc),
+   install(_install)
+   {
+      if(id[0] != 'v') return;
+      id = id.mid(1);
+      QStringList l = id.split('.');
+      if(l.size() != 4) return;
+      int * ptr = n;
+      for(QString s : l)
+      {
+         *(ptr++) = s.toInt();
+      }
+   }
+
+   Version(const Version & cp) :
+   n{cp.n[0],cp.n[1],cp.n[2],cp.n[3]}
+   { }
+
+   Version operator= (const Version & cp)
+   {
+      memcpy(n, cp.n, sizeof(n));
+      desc = cp.desc;
+      install = cp.install;
+      return *this;
+   }
+
+   bool operator== (const Version & v)
+   {
+      return n[0] == v.n[0] &&
+         n[1] == v.n[1] &&
+         n[2] == v.n[2] &&
+         n[3] == v.n[3];
+   }
+
+   bool operator != (const Version & v)
+   {
+      return ! (*this == v);
+   }
+
+   static Version self;
+};
+
+#include "version.h"
+
+Version Version::self(QString(VERSION));
+#ifndef SYSTEM
+
+#if defined(_WIN32)
+#define SYSTEM "win32"
+
+#elif defined(__linux__)
+#define SYSTEM "linux"
+
+#endif
+#endif
+
+void MainWindow::fetchUpdates()
+{
+   if(reqRemaining) return;
+   QStringList checkUrls = Options::get("check-urls").toStringList();
+   reqRemaining = checkUrls.size();
+   for(QString s : checkUrls)
+   {
+      netManager->get(QNetworkRequest(QUrl(s)));
+   }
+}
+
+
+void MainWindow::checkUpdates(QNetworkReply * r)
+{
+
+   static Version max = Version::self;
+
+   if(r->error() == QNetworkReply::NoError)
+   {
+      using namespace std;
+      using namespace ljsoncpp;
+
+      QByteArray data = r->readAll();
+      stringstream stream(QString(data).toStdString());
+
+
+      bool ok;
+      Object * o;
+      Array * versions;
+
+      string id;
+      Object * o2;
+      QString desc;
+      QString install;
+      Array * dls;
+
+
+
+      //Pour l'instant, on cherche juste la dernière versiondiponible
+
+      Value * root = Parser::parse(stream);
+      if(!root) goto END;
+      //assignement root
+      o = root->get<Object*>(&ok);
+      if(!ok) goto FAIL;
+
+      versions = o->getAttr<Array*>("Ardoise", &ok);
+      if(!ok) goto FAIL;
+
+      for(Value * v : *versions)
+      {
+         o = v->get<Object*>(&ok);
+         if(!ok) continue;
+
+         id = o->getAttr<string>("id", &ok);
+         if(!ok) continue;
+
+         o2 = o->getAttr<Object*>("desc");
+         desc = (o2
+         ? QString( o2->getAttr<std::string>( Options::getOption_cast<LanguageOption>("lang")->currentLang().toStdString() ).c_str() )
+            : QString("")
+         );
+         install = "";
+
+         o2 = o->getAttr<Object*>("dl", &ok);
+         if(!ok) continue;
+
+         dls = o2->getAttr<Array*>(SYSTEM, &ok);
+         if(!ok) continue;
+
+         for(Value * vdl : *dls)
+         {
+            Object * dl = vdl->get<Object*>(&ok);
+            if(!ok) continue;
+            string way = dl->getAttr<string>("way", &ok);
+            if(!ok) continue;
+            if(way == "installer")
+            {
+               Array * urls = dl->getAttr<Array*>("urls", &ok);
+               install += QString("<h3>%1</h3><p>").arg(tr("Installateurs :"));
+               for(Value * url : *urls)
+               {
+                  string urlstr = url->get<string>(&ok);
+                  QString str(urlstr.c_str());
+                  QFileInfo info(str);
+                  if(ok) install = install + "   <a href =\"" + str + "\">"+info.fileName()+"</a><br/>";
+               }
+               install += "</p>";
+            }
+         }
+
+
+
+         Version version(QString(id.c_str()), desc, install);
+         if(max<version) max = version;
+      }
+      FAIL:
+      delete root;
+   }
+
+
+
+   END:
+   if(!--reqRemaining && max != Version::self)
+   {
+      notifUpdate(max);
+   }
+}
+
+void MainWindow::notifUpdate(const Version &v)
+{
+   QLabel * txt = new QLabel();
+   txt->setTextFormat(Qt::RichText);
+   txt->setOpenExternalLinks(true);
+   txt->setText(QString("<h1>%1</h1> <h2>%2</h2><p>%3</p> <h2>%4</h2><p>%5</p>")
+      .arg(tr("Mise à jour disponible : version %1").arg(QString("v%1.%2.%3.%4").arg(v.n[0]).arg(v.n[1]).arg(v.n[2]).arg(v.n[3])))
+      .arg(tr("Liens :"))
+      .arg(v.install)
+      .arg(tr("Description :"))
+      .arg(v.desc));
+   displayWidget(tr("Une mise à jour est disponible"), txt, this);
+}
+
+

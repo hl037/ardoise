@@ -21,7 +21,7 @@ cd ../..
 
 
 #sourcecode version.h
-sed -i.old -e 's/^#define VERSION .*$/#define VERSION '$ver'/' version.h
+sed -i.old -e 's/^#define VERSION .*$/#define VERSION "v'$ver'"/' version.h
 
 
 
