@@ -18,6 +18,7 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  ********************************************/
 
+#include <iostream>
 #include "options.h"
 #include <QCoreApplication>
 #include <QLabel>
@@ -27,7 +28,12 @@
 #include <QComboBox>
 #include <QLocale>
 
-#include "json/ljsonp.hpp"
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QJsonValue>
+
 #include "optionswidget.h"
 
 
@@ -37,7 +43,9 @@ m_name(name),
 m_path(path),
 m_text(text),
 m_desc(desc),
-value(_value)
+value(_value),
+storedValue(_value),
+defaultValue(_value)
 {
 }
 
@@ -117,9 +125,45 @@ bool Option::applyModifier(QWidget *w)
       return setValue(sb->value());
    }
    default :
-      return false;
+      break;
    }
    return false;
+}
+
+void Option::storeCurrent()
+{
+   storedValue = value;
+}
+
+void Option::restoreStored(QWidget *mod)
+{
+   restoreValue(mod, storedValue);
+}
+
+void Option::restoreDefault(QWidget *mod)
+{
+   restoreValue(mod, defaultValue);
+}
+
+void Option::restoreValue(QWidget *mod, const QVariant &v)
+{
+   switch(v.type())
+   {
+   case QMetaType::Bool:
+   {
+      QCheckBox * cb = static_cast<QCheckBox*>(mod);
+      if(cb) cb->setChecked(v.toBool());
+      break;
+   }
+   case QMetaType::Int:
+   {
+      QSpinBox * sb = static_cast<QSpinBox*>(mod);
+      if(sb) sb->setValue(v.toInt());
+      break;
+   }
+   default :
+      break;
+   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,7 +233,8 @@ bool Options::set(const QString &key, QVariant value)
    if(it == optionTable.end())
    {
       Option * opt = new Option(key, value, "");
-      optionTable[key] = opt;
+      optionTable[opt->name()] = opt;
+      optionList.push_back(opt);
       return true;
    }
    else
@@ -198,52 +243,59 @@ bool Options::set(const QString &key, QVariant value)
    }
 }
 
-static inline QVariant value2variant(ljsoncpp::Value * v)
+static inline QVariant value2variant(const QJsonValue & v)
 {
-   using namespace std;
-   using namespace ljsoncpp;
-   switch(v->type())
+   switch(v.type())
    {
-   case NUMBER:
+   case QJsonValue::Double :
    {
-      long double val = v->get<long double>();
+      double val = v.toDouble();
       int val2 = val;
-      if(val == (long double) val2)
+      if(val == (double) val2)
       {
          return QVariant(val2);
       }
-      else return QVariant((qreal) val);
+      else return QVariant((double) val);
    }
-   case STRING:
-      return QVariant(QString(v->get<string>().c_str()));
-   case BOOL:
-      return QVariant(v->get<bool>());
+   case QJsonValue::String:
+      return QVariant(v.toString());
+   case QJsonValue::Bool:
+      return QVariant(v.toBool());
+   case QJsonValue::Array:
+      return QVariant(v.toArray().toVariantList());
+   case QJsonValue::Object:
+      return QVariant(v.toObject().toVariantMap());
    default:
-      return QVariant();
+      break;
    }
+   return QVariant();
 }
 
-void Options::readConf(std::istream &in)
+void Options::readConf(const QByteArray & in)
 {
-   using namespace std;
-   using namespace ljsoncpp;
-   bool ok;
-   Value * v = Parser::parse(in);
-   Object * root;
-   if(!v) goto FAIL;
-   root = v->get<Object*>(&ok);
-   if(!ok) goto FAIL;
-   for(Object::iterator it = root->begin(), end = root->end(); it!=end ;++it)
+   QJsonParseError e;
+   QJsonDocument doc = QJsonDocument::fromJson(in, &e);
+   if(e.error != QJsonParseError::NoError)
    {
-      set(QString(it->first.c_str()), value2variant(it->second));
+      std::cerr<<"at "<<e.offset<<" : "<<e.errorString().toStdString();
+      return;
    }
-   FAIL:
-   delete v;
+   QJsonObject root = doc.object();
+   for(QJsonObject::Iterator it = root.begin(), end = root.end() ; it!=end ; ++it)
+   {
+      set(it.key(), value2variant(it.value()));
+   }
 }
 
-void Options::saveConf(std::ostream &out)
+QByteArray Options::saveConf()
 {
-   //TODO need json writter
+   QJsonObject o;
+   for(auto it = optionList.begin(), end = optionList.end() ; it != end ; ++it)
+   {
+      Option * & val = *it;
+      o[val->name()] = QJsonValue::fromVariant(val->getPrintedValue());
+   }
+   return QJsonDocument(o).toJson();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -294,6 +346,19 @@ bool ComboOption::applyModifier(QWidget *w)
    QComboBox * cb = qobject_cast<QComboBox *>(w);
    if(!cb) return false;
    return setValue(cb->currentIndex());
+}
+
+void ComboOption::storeCurrent()
+{
+   storedValue = value;
+}
+
+void ComboOption::restoreValue(QWidget *mod, const QVariant &v)
+{
+   QComboBox * cb = qobject_cast<QComboBox *>(mod);
+   if(!cb) return;
+   setValue(v.toInt());
+   cb->setCurrentIndex(v.toInt());
 }
 
 void ComboOption::changeValue(int ind)
@@ -350,13 +415,32 @@ m_locales(locales)
 {
 }
 
+bool LanguageOption::setValue(const QString &str)
+{
+   QLocale l(str);
+   int ind = m_locales.indexOf(l);
+   if(ind != -1) return setValue(ind);
+   return ComboOption::setValue(str);
+}
+
 bool LanguageOption::setValue(int ind)
 {
    if(!ComboOption::setValue(ind)) return false;
    translator->load(m_locales[value], "ardoise",  "_", ":/translations/");
    return true;
 }
+
+QVariant LanguageOption::getPrintedValue() const
+{
+   return QVariant(currentLang());
+}
+
 QLocale LanguageOption::currentLocale() const
 {
    return m_locales[value];
+}
+
+QString LanguageOption::currentLang() const
+{
+   return currentLocale().name().split("_").at(0);
 }

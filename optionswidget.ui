@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
-    <height>148</height>
+    <width>563</width>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>
@@ -61,7 +61,7 @@
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>OptionsWidget</receiver>
-   <slot>reject()</slot>
+   <slot>cancel()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>316</x>
@@ -93,5 +93,7 @@
  <slots>
   <slot>buttonClicked(QAbstractButton*)</slot>
   <slot>validate()</slot>
+  <slot>cancel()</slot>
+  <slot>restoreDefaults()</slot>
  </slots>
 </ui>

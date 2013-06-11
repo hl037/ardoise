@@ -72,6 +72,8 @@ void OptionsWidget::addOption(Option *opt)
    if(!r.l) return;
    r.opt = opt;
    r.w = opt->modifier();
+
+   r.opt->storeCurrent();
    QStringList path = opt->path().split(QChar('/'));
    Node * n = root;
    for(QString s : path)
@@ -119,6 +121,30 @@ void OptionsWidget::apply(OptionsWidget::Node *n)
    }
 }
 
+void OptionsWidget::cancel(OptionsWidget::Node *n)
+{
+   for(FormRow f : n->rows)
+   {
+      f.opt->restoreStored(f.w);
+   }
+   for(auto it = n->childs.begin(), end = n->childs.end() ; it!=end ; ++it)
+   {
+      cancel(it.value());
+   }
+}
+
+void OptionsWidget::restoreDefaults(OptionsWidget::Node *n)
+{
+   for(FormRow f : n->rows)
+   {
+      f.opt->restoreDefault(f.w);
+   }
+   for(auto it = n->childs.begin(), end = n->childs.end() ; it!=end ; ++it)
+   {
+      restoreDefaults(it.value());
+   }
+}
+
 void OptionsWidget::retranslate(OptionsWidget::Node *n)
 {
    for(FormRow f : n->rows)
@@ -141,7 +167,17 @@ void OptionsWidget::build()
 
 void OptionsWidget::buttonClicked(QAbstractButton* b)
 {
-   if(buttonBox->buttonRole(b) == QDialogButtonBox::ApplyRole) apply();
+   switch(buttonBox->buttonRole(b))
+   {
+   case QDialogButtonBox::ApplyRole:
+      apply();
+      break;
+   case QDialogButtonBox::ResetRole:
+      restoreDefaults();
+      break;
+   default:
+      break;
+   }
 }
 
 void OptionsWidget::apply()
@@ -153,4 +189,15 @@ void OptionsWidget::validate()
 {
    apply();
    accept();
+}
+
+void OptionsWidget::cancel()
+{
+   cancel(root);
+   reject();
+}
+
+void OptionsWidget::restoreDefaults()
+{
+   restoreDefaults(root);
 }

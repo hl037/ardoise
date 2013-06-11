@@ -42,9 +42,9 @@
 #include <QLocale>
 #include <iostream>
 #include <fstream>
-#include "json/ljsonp.hpp"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include "json/ljsonp.hpp"
 #include "options.h"
 #include "optionswidget.h"
 MainWindow *MainWindow::mainWindow = nullptr;
@@ -133,8 +133,15 @@ void MainWindow::ini()
       QT_TRANSLATE_NOOP("OptionsWidget", "À chaque démarrage, l'ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c'est le cas."),
       "general");
    Options::addOption(autoCheckUpdates);
-
-
+   //------------------------
+   //    Repos-Check-updates
+   //------------------------
+   Option * checkUrls = new Option("check-urls",
+   QVariant(QStringList{}),
+      QT_TRANSLATE_NOOP("OptionsWidget", "Vérification des mise à jour au démarrage"),
+      QT_TRANSLATE_NOOP("OptionsWidget", "À chaque démarrage, l'ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c'est le cas."),
+      "general");
+   Options::addOption(checkUrls);
 
 
    supportPalRecov = false;
@@ -990,7 +997,7 @@ void MainWindow::showHelp()
 {
    QResource r(QString(":/help_%1.html")
       .arg(static_cast<const LanguageOption*>(
-      Options::getOption("lang"))->currentLocale().name().split("_").at(0))
+      Options::getOption("lang"))->currentLang())
       );
    if(r.isValid())
    {
@@ -1014,8 +1021,12 @@ void MainWindow::showOpts()
 
 void MainWindow::openConf(const QString &path)
 {
-   std::ifstream f(path.toStdString(), std::ios_base::in);
-   Options::readConf(f);
+   QFile f(path);
+   if(f.open(QFile::ReadOnly))
+   {
+      Options::readConf(f.readAll());
+      f.close();
+   }
 }
 
 struct Version

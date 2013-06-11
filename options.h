@@ -26,10 +26,8 @@
 #include <QTranslator>
 #include <QVariant>
 #include <QStringList>
-#include "json/ljsonp.hpp"
 #include <QLocale>
 
-// TODO ! Faire un système permettant de construire le widget des options
 
 class OptionsWidget;
 class QLabel;
@@ -47,11 +45,14 @@ protected:
    const char * m_text;
    const char * m_desc;
    QVariant value;
+   QVariant storedValue;
+   QVariant defaultValue;
 
 public:
    Option(const QString & name, const QVariant & value, const char * text, const char * desc = "", const QString & path = "general");
    inline QMetaType::Type type() const {return static_cast<QMetaType::Type>(value.type());}
    virtual QVariant getValue() const { return value; }
+   virtual QVariant getPrintedValue() const { return getValue(); }
    virtual bool setValue(const QVariant & value);
    virtual QWidget * modifier() const;//Transpher ownership!!
    virtual void retranslateModifier(QWidget * mod) const;
@@ -62,6 +63,13 @@ public:
    virtual QString desc() const;
    virtual bool applyModifier(QWidget * w);
 
+   virtual void storeCurrent();
+   void restoreStored(QWidget * mod = 0);
+   void restoreDefault(QWidget * mod = 0);
+protected :
+   virtual void restoreValue(QWidget * mod, const QVariant & v);
+
+public:
    inline QString name() const {return m_name;}
    inline QString path() const {return m_path;}
 };
@@ -87,8 +95,8 @@ public:
    static const Option* getOption(const QString & key);
    static bool set(const QString & key, QVariant value);
 
-   static void readConf(std::istream & in);
-   static void saveConf(std::ostream & out);
+   static void readConf(const QByteArray &in);
+   static QByteArray saveConf();
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,12 +110,16 @@ protected:
 
 public:
    ComboOption(const QString & name, int defaultValue, const QStringList & choices, const char * text, const char * desc = "", const QString & path = "general");
-
+   virtual QVariant getValue() const {return value;}
    virtual bool setValue(const QVariant & value);
    virtual bool setValue(const QString &str);
    virtual bool setValue(int ind);
    virtual QWidget * modifier() const;//Transpher ownership!!
    virtual bool applyModifier(QWidget * w);
+
+   virtual void storeCurrent();
+protected:
+   virtual void restoreValue(QWidget *mod, const QVariant &v);
 
 public slots:
    void changeValue(int ind);
@@ -139,9 +151,12 @@ protected:
 
 public:
    LanguageOption(const QString & name, int defaultValue, const QList<QLocale> & locales, const char * text, const char * desc = "", const QString & path = "general");
+   virtual bool setValue(const QString &str);
    virtual bool setValue(int ind);
+   virtual QVariant getPrintedValue() const;
 
    QLocale currentLocale() const;
+   QString currentLang() const;
 };
 
 #endif // OPTIONS_H

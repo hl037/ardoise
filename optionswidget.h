@@ -58,6 +58,8 @@ protected:
 
    void build(Node *n, QWidget *w);
    void apply(Node *n);
+   void cancel(Node *n);
+   void restoreDefaults(Node *n);
    void retranslate(Node *n);
    inline void retranslate(){retranslate(root);}
    
@@ -73,6 +75,8 @@ public slots:
    void buttonClicked(QAbstractButton *b);
    void apply();
    void validate();
+   void cancel();
+   void restoreDefaults();
 };
 
 #endif // OPTIONSWIDGET_H
