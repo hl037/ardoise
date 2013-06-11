@@ -827,6 +827,12 @@ void MainWindow::openPal()
    openPal(path);
 }
 
+void MainWindow::clear()
+{
+   if(!confirm(tr("Réinitialiser le dessin"), tr("Êtes-vous sûr de vouloir effacer tout le dessin?"))) return;
+   ardoise->clear();
+}
+
 
 void MainWindow::openPal(const QString & path)
 {

@@ -109,6 +109,7 @@ public slots:
    void setWeight2(double w);
    void savePal();
    void openPal();
+   void clear();
 
    void save();
    void open();

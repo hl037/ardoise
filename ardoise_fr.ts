@@ -55,134 +55,139 @@
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="272"/>
-        <location filename="mainwindow.cpp" line="988"/>
+        <location filename="mainwindow.cpp" line="284"/>
+        <location filename="mainwindow.cpp" line="314"/>
         <source>Mode dessin, changer pour texte</source>
         <translation>Mode dessin, changer pour texte</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="474"/>
         <source>Couleurs Sauvegardées %1</source>
         <translation>Couleurs Sauvegardées %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="486"/>
         <source>Épaisseurs Sauvegardées %1</source>
         <translation>Épaisseurs Sauvegardées %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="498"/>
+        <location filename="mainwindow.cpp" line="516"/>
         <source>Brosses en %1 restorées</source>
         <translation>Brosses en %1 restorées</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="505"/>
+        <location filename="mainwindow.cpp" line="523"/>
         <source>Couleurs en %1 Supprimées</source>
         <translation>Couleurs en %1 Supprimées</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="512"/>
+        <location filename="mainwindow.cpp" line="530"/>
         <source>Épaisseurs en %1 Supprimées</source>
         <translation>Épaisseurs en %1 Supprimées</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="517"/>
+        <location filename="mainwindow.cpp" line="535"/>
         <source>Réinitialiser les couleurs de la palette</source>
         <translation>Réinitialiser les couleurs de la palette</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="517"/>
+        <location filename="mainwindow.cpp" line="535"/>
         <source>Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?</source>
         <translation>Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="523"/>
+        <location filename="mainwindow.cpp" line="541"/>
         <source>Couleurs supprimées</source>
         <translation>Couleurs supprimées</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="528"/>
+        <location filename="mainwindow.cpp" line="546"/>
         <source>Réinitialiser les épaisseurs de la palette</source>
         <translation>Réinitialiser les épaisseurs de la palette</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="528"/>
+        <location filename="mainwindow.cpp" line="546"/>
         <source>Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?</source>
         <translation>Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="534"/>
+        <location filename="mainwindow.cpp" line="552"/>
         <source>Épaisseurs supprimées</source>
         <translation>Épaisseurs supprimées</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="581"/>
+        <location filename="mainwindow.cpp" line="599"/>
         <source>Enregistrer la palette</source>
         <translation>Enregistrer la palette</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="808"/>
+        <location filename="mainwindow.cpp" line="826"/>
         <source>Ouvrir la palette</source>
         <translation>Ouvrir la palette</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="832"/>
+        <source>Réinitialiser le dessin</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="832"/>
+        <source>Êtes-vous sûr de vouloir effacer tout le dessin?</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="856"/>
         <source>Format inconnu</source>
         <translation>Format inconnu</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="832"/>
+        <location filename="mainwindow.cpp" line="856"/>
         <source>Le fichier ne correspond pas à une &apos;Ardoise Palette&apos; valide.</source>
         <translation>Le fichier ne correspond pas à une &apos;Ardoise Palette&apos; valide.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="883"/>
+        <location filename="mainwindow.cpp" line="907"/>
         <source>Enregistrer l&apos;image</source>
         <translation>Enregistrer l&apos;image</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="973"/>
+        <location filename="mainwindow.cpp" line="997"/>
         <source>Ouvrir l&apos;image</source>
         <translation>Ouvrir l&apos;image</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="991"/>
+        <location filename="mainwindow.cpp" line="317"/>
         <source>Mode texte, changer pour dessin</source>
         <translation>Mode texte, changer pour dessin</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="999"/>
+        <location filename="mainwindow.cpp" line="1028"/>
         <source>Aide Ardoise</source>
         <translation>Aide Ardoise</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1164"/>
-        <source>fr</source>
-        <translation>fr</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="1182"/>
+        <location filename="mainwindow.cpp" line="1207"/>
         <source>Installateurs :</source>
         <oldsource>&lt;h3&gt;Installateurs : &lt;/h3&gt;&lt;p&gt;</oldsource>
         <translation>Installateurs :</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1216"/>
+        <location filename="mainwindow.cpp" line="1243"/>
         <source>Mise à jour disponible : version %1</source>
         <translation>Mise à jour disponible : version %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1217"/>
+        <location filename="mainwindow.cpp" line="1244"/>
         <source>Liens :</source>
         <translation>Liens :</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1219"/>
+        <location filename="mainwindow.cpp" line="1246"/>
         <source>Description :</source>
         <translation>Description :</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1221"/>
+        <location filename="mainwindow.cpp" line="1248"/>
         <source>Une mise à jour est disponible</source>
         <translation>Une mise à jour est disponible</translation>
     </message>

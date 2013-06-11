@@ -822,6 +822,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>erase_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>507</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>303</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>setCol1()</slot>
@@ -834,5 +850,6 @@
   <slot>showHelp()</slot>
   <slot>fetchUpdates()</slot>
   <slot>showOpts()</slot>
+  <slot>clear()</slot>
  </slots>
 </ui>
