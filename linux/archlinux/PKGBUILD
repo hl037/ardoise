@@ -40,7 +40,16 @@ build() {
    cd "$srcdir"
    rm -rf "$_gitname-build"
    git clone "$_gitname" "$_gitname-build"
-
+   
+   
+   #
+   # Submodules
+   #
+   
+   cd "$_gitname-build"
+   git submodule update --init
+   cd ..
+   
    #
    # BUILD HERE
    #
