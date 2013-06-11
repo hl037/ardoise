@@ -54,8 +54,8 @@ void ACursor::updateCursor()
       m_center.setX(size/2);
       m_center.setY(size/2);
 
-      int r1 = (d1-p1.width())/2;
-      int r2 = (d2-p2.width())/2;
+      int r1 = d1/2;
+      int r2 = d2/2;
 
       QPainter p;
       p.begin(&pix);

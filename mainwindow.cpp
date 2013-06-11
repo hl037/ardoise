@@ -82,7 +82,7 @@ void displayWidget(const QString & title, QWidget * w, QWidget * parent = 0)
    w->setParent(0);//indispensable pour éviter que le widget soit détruit via Dialog::~Dialog()
 }
 
-const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+const char MainWindow::dtd[] = R"(<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE xapal [
 
 <!ELEMENT xapal (pal)? >
@@ -104,7 +104,8 @@ const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!ATTLIST weigth i CDATA #REQUIRED>
 <!ATTLIST weigth w CDATA #REQUIRED>
 
-]>)";
+]>
+)";
 
 bool supportOptionsFiles;
 
