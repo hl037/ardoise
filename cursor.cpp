@@ -21,12 +21,14 @@
 #include "cursor.h"
 #include <QPainter>
 #include <QGraphicsTextItem>
+#include <QPixmapCache>
 
 ACursor::ACursor(QWidget *parent) :
    QWidget(parent),
+   d1(2),
+   d2(2),
    t(new QGraphicsTextItem("T"))
 {
-   //setWindowFlags(Qt::SubWindow|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint);
    setAttribute(Qt::WA_TranslucentBackground);
    setMouseTracking(1);
    opt.initFrom(this);
@@ -37,36 +39,78 @@ ACursor::~ACursor()
    t->deleteLater();
 }
 
-void ACursor::paintEvent(QPaintEvent *)
+void ACursor::updateCursor()
 {
-
-   QPainter p(this);
 
    switch(m)
    {
    case ArdoiseGlobal::DRAWING_MODE:
    {
+      int size = qMax(d1 + p1.width() * 2, d2 + p2.width() * 2);
+      if(!size) size = 1;
+      QPixmap pix(size, size);
+      pix.fill(Qt::transparent);
+
+      m_center.setX(size/2);
+      m_center.setY(size/2);
+
+      int r1 = (d1-p1.width())/2;
+      int r2 = (d2-p2.width())/2;
+
+      QPainter p;
+      p.begin(&pix);
       p.setBrush(QBrush(QColor(0,0,0,0)));
       p.setPen(p2);
-      p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
+      p.drawEllipse(m_center, r2,r2);
       p.setPen(p1);
-      p.drawEllipse((width()-d1)/2,(height()-d1)/2,d1-1,d1-1);
+      p.drawEllipse(m_center, r1,r1);
       p.setPen(p2);
-      p.drawEllipse((width()-d2)/2,(height()-d2)/2,d2-1,d2-1);
+      p.drawEllipse(m_center, r2,r2);
+      QPixmapCache::insert("Cursor", pix);
+      p.end();
+
+      resize(pix.size());
       break;
    }
    case ArdoiseGlobal::TEXT_MODE:
    {
-      //f.setStretch(d1/2);
       QFont f;
       f.setPixelSize(d1*8);
       t->setFont(f);
       t->setDefaultTextColor(p1.color());
 
-      p.translate(width()/2,height()/2);
+      QPixmap pix(t->boundingRect().size().toSize());
+      pix.fill(Qt::transparent);
+      QPainter p(&pix);
       t->paint(&p, &opt, 0);
+      p.end();
+      QPixmapCache::insert("Cursor", pix);
+
+      m_center.setX(0);
+      m_center.setY(0);
+
+      resize(pix.size());
+      break;
    }
    default: ;
-   }
+      QPixmap pix(2,2);
+      pix.fill(Qt::black);
+      QPixmapCache::insert("Cursor", pix);
 
+      m_center.setX(pix.width()/2);
+      m_center.setY(pix.height()/2);
+
+      resize(pix.size());
+      break;
+   }
+   repaint();
+}
+
+void ACursor::paintEvent(QPaintEvent *)
+{
+   QPainter p(this);
+
+   QPixmap pix;
+   QPixmapCache::find("Cursor", pix);
+   p.drawPixmap(0,0,pix);
 }

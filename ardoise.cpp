@@ -44,8 +44,8 @@ Ardoise::Ardoise(QWidget *parent) :
    typing(false),
    textInput(new TextInput(this)),
    textOffset(0,0),
-   m_zoomWheel(true),
-   img(new QImage)
+   img(new QImage),
+   m_zoomWheel(true)
 {
    select = new RectSelection(this);
    select->hide();
@@ -123,7 +123,7 @@ void Ardoise::lineTo(QPoint p, const QPen &pen)
    paint.drawLine(lastPoint, p);
 
    int rad = (pen.width() / 2) + 2;
-   update(QRect(lastPoint, p).normalized().adjusted(-rad, -rad, +rad, +rad));
+   update(QRect(lastPoint, p).normalized().adjusted(-rad, -rad, +rad, +rad).translated(-imgOffset));
    lastPoint = p;
 }
 
@@ -244,46 +244,6 @@ void Ardoise::cancelText()
    typing = false;
 }
 
-/*
-void Ardoise::resize(int rx, int ry, QPoint pos)
-{
-   if(typing) cancelText();
-   int nx,ny;
-   QSize s(width()+qAbs(rx),height()+qAbs(ry));
-   int mapX,mapY;
-   if(rx<0)
-   {
-      nx=0;
-      mapX=-rx;
-   }
-   else if(rx>0)
-   {
-      nx=x()+pos.x();
-      mapX=0;
-   }
-   else { nx=x()+pos.x() ; mapX=0; }
-
-   if(ry<0)
-   {
-      ny=0;
-      mapY=-ry;
-   }
-   else if(ry>0)
-   {
-      ny=y()+pos.y();
-      mapY=0;
-   }
-   else { ny=y()+pos.y() ; mapY=0; }
-
-   //D("rx="<<rx<<" ry="<<ry<<" pos="<<pos<<" nx="<<nx<<" ny="<<ny<<"  mapX="<<mapX<<" mapY="<<mapY<<"  w="<<width()<<" h="<<height()<<"  x="<<x()<<" y="<<y())
-
-   resizeImg(&img,s,QPoint(mapX,mapY));
-   textOffset-=QPoint(mapX,mapY);
-   QWidget::resize(s);
-   move(QPoint(nx,ny));
-   select->move(select->pos()+QPoint(mapX,mapY));
-}*/
-
 void Ardoise::zoomTo(double fac, QPoint o)
 {
    QPoint p=o+(pos()-o)*fac;
@@ -350,8 +310,7 @@ void Ardoise::mousePressEvent(QMouseEvent *e)
 
 void Ardoise::mouseMoveEvent(QMouseEvent *e)
 {
-   //cur->setGeometry(QRect(e->globalPos()-QPoint(50,50),e->globalPos()+QPoint(50,50)));
-   if(moveCursor) cur->setGeometry(QRect(e->pos()-QPoint(50,50),e->pos()+QPoint(50,50)));
+   if(moveCursor) cur->move(e->pos()-cur->center());
    QPoint imgPoint = getImgPoint(e->pos());
    if(dessin && moveCursor)
    {
@@ -437,6 +396,7 @@ void Ardoise::affSelect(bool b) //[slot]
 
 void Ardoise::swapMode()
 {
+   QPoint curc = cur->center();
    if(mode == ArdoiseGlobal::DRAWING_MODE)
    {
       mode = ArdoiseGlobal::TEXT_MODE;
@@ -449,6 +409,8 @@ void Ardoise::swapMode()
       cur->setMode(ArdoiseGlobal::DRAWING_MODE);
       textInput->hide();
    }
+   curc -= cur->center();
+   cur->move(cur->pos()+curc);
    typing = false;
 }
 
