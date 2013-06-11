@@ -64,6 +64,7 @@ build() {
    rm -rf "$BUILD"
    mkdir "$BUILD"
    cd "$BUILD"
+   lrelease-qt5 "$srcdir/$_gitname-build/ardoise.pro"
    qmake-qt5 "$srcdir/$_gitname-build/ardoise.pro" -r -spec $SPEC
    make -w
 }

@@ -16,6 +16,7 @@ qrc_*
 !**/*.png
 !**/*.desktop
 !**/PKGBUILD
+!**/INSTALL.txt
 !json
 !windows/conf
 !windows/conf/*

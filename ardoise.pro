@@ -45,7 +45,8 @@ OTHER_FILES += COPYING.txt \
     DevLine.txt \
     help_fr.html \
     help_en.html \
-    help.html
+    help.html \
+    linux/INSTALL.txt
 
 RESOURCES += icons.qrc \
     translations.qrc

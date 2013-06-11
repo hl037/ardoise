@@ -14,6 +14,7 @@ Qt5Core.dll
 Qt5Gui.dll
 Qt5Widgets.dll
 Qt5Xml.dll
+QtNetwork.dll
 qwindows.dll
 conf/default.xapal
 conf/last.xapal

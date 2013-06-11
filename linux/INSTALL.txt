@@ -1,0 +1,15 @@
+You need QtSDK in your path.
+
+to build, do the following:
+
+$ lrelease ardoise.pro
+$ qmake ardoise.pro
+$ make
+
+
+Perhaps your system has a different Qt version in the path and add  the suffix -qt5 (as Archlinux for example)
+in this case, do:
+
+$ lrelease-qt5 ardoise.pro
+$ qmake-qt5 ardoise.pro
+$ make
