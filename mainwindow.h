@@ -82,6 +82,7 @@ public:
 protected:
    Ardoise * scene;
    void changeEvent(QEvent *e);
+   QString modeText();
    QColor col1;
    QColor col2;
 
@@ -100,9 +101,6 @@ protected:
    int reqRemaining;
 
    QTextBrowser * help;
-
-public:
-   QStringList checkUrls;
 
 public slots:
    void setCol1();

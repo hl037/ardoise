@@ -106,7 +106,7 @@ const char MainWindow::dtd[] = R"(<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 
 ]>)";
 
-bool supportPalRecov;
+bool supportOptionsFiles;
 
 QDir home;
 
@@ -136,15 +136,15 @@ void MainWindow::ini()
    //------------------------
    //    Repos-Check-updates
    //------------------------
-   Option * checkUrls = new Option("check-urls",
+   StringListOption * checkUrls = new StringListOption("check-urls",
    QVariant(QStringList{}),
-      QT_TRANSLATE_NOOP("OptionsWidget", "Vérification des mise à jour au démarrage"),
-      QT_TRANSLATE_NOOP("OptionsWidget", "À chaque démarrage, l'ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c'est le cas."),
+      "",
+      "Liste des urls où on peut trouver ardoise.json",
       "general");
    Options::addOption(checkUrls);
 
 
-   supportPalRecov = false;
+   supportOptionsFiles = false;
 #if defined __linux__
    home = QDir::home();
    home.mkpath(".config/ardoise");
@@ -171,7 +171,7 @@ void MainWindow::ini()
       openConf(home.absoluteFilePath("conf.json"));
    }
    if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
-   supportPalRecov = true;
+   supportOptionsFiles = true;
 #elif defined _WIN32
    home = QDir::current();
    home.mkpath("conf");
@@ -192,6 +192,10 @@ void MainWindow::ini()
    if(home.exists("last.xapal"))
    {
       openPal(home.absoluteFilePath("last.xapal"));
+   }
+   if(home.exists("conf.json"))
+   {
+      openConf(home.absoluteFilePath("conf.json"));
    }
    supportPalRecov = true;
 #else
@@ -295,9 +299,24 @@ void MainWindow::changeEvent(QEvent *e)
    switch (e->type()) {
    case QEvent::LanguageChange:
       retranslateUi(this);
+      swapMode_pb->setText(modeText());
       break;
    default:
       break;
+   }
+}
+
+QString MainWindow::modeText()
+{
+   switch(ardoise->getMode())
+   {
+   case ArdoiseGlobal::DRAWING_MODE:
+      return tr("Mode dessin, changer pour texte");
+      break;
+   case ArdoiseGlobal::TEXT_MODE:
+      return tr("Mode texte, changer pour dessin");
+      break;
+   default: ;
    }
 }
 
@@ -339,7 +358,7 @@ void MainWindow::setWeight2(double w)  //[slot]
 void MainWindow::closeEvent(QCloseEvent *e)
 {
    QMainWindow::closeEvent(e);
-   if(e->isAccepted() && supportPalRecov)
+   if(e->isAccepted() && supportOptionsFiles)
    {
       savePal(home.absoluteFilePath("last.xapal"));
    }
@@ -981,23 +1000,13 @@ void MainWindow::open() //[slot]
 void MainWindow::swapMode()
 {
    ardoise->swapMode();
-   switch(ardoise->getMode())
-   {
-   case ArdoiseGlobal::DRAWING_MODE:
-      swapMode_pb->setText(tr("Mode dessin, changer pour texte"));
-      break;
-   case ArdoiseGlobal::TEXT_MODE:
-      swapMode_pb->setText(tr("Mode texte, changer pour dessin"));
-      break;
-   default: ;
-   }
+   swapMode_pb->setText(modeText());
 }
 
 void MainWindow::showHelp()
 {
    QResource r(QString(":/help_%1.html")
-      .arg(static_cast<const LanguageOption*>(
-      Options::getOption("lang"))->currentLang())
+      .arg(Options::getOption_cast<LanguageOption>("lang")->currentLang())
       );
    if(r.isValid())
    {
@@ -1017,6 +1026,15 @@ void MainWindow::showOpts()
 {
    OptionsWidget * opts = Options::optionsWidget();
    opts->exec();
+   if(supportOptionsFiles)
+   {
+      QFile f(home.filePath("conf.json"));
+      if(f.open(QFile::WriteOnly))
+      {
+         f.write(Options::saveConf());
+      }
+      f.close();
+   }
 }
 
 void MainWindow::openConf(const QString &path)
@@ -1090,7 +1108,6 @@ struct Version
 #include "version.h"
 
 Version Version::self(QString(VERSION));
-#define SYSTEM "win32"
 #ifndef SYSTEM
 
 #if defined(_WIN32)
@@ -1102,10 +1119,10 @@ Version Version::self(QString(VERSION));
 #endif
 #endif
 
-
 void MainWindow::fetchUpdates()
 {
    if(reqRemaining) return;
+   QStringList checkUrls = Options::get("check-urls").toStringList();
    reqRemaining = checkUrls.size();
    for(QString s : checkUrls)
    {
@@ -1118,6 +1135,7 @@ void MainWindow::checkUpdates(QNetworkReply * r)
 {
 
    static Version max = Version::self;
+
    if(r->error() == QNetworkReply::NoError)
    {
       using namespace std;
@@ -1127,68 +1145,83 @@ void MainWindow::checkUpdates(QNetworkReply * r)
       stringstream stream(QString(data).toStdString());
 
 
+      bool ok;
+      Object * o;
+      Array * versions;
+
+      string id;
+      Object * o2;
+      QString desc;
+      QString install;
+      Array * dls;
+
+
+
       //Pour l'instant, on cherche juste la dernière versiondiponible
 
       Value * root = Parser::parse(stream);
-      bool ok;
-      for(QString s : checkUrls)
-      {
-         //assignement root
-         Object * o = root->get<Object*>(&ok);
-         if(ok)
-         {
-            Array * versions = o->getAttr<Array*>("Ardoise", &ok);
-            if(ok)
-            {
-               for(Value * v : *versions)
-               {
-                  o = v->get<Object*>(&ok);
-                  if(ok)
-                  {
-                     string id = o->getAttr<string>("id", &ok);
-                     if(ok)
-                     {
-                        Object * o2 = o->getAttr<Object*>("desc");
-                        QString desc = o2 ? QString(o2->getAttr<string>(tr("fr").toStdString()).c_str()) : QString("");
-                        QString install = "";
+      if(!root) goto END;
+      //assignement root
+      o = root->get<Object*>(&ok);
+      if(!ok) goto FAIL;
 
-                        o2 = o->getAttr<Object*>("dl", &ok);
-                        if(ok)
-                        {
-                           Array * dls = o2->getAttr<Array*>(SYSTEM, &ok);
-                           if(ok)
-                           {
-                              for(Value * vdl : *dls)
-                              {
-                                 Object * dl = vdl->get<Object*>(&ok);
-                                 if(!ok) continue;
-                                 string way = dl->getAttr<string>("way", &ok);
-                                 if(!ok) continue;
-                                 if(way == "installer")
-                                 {
-                                    Array * urls = dl->getAttr<Array*>("urls", &ok);
-                                    install += QString("<h3>%1</h3><p>").arg(tr("Installateurs :"));
-                                    for(Value * url : *urls)
-                                    {
-                                       string urlstr = url->get<string>(&ok);
-                                       QString str(urlstr.c_str());
-                                       QFileInfo info(str);
-                                       if(ok) install = install + "   <a href =\"" + str + "\">"+info.fileName()+"</a><br/>";
-                                    }
-                                    install += "</p>";
-                                 }
-                              }
-                           }
-                        }
-                        Version v(QString(id.c_str()), desc, install);
-                        if(max<v) max = v;
-                     }
-                  }
+      versions = o->getAttr<Array*>("Ardoise", &ok);
+      if(!ok) goto FAIL;
+
+      for(Value * v : *versions)
+      {
+         o = v->get<Object*>(&ok);
+         if(!ok) continue;
+
+         id = o->getAttr<string>("id", &ok);
+         if(!ok) continue;
+
+         o2 = o->getAttr<Object*>("desc");
+         desc = (o2
+         ? QString( o2->getAttr<std::string>( Options::getOption_cast<LanguageOption>("lang")->currentLang().toStdString() ).c_str() )
+            : QString("")
+         );
+         install = "";
+
+         o2 = o->getAttr<Object*>("dl", &ok);
+         if(!ok) continue;
+
+         dls = o2->getAttr<Array*>(SYSTEM, &ok);
+         if(!ok) continue;
+
+         for(Value * vdl : *dls)
+         {
+            Object * dl = vdl->get<Object*>(&ok);
+            if(!ok) continue;
+            string way = dl->getAttr<string>("way", &ok);
+            if(!ok) continue;
+            if(way == "installer")
+            {
+               Array * urls = dl->getAttr<Array*>("urls", &ok);
+               install += QString("<h3>%1</h3><p>").arg(tr("Installateurs :"));
+               for(Value * url : *urls)
+               {
+                  string urlstr = url->get<string>(&ok);
+                  QString str(urlstr.c_str());
+                  QFileInfo info(str);
+                  if(ok) install = install + "   <a href =\"" + str + "\">"+info.fileName()+"</a><br/>";
                }
+               install += "</p>";
             }
          }
+
+
+
+         Version version(QString(id.c_str()), desc, install);
+         if(max<version) max = version;
       }
+      FAIL:
+      delete root;
    }
+
+
+
+   END:
    if(!--reqRemaining && max != Version::self)
    {
       notifUpdate(max);

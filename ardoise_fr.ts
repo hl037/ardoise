@@ -7,184 +7,184 @@
     <message>
         <location filename="mainwindow.ui" line="14"/>
         <source>Ardoise</source>
-        <translation type="unfinished"></translation>
+        <translation>Ardoise</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="137"/>
         <source>Ouvrir</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="226"/>
         <source>Réinitialiser</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialiser</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="287"/>
         <source>Afficher la selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher la sélection</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="348"/>
         <source>Enregistrer</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="456"/>
         <source>Couleur 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur 1</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="564"/>
         <source>Couleur 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur 2</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="606"/>
         <source>Afficher l&apos;aide</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher l&apos;aide</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="619"/>
         <source>Vérifier les mises à jour</source>
-        <translation type="unfinished"></translation>
+        <translation>Vérifier les mises à jour</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="632"/>
         <source>Paramètres</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="272"/>
         <location filename="mainwindow.cpp" line="988"/>
         <source>Mode dessin, changer pour texte</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode dessin, changer pour texte</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="456"/>
         <source>Couleurs Sauvegardées %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs Sauvegardées %1</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="468"/>
         <source>Épaisseurs Sauvegardées %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Épaisseurs Sauvegardées %1</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="498"/>
         <source>Brosses en %1 restorées</source>
-        <translation type="unfinished"></translation>
+        <translation>Brosses en %1 restorées</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="505"/>
         <source>Couleurs en %1 Supprimées</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs en %1 Supprimées</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="512"/>
         <source>Épaisseurs en %1 Supprimées</source>
-        <translation type="unfinished"></translation>
+        <translation>Épaisseurs en %1 Supprimées</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="517"/>
         <source>Réinitialiser les couleurs de la palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialiser les couleurs de la palette</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="517"/>
         <source>Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?</source>
-        <translation type="unfinished"></translation>
+        <translation>Êtes-vous sûr de vouloir réinitialiser toutes les couleurs de la palette?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="523"/>
         <source>Couleurs supprimées</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs supprimées</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="528"/>
         <source>Réinitialiser les épaisseurs de la palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialiser les épaisseurs de la palette</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="528"/>
         <source>Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?</source>
-        <translation type="unfinished"></translation>
+        <translation>Êtes-vous sûr de vouloir réinitialiser toutes les épaisseurs de la palette?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="534"/>
         <source>Épaisseurs supprimées</source>
-        <translation type="unfinished"></translation>
+        <translation>Épaisseurs supprimées</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="581"/>
         <source>Enregistrer la palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer la palette</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="808"/>
         <source>Ouvrir la palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir la palette</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="832"/>
         <source>Format inconnu</source>
-        <translation type="unfinished"></translation>
+        <translation>Format inconnu</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="832"/>
         <source>Le fichier ne correspond pas à une &apos;Ardoise Palette&apos; valide.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le fichier ne correspond pas à une &apos;Ardoise Palette&apos; valide.</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="883"/>
         <source>Enregistrer l&apos;image</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer l&apos;image</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="973"/>
         <source>Ouvrir l&apos;image</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir l&apos;image</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="991"/>
         <source>Mode texte, changer pour dessin</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode texte, changer pour dessin</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="999"/>
         <source>Aide Ardoise</source>
-        <translation type="unfinished"></translation>
+        <translation>Aide Ardoise</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1164"/>
         <source>fr</source>
-        <translation type="unfinished"></translation>
+        <translation>fr</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1182"/>
         <source>Installateurs :</source>
         <oldsource>&lt;h3&gt;Installateurs : &lt;/h3&gt;&lt;p&gt;</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>Installateurs :</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1216"/>
         <source>Mise à jour disponible : version %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Mise à jour disponible : version %1</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1217"/>
         <source>Liens :</source>
-        <translation type="unfinished"></translation>
+        <translation>Liens :</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1219"/>
         <source>Description :</source>
-        <translation type="unfinished"></translation>
+        <translation>Description :</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1221"/>
         <source>Une mise à jour est disponible</source>
-        <translation type="unfinished"></translation>
+        <translation>Une mise à jour est disponible</translation>
     </message>
 </context>
 <context>
@@ -192,33 +192,33 @@
     <message>
         <location filename="optionswidget.ui" line="14"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="124"/>
         <source>Langage</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="125"/>
         <source>Langage dans lequel sera l&apos;interface, ainsi que l&apos;aide.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="132"/>
         <source>Vérification des mise à jour au démarrage</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="133"/>
         <source>À chaque démarrage, l&apos;ardoise va rechercher sur le net si des mises à jour sont disponible et affiche un message vous invitant à les télécharger si c&apos;est le cas.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="stringtotranslate.h" line="27"/>
         <source>general</source>
         <comment>Onglet général du widget de configuration</comment>
-        <translation type="unfinished"></translation>
+        <translation>Général</translation>
     </message>
 </context>
 <context>
@@ -226,7 +226,7 @@
     <message>
         <location filename="mainwindow.cpp" line="73"/>
         <source>Fermer</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>
