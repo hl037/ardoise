@@ -64,8 +64,8 @@ public:
    ~ACursor();
 
 protected:
-
    void updateCursor();
+   void updateCursor(QPixmap & pm);
    void paintEvent(QPaintEvent *);
    void mousePressEvent(QMouseEvent *e){e->ignore();}
    void mouseMoveEvent(QMouseEvent *e){e->ignore();}

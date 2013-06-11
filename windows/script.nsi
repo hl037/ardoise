@@ -38,7 +38,7 @@
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
-   Page Custom shortcuts check "Ma page!!!"
+   Page Custom shortcuts check ""
   !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -70,8 +70,8 @@ LangString SCText ${LANG_FRENCH} "Vous pouvez ajouter des raccourcis pour trouve
 LangString SCText ${LANG_ENGLISH} "You can add some shortcuts to find and run the Ardoise (Slate) in an easier and faster way :"
 LangString DesktopSCText ${LANG_FRENCH} "Créer un raccourcis sur le bureau"
 LangString DesktopSCText ${LANG_ENGLISH} "Create desktop shortcut"
-LangString QLSCText ${LANG_FRENCH} "Créer un raccourcis dans la bar de lancement rapide"
-LangString QLSCText ${LANG_ENGLISH} "Create uqick launch bar shortcut"
+LangString QLSCText ${LANG_FRENCH} "Créer un raccourcis dans la barre de lancement rapide"
+LangString QLSCText ${LANG_ENGLISH} "Create quick launch bar shortcut"
   
 Function shortcuts 
    nsDialogs::Create 1018
@@ -142,14 +142,26 @@ Section !$(Ardoise) Ardoise
   File "Qt5Gui.dll"
   File "Qt5Widgets.dll"
   File "Qt5Xml.dll"
+  File "Qt5Network.dll"
   SetOutPath "$INSTDIR\platforms"
   File "qwindows.dll"
   CreateShortCut "$STARTMENU\Programs\Ardoise.lnk" "$INSTDIR\ardoise.exe"
 SectionEnd
 
+
+LangString ConfJson ${LANG_FRENCH} "fr"
+LangString ConfJson ${LANG_ENGLISH} "en"
+
 Section $(Conf) Conf
   SetOutPath "$INSTDIR\conf"
   File "conf\*"
+  StrCmp $(ConfJson) "fr" +1 +3
+     File "fr\*"
+     Goto done
+  StrCmp $(ConfJson) "en" +1 +3
+     File "en\*"
+     Goto done
+  done:
 SectionEnd
 
 Section

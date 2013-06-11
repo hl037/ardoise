@@ -1,0 +1,7 @@
+{
+    "auto-check-updates": true,
+    "check-urls": [
+        "https://raw.github.com/hl037/ardoise/master/ardoise.json"
+    ],
+    "lang": "fr"
+}

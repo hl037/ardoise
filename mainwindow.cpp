@@ -138,7 +138,7 @@ void MainWindow::ini()
    //    Repos-Check-updates
    //------------------------
    StringListOption * checkUrls = new StringListOption("check-urls",
-   QVariant(QStringList{}),
+      QVariant(QStringList{"https://raw.github.com/hl037/ardoise/master/ardoise.json"}),
       "",
       "Liste des urls où on peut trouver ardoise.json",
       "general");
@@ -365,6 +365,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
    {
       savePal(home.absoluteFilePath("last.xapal"));
    }
+   saveConf();
 }
 
 bool MainWindow::eventFilter(QObject * o, QEvent *ev)
