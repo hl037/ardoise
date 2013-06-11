@@ -198,7 +198,7 @@ void MainWindow::ini()
    {
       openConf(home.absoluteFilePath("conf.json"));
    }
-   supportPalRecov = true;
+   supportOptionsFiles = true;
 #else
 #warning "This build won't support palette recovery"
 #endif
