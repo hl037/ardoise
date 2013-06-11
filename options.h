@@ -94,9 +94,9 @@ public:
 
    static bool addOption(Option* opt);
    static QVariant get(const QString & key);
-   static const Option* getOption(const QString & key);
+   static Option* getOption(const QString & key);
    template <class T>
-   static inline const T* getOption_cast(const QString & key) { return static_cast<const T*>(getOption(key)); }
+   static inline T* getOption_cast(const QString & key) { return static_cast<T*>(getOption(key)); }
    static bool set(const QString & key, QVariant value);
 
    static void readConf(const QByteArray &in);
@@ -174,6 +174,8 @@ class StringListOption : public Option
 public:
    StringListOption(const QString & name, const QVariant & value, const char * text, const char * desc = "", const QString & path = "general");
    virtual bool setValue(const QVariant & _value);
+   bool addValue(const QVariant & val);
+   QStringList getStringList();
 };
 
 #endif // OPTIONS_H

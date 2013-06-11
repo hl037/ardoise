@@ -223,7 +223,7 @@ QVariant Options::get(const QString &key)
    return it.value()->getValue();
 }
 
-const Option *Options::getOption(const QString &key)
+Option *Options::getOption(const QString &key)
 {
    auto it = optionTable.find(key);
    if(it == optionTable.end()) return nullptr;
@@ -467,4 +467,16 @@ bool StringListOption::setValue(const QVariant &_value)
       return true;
    }
    return false;
+}
+
+bool StringListOption::addValue(const QVariant &val)
+{
+   if(!val.canConvert(QMetaType::QString)) return false;
+   value = (value.toStringList()<<val.toString());
+   return true;
+}
+
+QStringList StringListOption::getStringList()
+{
+   return value.toStringList();
 }

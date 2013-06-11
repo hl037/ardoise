@@ -1034,6 +1034,10 @@ void MainWindow::showOpts()
 {
    OptionsWidget * opts = Options::optionsWidget();
    opts->exec();
+}
+
+void MainWindow::saveConf()
+{
    if(supportOptionsFiles)
    {
       QFile f(home.filePath("conf.json"));
@@ -1155,6 +1159,7 @@ void MainWindow::checkUpdates(QNetworkReply * r)
 
       bool ok;
       Object * o;
+      Array * links;
       Array * versions;
 
       string id;
@@ -1172,6 +1177,30 @@ void MainWindow::checkUpdates(QNetworkReply * r)
       //assignement root
       o = root->get<Object*>(&ok);
       if(!ok) goto FAIL;
+
+      links = o->getAttr<Array*>("check-urls", &ok);
+      if(ok)
+      {
+         StringListOption * cklist = Options::getOption_cast<StringListOption>("check-urls");
+         QStringList l = cklist->getStringList();
+         for(Value * v : *links)
+         {
+            string str = v->get<string>(&ok);
+            if(ok)
+            {
+               QString s(str.c_str());
+
+               if(!l.contains(s))
+               {
+                  l<<s;
+                  cklist->addValue(s);
+                  ++reqRemaining;
+                  netManager->get(QNetworkRequest(QUrl(s)));
+               }
+            }
+         }
+         saveConf();
+      }
 
       versions = o->getAttr<Array*>("Ardoise", &ok);
       if(!ok) goto FAIL;

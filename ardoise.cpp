@@ -88,9 +88,8 @@ void Ardoise::resizeImg(const QSize &newSize, QPoint map)
     newImage->fill(qRgb(255, 255, 255));
     QPainter painter(newImage);
     painter.drawImage(map, *img);
-    QImage * tmp = img;
-    img = newImage;//TODO ! img peut devenir un pointeur ce qui enlèverait le cout de operator=
-    delete tmp;
+    delete img;
+    img = newImage;
 }
 
 void Ardoise::fill()
@@ -369,9 +368,8 @@ void Ardoise::clear() //[slot]
 {
    QImage * i = new QImage(size(), QImage::Format_RGB32);
    i->fill(0xFFFFFFFF);
-   QImage * tmp = img;
+   delete img;
    img=i;
-   delete tmp;
    graphicsScene->clear();
    update();
 }

@@ -73,7 +73,7 @@ public:
    void savePal(const QString & path);
    void openPal(const QString & path);
 
-   void saveConf(const QString & path);
+   void saveConf();
    void openConf(const QString & path);
 
 
@@ -99,6 +99,7 @@ protected:
 
    QNetworkAccessManager * netManager;
    int reqRemaining;
+
 
    QTextBrowser * help;
 
