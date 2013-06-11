@@ -32,6 +32,11 @@ ACursor::ACursor(QWidget *parent) :
    opt.initFrom(this);
 }
 
+ACursor::~ACursor()
+{
+   t->deleteLater();
+}
+
 void ACursor::paintEvent(QPaintEvent *)
 {
 

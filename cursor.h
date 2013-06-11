@@ -59,6 +59,7 @@ protected:
 public:
 
    ACursor(QWidget *parent = 0);
+   ~ACursor();
 
 protected:
 

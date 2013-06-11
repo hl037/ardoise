@@ -47,6 +47,7 @@ public:
    typedef ArdoiseGlobal::Mode Mode;
 
    explicit Ardoise(QWidget *parent = 0);
+   ~Ardoise();
 
    //void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
 
@@ -75,7 +76,7 @@ protected:
    ACursor * cur;
    QPen pen1;
    QPen pen2;
-   QImage img;
+   QImage * img;
    QPoint lastPoint;
    QPoint mo;
 

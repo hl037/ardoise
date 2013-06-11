@@ -128,12 +128,12 @@
     <message>
         <location filename="mainwindow.cpp" line="832"/>
         <source>Réinitialiser le dessin</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear the drawing surface</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="832"/>
         <source>Êtes-vous sûr de vouloir effacer tout le dessin?</source>
-        <translation type="unfinished"></translation>
+        <translation>Are you sure to clear the entire drawing surface?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="856"/>

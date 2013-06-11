@@ -290,6 +290,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+   help->deleteLater();
    Options::destroy();
 }
 
@@ -318,6 +319,7 @@ QString MainWindow::modeText()
       break;
    default: ;
    }
+   return QString();
 }
 
 //void mainWindow::resizeEvent(QResizeEvent * e)

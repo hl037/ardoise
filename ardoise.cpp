@@ -44,14 +44,15 @@ Ardoise::Ardoise(QWidget *parent) :
    typing(false),
    textInput(new TextInput(this)),
    textOffset(0,0),
-   m_zoomWheel(true)
+   m_zoomWheel(true),
+   img(new QImage)
 {
    select = new RectSelection(this);
    select->hide();
    setPen1(QPen(QColor(0,0,0)));
    setPen2(QPen(QColor(255,255,255)));
    setMouseTracking(1);
-   cur = new ACursor(this);
+   cur = new ACursor(this); //deleted by parent
    cur->setMode(ArdoiseGlobal::DRAWING_MODE);
    QPixmap p(32,32);
    p.fill(QColor(0,0,0,0));
@@ -67,26 +68,34 @@ Ardoise::Ardoise(QWidget *parent) :
    fill();
 }
 
+Ardoise::~Ardoise()
+{
+   delete img;
+   //cur->deleteLater();
+}
+
 const QImage & Ardoise::getImg() const
 {
-   return img;
+   return *img;
 }
 
 void Ardoise::resizeImg(const QSize &newSize, QPoint map)
 {
-    if (img.size() == newSize)
+    if (img->size() == newSize)
         return;
 
-    QImage newImage(newSize, QImage::Format_RGB32);
-    newImage.fill(qRgb(255, 255, 255));
-    QPainter painter(&newImage);
-    painter.drawImage(map, img);
-    img = newImage;
+    QImage * newImage = new QImage(newSize, QImage::Format_RGB32);
+    newImage->fill(qRgb(255, 255, 255));
+    QPainter painter(newImage);
+    painter.drawImage(map, *img);
+    QImage * tmp = img;
+    img = newImage;//TODO ! img peut devenir un pointeur ce qui enlèverait le cout de operator=
+    delete tmp;
 }
 
 void Ardoise::fill()
 {
-   QSize s(img.size());
+   QSize s(img->size());
    QPoint p(0,0);
    if(imgOffset.x()<0) // <-- est négatif!
    {
@@ -100,8 +109,8 @@ void Ardoise::fill()
       p.ry()-=imgOffset.y();
       imgOffset.setY(0);
    }
-   s.rwidth() += qMax(0, width()+imgOffset.x()-img.width());
-   s.rheight() += qMax(0, height()+imgOffset.y()-img.height());
+   s.rwidth() += qMax(0, width()+imgOffset.x()-img->width());
+   s.rheight() += qMax(0, height()+imgOffset.y()-img->height());
 
    resizeImg(s, p);
    update();
@@ -109,7 +118,7 @@ void Ardoise::fill()
 
 void Ardoise::lineTo(QPoint p, const QPen &pen)
 {
-   QPainter paint(&img);
+   QPainter paint(img);
    paint.setPen(pen);
    paint.drawLine(lastPoint, p);
 
@@ -120,7 +129,7 @@ void Ardoise::lineTo(QPoint p, const QPen &pen)
 
 void Ardoise::pointTo(QPoint p, const QPen &pen)
 {
-   QPainter paint(&img);
+   QPainter paint(img);
    paint.setPen(pen);
    paint.drawPoint(p);
    lastPoint = p;
@@ -173,7 +182,7 @@ void Ardoise::printText()
       QGraphicsTextItem it(textInput->text());
       it.setFont(f);
       it.setDefaultTextColor(pen1.color());
-      QPainter p(&img);
+      QPainter p(img);
       p.translate(textPos);
       QStyleOptionGraphicsItem opt;
       opt.initFrom(this);
@@ -203,13 +212,13 @@ QImage Ardoise::getSelection()
    QImage i(select->getSelection().size(),QImage::Format_RGB32);
    i.fill(0xFFFFFFFF);
    QPainter p(&i);
-   p.drawImage(i.rect(),img,select->getSelection().translated(imgOffset));
+   p.drawImage(i.rect(),*img,select->getSelection().translated(imgOffset));
    return i;
 }
 
 void Ardoise::setImage(const QImage &i)
 {
-   img = i;
+   *img = i;
    QSize s = (i.size()-size())/2;
    imgOffset.setX(s.width());
    imgOffset.setY(s.height());
@@ -281,13 +290,13 @@ void Ardoise::zoomTo(double fac, QPoint o)
 #ifdef ONLY_FAST_TRANSPHORMATION
    img=img.scaledToHeight(height()*fac,Qt::FastTransformation);
 #else
-   if((height()|width())>5000)img=img.scaledToHeight(height()*fac,Qt::FastTransformation);
-   else img=img.scaledToHeight(height()*fac,Qt::SmoothTransformation);
+   if((height()|width())>5000)*img=img->scaledToHeight(height()*fac, Qt::FastTransformation);
+   else *img=img->scaledToHeight(height()*fac,Qt::SmoothTransformation);
 #endif
    QWidget::resize(size()*fac);
    move(p);
    QPainter painter(this);
-   painter.drawImage(QPoint(0,0),img);
+   painter.drawImage(QPoint(0,0),*img);
    select->setGeometry(QRect(select->pos()*fac,select->size()*fac));
 }
 
@@ -296,7 +305,7 @@ void Ardoise::paintEvent(QPaintEvent * e)
 {
    QPainter painter(this);
    QRect rectangle = e->rect();
-   painter.drawImage(rectangle, img, rectangle.translated(imgOffset));
+   painter.drawImage(rectangle, *img, rectangle.translated(imgOffset));
    QRect rt = rectangle.translated(textOffset);
    graphicsScene->render(&painter, rectangle, rt);
 }
@@ -399,9 +408,11 @@ void Ardoise::moveViewBy(const QPoint &offset)
 
 void Ardoise::clear() //[slot]
 {
-   QImage i(size(), QImage::Format_RGB32);
-   i.fill(0xFFFFFFFF);
+   QImage * i = new QImage(size(), QImage::Format_RGB32);
+   i->fill(0xFFFFFFFF);
+   QImage * tmp = img;
    img=i;
+   delete tmp;
    graphicsScene->clear();
    update();
 }
