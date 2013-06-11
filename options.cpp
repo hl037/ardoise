@@ -36,7 +36,6 @@
 
 #include "optionswidget.h"
 
-
 Option::Option(const QString &name, const QVariant & _value, const char * text, const char * desc, const QString &path) :
 QObject(),
 m_name(name),
@@ -152,13 +151,15 @@ void Option::restoreValue(QWidget *mod, const QVariant &v)
    case QMetaType::Bool:
    {
       QCheckBox * cb = static_cast<QCheckBox*>(mod);
-      if(cb) cb->setChecked(v.toBool());
+      value = v;
+      if(cb) cb->setChecked(value.toBool());
       break;
    }
    case QMetaType::Int:
    {
       QSpinBox * sb = static_cast<QSpinBox*>(mod);
-      if(sb) sb->setValue(v.toInt());
+      value = v;
+      if(sb) sb->setValue(value.toInt());
       break;
    }
    default :
