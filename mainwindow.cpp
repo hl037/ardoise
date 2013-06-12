@@ -1064,6 +1064,11 @@ void MainWindow::openConf(const QString &path)
    }
 }
 
+QMenu *MainWindow::createPopupMenu()
+{
+   return NULL;
+}
+
 struct Version
 {
    int n[4];
