@@ -75,9 +75,6 @@ public:
 
    virtual QMenu* createPopupMenu();
 
-
-
-
 protected:
    Ardoise * scene;
    void changeEvent(QEvent *e);
@@ -98,7 +95,6 @@ protected:
 
    QNetworkAccessManager * netManager;
    int reqRemaining;
-
 
    QTextBrowser * help;
 

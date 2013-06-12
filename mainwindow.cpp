@@ -378,6 +378,8 @@ bool MainWindow::eventFilter(QObject * o, QEvent *ev)
 
    bool b = false;
 
+   // TODO   filtrer le release de [KEY_Esc] et de [Key_Enter] pour faire quitter le focus au widget
+
    if(!isActiveWindow() || o->inherits("QWidgetWindow") || o->inherits("QLineEdit") || o->inherits("QDialog") || o->inherits("QAbstractSpinBox")) return false;
 
    //Palette
