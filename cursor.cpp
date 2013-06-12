@@ -27,6 +27,7 @@ ACursor::ACursor(QWidget *parent) :
    QWidget(parent),
    d1(2),
    d2(2),
+   m(ArdoiseGlobal::DRAWING_MODE),
    t(new QGraphicsTextItem("T"))
 {
    setAttribute(Qt::WA_TranslucentBackground);
@@ -103,7 +104,7 @@ void ACursor::updateCursor()
       resize(pix.size());
       break;
    }
-   repaint();
+   repaint();//We can because paintEvent must call the overloaded method
 }
 
 void ACursor::updateCursor(QPixmap &pm)
@@ -169,13 +170,11 @@ void ACursor::updateCursor(QPixmap &pm)
       pm = pix;
       break;
    }
-   repaint();
 }
 
 void ACursor::paintEvent(QPaintEvent *)
 {
    QPainter p(this);
-
    QPixmap pix;
    if(!QPixmapCache::find("Cursor", pix))
    {
