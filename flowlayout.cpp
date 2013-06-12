@@ -80,6 +80,7 @@ QSize FlowLayout::sizeHint() const
    }
    s.setWidth(w);
    s.setHeight(h);
+
    return s;
 }
 

@@ -47,6 +47,7 @@
 #include "json/ljsonp.hpp"
 #include "options.h"
 #include "optionswidget.h"
+#include "version.h"
 MainWindow *MainWindow::mainWindow = nullptr;
 
 MainWindow *MainWindow::instance()
@@ -220,6 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
    setupUi(this);
+   version_lab->setText(VERSION);
    FlowLayout * f1 = new FlowLayout;
    FlowLayout * f2 = new FlowLayout;
    //QVBoxLayout * f3 = new QVBoxLayout;
@@ -253,7 +255,8 @@ MainWindow::MainWindow(QWidget *parent) :
    f->addItem(f1);
    f->addItem(f2);
    //f->addItem(f3);
-   f->addStretch(1000);
+   f->addStretch(10000);
+   f->addWidget(version_lab);
 
    //doc->resize(doc->width(), 60);
 
@@ -1119,7 +1122,6 @@ struct Version
    static Version self;
 };
 
-#include "version.h"
 
 Version Version::self(QString(VERSION));
 #ifndef SYSTEM
