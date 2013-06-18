@@ -209,7 +209,7 @@ bool Options::addOption(Option *opt)
    }
    if(it.value() == opt)
    {
-      optionList.append(optionList.takeAt(optionList.indexOf(opt))); // NOTE : possibilité d'obtenir l'index en l'enregistrant dans Option
+      optionList.append(optionList.takeAt(optionList.indexOf(opt)));
       return true;
    }
    delete opt;

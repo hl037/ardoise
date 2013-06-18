@@ -36,7 +36,8 @@ class RectSelection;
 class QPen;
 class QImage;
 
-// NOTE : Peut-être agrandir l'ardoise si dessin à l'extérieur pour avoir un comportement uniforme
+//TODO ! v0.4.1.0 Agrandir automatiquement l'ardoise si dessin à l'extérieur en stockant les points, puis agrandir, dessiner ces points et copier ancienne img.
+
 class Ardoise : public QWidget
 {
 Q_OBJECT
@@ -48,9 +49,6 @@ public:
 
    explicit Ardoise(QWidget *parent = 0);
    ~Ardoise();
-
-   //void resize(int rx, int ry, QPoint pos=QPoint(0,0)); //augmente la taille de l'image de |rx|*|ry| : le signe détermine si l'espace est ajouté "avant"(signe négatif) ou "apres"(signe positif) l'image' si nul, on deplace de la valeur indiquée par pos.
-
 
    //TODO ne pas modifier l'image originale lors du Zoom
    void zoomTo(double fac, QPoint o);
@@ -133,7 +131,7 @@ signals:
 
 public slots:
    void clear();
-   // TODO Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
+   // TODO ! v0.4.1.0 Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
    void affSelect(bool b);
 
    void endText();
