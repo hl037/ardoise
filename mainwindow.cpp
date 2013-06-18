@@ -139,7 +139,7 @@ void MainWindow::ini()
    //    Repos-Check-updates
    //------------------------
    StringListOption * checkUrls = new StringListOption("check-urls",
-      QVariant(QStringList{"https://raw.github.com/hl037/ardoise/master/ardoise.json"}),
+      QVariant(QStringList{"http://gitorious.org/ardoise/ardoise/blobs/raw/master/ardoise.json"}),
       "",
       "Liste des urls où on peut trouver ardoise.json",
       "general");
@@ -172,7 +172,6 @@ void MainWindow::ini()
    {
       openConf(home.absoluteFilePath("conf.json"));
    }
-   if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
    supportOptionsFiles = true;
 #elif defined _WIN32
    home = QDir::current();
@@ -203,6 +202,7 @@ void MainWindow::ini()
 #else
 #warning "This build won't support palette recovery"
 #endif
+   if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
 }
 void MainWindow::setShortcuts()
 {
