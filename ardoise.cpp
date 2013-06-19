@@ -281,31 +281,32 @@ void Ardoise::mousePressEvent(QMouseEvent *e)
    grabMouse();
    QWidget::mousePressEvent(e);
 
-   QPoint imgPoint = getImgPoint(e->pos());
-
-   switch(mode)
+   if(moveCursor)
    {
-   case ArdoiseGlobal::DRAWING_MODE:
-      if((e->button()==Qt::LeftButton || e->button()==Qt::RightButton) && moveCursor)
+      QPoint imgPoint = getImgPoint(e->pos());
+
+      switch(mode)
       {
-         pointTo(imgPoint,e->button()==Qt::LeftButton? pen1:pen2);
-         drawing=1;
-         e->accept();
+      case ArdoiseGlobal::DRAWING_MODE:
+         if((e->button()==Qt::LeftButton || e->button()==Qt::RightButton))
+         {
+            pointTo(imgPoint,e->button()==Qt::LeftButton? pen1:pen2);
+            drawing=1;
+            e->accept();
+         }
+         else e->ignore();
+         break;
+      case ArdoiseGlobal::DRAW_TEXT_MODE:
+      case ArdoiseGlobal::FLOATING_TEXT_MODE:
+         if(e->button()==Qt::LeftButton)
+         {
+            beginText(imgPoint);
+            e->accept();
+         }
+         else e->ignore();
       }
-      else e->ignore();
-      break;
-   case ArdoiseGlobal::DRAW_TEXT_MODE:
-   case ArdoiseGlobal::FLOATING_TEXT_MODE:
-      if(e->button()==Qt::LeftButton)
-      {
-         beginText(imgPoint);
-         e->accept();
-      }
-      else e->ignore();
    }
    mo=e->pos();
-
-
 }
 
 void Ardoise::mouseMoveEvent(QMouseEvent *e)

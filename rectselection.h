@@ -63,6 +63,8 @@ public:
 
    inline QRect getSelection() const {return QRect(x()+SIZE_BOUTON,y()+SIZE_BOUTON,width()-SIZE_BOUTONx2,height()-SIZE_BOUTONx2);}
 
+
+
 protected:
    Ardoise * a;
    void (RectSelection::*proc)();
@@ -71,6 +73,7 @@ protected:
    QPoint oo;
    QPoint offset;
    int direction;
+   QRect vrect;
 
 
    void changeEvent(QEvent *e);
@@ -79,6 +82,8 @@ protected:
    void mouseMoveEvent(QMouseEvent *e);
    void mousePressEvent(QMouseEvent *e);
    inline void mouseReleaseEvent(QMouseEvent *e) {change=0; e->ignore();}
+   void setVGeometry(const QRect & r);
+   inline void setVGeometry(int x, int y, int w, int h){setVGeometry(QRect(x,y,w,h));}
 /*
    void enterEvent(QEvent *e);
    void leaveEvent(QEvent *e);*/

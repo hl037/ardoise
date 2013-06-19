@@ -18,7 +18,9 @@ SOURCES += main.cpp \
     textinput.cpp \
     json/ljsonp.cpp \
     options.cpp \
-    optionswidget.cpp
+    optionswidget.cpp \
+    releasefocusfilter.cpp \
+    displaywidget.cpp
 HEADERS += mainwindow.h \
     ardoise.h \
     rectselection.h \
@@ -30,7 +32,9 @@ HEADERS += mainwindow.h \
     json/ljsonp.hpp \
     options.h \
     optionswidget.h \
-    stringtotranslate.h
+    stringtotranslate.h \
+    releasefocusfilter.h \
+    displaywidget.h
 FORMS += \
     mainwindow.ui \
     rectselection.ui \

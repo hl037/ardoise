@@ -25,7 +25,6 @@
 #include <QBrush>
 #include <QColor>
 
-
 RectSelection::RectSelection(Ardoise * parent) :
     QWidget(parent)
 {
@@ -62,7 +61,6 @@ void RectSelection::resizeEvent(QResizeEvent * e)
    }
    if(e->size().height()<SIZE_BOUTONx3)
    {
-
       b4->hide();
       b8->hide();
    }
@@ -84,8 +82,7 @@ void RectSelection::mouseMoveEvent(QMouseEvent *e)
 {
    if(change)
    {
-      offset=e->pos()-o;
-      o=e->pos();
+      offset=e->globalPos()-o;
       (this->*this->RectSelection::proc)();
    }
    else e->ignore();
@@ -97,67 +94,59 @@ void RectSelection::mousePressEvent(QMouseEvent *e)
    if(e->button() == Qt::MiddleButton) e->ignore();
    else
    {
-      o=e->pos();
-      oo=o;
+      vrect = geometry().adjusted(SIZE_BOUTON,SIZE_BOUTON,-SIZE_BOUTON,-SIZE_BOUTON);
+      o=e->globalPos();
       change=1;
    }
 }
-/*
-void rectSelection::enterEvent(QEvent *e)
-{
-   a->hideCur();
-   a->setMouseTracking(0);
-}
 
-void rectSelection::leaveEvent(QEvent *e)
-{
-   a->showCur();
-   a->setMouseTracking(1);
-}
-*/
 void RectSelection::hg()
 {
-   setGeometry(o.x()+x(),o.y()+y(),width()-o.x(),height()-o.y());
+   setVGeometry(offset.x()+vrect.x(),offset.y()+vrect.y(),vrect.width()-offset.x(),vrect.height()-offset.y());
 }
 
 void RectSelection::h()
 {
-   setGeometry(x(),o.y()+y(),width(),height()-o.y());
+   setVGeometry(vrect.x(),offset.y()+vrect.y(),vrect.width(),vrect.height()-offset.y());
 }
 
 void RectSelection::hd()
 {
-   setGeometry(x(),o.y()+y(),width()+offset.x(),height()-o.y());
+   setVGeometry(vrect.x(),offset.y()+vrect.y(),vrect.width()+offset.x(),vrect.height()-offset.y());
 }
 
 void RectSelection::d()
 {
-   setGeometry(x(),y(),width()+offset.x(),height());
+   setVGeometry(vrect.x(),vrect.y(),vrect.width()+offset.x(),vrect.height());
 }
-
 void RectSelection::bd()
 {
-   setGeometry(x(),y(),width()+offset.x(),height()+offset.y());
+   setVGeometry(vrect.x(),vrect.y(),vrect.width()+offset.x(),vrect.height()+offset.y());
 }
 
 void RectSelection::b()
 {
-   setGeometry(x(),y(),width(),height()+offset.y());
+   setVGeometry(vrect.x(),vrect.y(),vrect.width(),vrect.height()+offset.y());
 }
 
 void RectSelection::bg()
 {
-   setGeometry(o.x()+x(),y(),width()-o.x(),height()+offset.y());
+   setVGeometry(offset.x()+vrect.x(),vrect.y(),vrect.width()-offset.x(),vrect.height()+offset.y());
 }
 
 void RectSelection::g()
 {
-   setGeometry(o.x()+x(),y(),width()-o.x(),height());
+   setVGeometry(offset.x()+vrect.x(),vrect.y(),vrect.width()-offset.x(),vrect.height());
 }
 
 void RectSelection::all()
 {
-   move(o.x()+x()-oo.x(),o.y()+y()-oo.y());
+   move(vrect.topLeft()+offset+QPoint(-SIZE_BOUTON,-SIZE_BOUTON));
+}
+
+void RectSelection::setVGeometry(const QRect &r)
+{
+   setGeometry(r.normalized().adjusted(-SIZE_BOUTON,-SIZE_BOUTON,SIZE_BOUTON,SIZE_BOUTON));
 }
 
 /*

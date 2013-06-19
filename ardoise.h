@@ -36,7 +36,7 @@ class RectSelection;
 class QPen;
 class QImage;
 
-//TODO ! v0.4.1.0 Agrandir automatiquement l'ardoise si dessin à l'extérieur en stockant les points, puis agrandir, dessiner ces points et copier ancienne img.
+//TODO  v0.4.1.0 Agrandir automatiquement l'ardoise si dessin à l'extérieur en stockant les points, puis agrandir, dessiner ces points et copier ancienne img.
 
 class Ardoise : public QWidget
 {
@@ -131,7 +131,7 @@ signals:
 
 public slots:
    void clear();
-   // TODO ! v0.4.1.0 Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
+   // TODO  v0.4.1.0 Possibilité de réinitialiser la sélection ainsi que de sélectionner toute la fenetre courante
    void affSelect(bool b);
 
    void endText();

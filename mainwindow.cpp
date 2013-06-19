@@ -23,6 +23,7 @@
 #include "cursor.h"
 #include <cstdio>
 #include <QColorDialog>
+#include <QColor>
 #include <QBrush>
 #include <QPen>
 #include <QKeyEvent>
@@ -48,6 +49,9 @@
 #include "options.h"
 #include "optionswidget.h"
 #include "version.h"
+#include "releasefocusfilter.h"
+#include "displaywidget.h"
+
 MainWindow *MainWindow::mainWindow = nullptr;
 
 MainWindow *MainWindow::instance()
@@ -60,27 +64,6 @@ void *MainWindow::operator new(std::size_t s)
 {
    if(mainWindow != nullptr) throw "a MainWindows instance already exists";
    return mainWindow = static_cast<MainWindow*>(::operator  new (s));
-}
-
-
-void displayWidget(const QString & title, QWidget * w, QWidget * parent = 0)
-{
-   QDialog d(parent);
-   w->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-   d.setWindowTitle(title);
-   QVBoxLayout * vl = new QVBoxLayout;
-   QHBoxLayout * hl = new QHBoxLayout;
-   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
-   QPushButton * b = new QPushButton(QObject::tr("Fermer"));
-   b->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-   hl->addWidget(b);
-   hl->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding, QSizePolicy::Maximum));
-   vl->addWidget(w);
-   vl->addLayout(hl);
-   QObject::connect(b, SIGNAL(clicked()), &d, SLOT(accept()));
-   d.setLayout(vl);
-   d.exec();
-   w->setParent(0);//indispensable pour éviter que le widget soit détruit via Dialog::~Dialog()
 }
 
 const char MainWindow::dtd[] = R"(<?xml version="1.0" encoding="UTF-8"?>
@@ -226,6 +209,7 @@ MainWindow::MainWindow(QWidget *parent) :
    FlowLayout * f2 = new FlowLayout;
    //QVBoxLayout * f3 = new QVBoxLayout;
    QVBoxLayout * f = new QVBoxLayout;
+   ReleaseFocusFilter * focFilter = new ReleaseFocusFilter(this);
 
    f1->setMargin(2);
    f1->setHSpace(1);
@@ -238,8 +222,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
    f1->addWidget(couleur1_pb);
+   w1_sb->installEventFilter(focFilter);
    f1->addWidget(w1_sb);
    f1->addWidget(couleur2_pb);
+   w2_sb->installEventFilter(focFilter);
    f1->addWidget(w2_sb);
    f1->addWidget(statut_lab);
    f2->addWidget(save_pb);
@@ -326,14 +312,11 @@ QString MainWindow::modeText()
    return QString();
 }
 
-//void mainWindow::resizeEvent(QResizeEvent * e)
-//{
-//   air->setGeometry(2,2,surface->width()-4,surface->height()-4);
-//}
-
 void MainWindow::setCol1()  //[slot]
 {
-   ardoise->setPen1(QPen(QBrush(col1=QColorDialog::getColor(col1)), w1_sb->value()));
+   QColor c = QColorDialog::getColor(col1);
+   if(!c.isValid()) return;
+   ardoise->setPen1(QPen(QBrush(col1=c), w1_sb->value()));
    ardoise->getCursor()->setCol1(col1);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col1.red(),col1.green(),col1.blue());
@@ -342,7 +325,9 @@ void MainWindow::setCol1()  //[slot]
 
 void MainWindow::setCol2()  //[slot]
 {
-   ardoise->setPen2(QPen(QBrush(col2=QColorDialog::getColor(col2)), w2_sb->value()));
+   QColor c = QColorDialog::getColor(col2);
+   if(!c.isValid()) return;
+   ardoise->setPen2(QPen(QBrush(col2=c), w2_sb->value()));
    ardoise->getCursor()->setCol2(col2);
    char buf[40];
    sprintf(buf,"color: rgb(%i,%i,%i);",col2.red(),col2.green(),col2.blue());
@@ -377,8 +362,6 @@ bool MainWindow::eventFilter(QObject * o, QEvent *ev)
    QKeyEvent * e = static_cast<QKeyEvent*>(ev);
 
    bool b = false;
-
-   // TODO   filtrer le release de [KEY_Esc] et de [Key_Enter] pour faire quitter le focus au widget
 
    if(!isActiveWindow() || o->inherits("QWidgetWindow") || o->inherits("QLineEdit") || o->inherits("QDialog") || o->inherits("QAbstractSpinBox")) return false;
 
@@ -677,12 +660,6 @@ void MainWindow::savePal(const QString & path)
 
       FILE * f;
       f = fopen(path.toStdString().c_str(), "wb");
-      /*
-      for(uint i = 0 ; i<602 ; ++i)
-      {
-         fputc(b[i], f);
-      };
-      */
       fwrite(b,1,602,f);
       fclose(f);
    }
@@ -912,7 +889,7 @@ void MainWindow::openPal(const QString & path)
 
 void MainWindow::save() //[slot]
 {
-   QString filter;
+   static QString filter = "Portable Network Graphics PNG (*.png)";
    QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
    if(chemin.isEmpty()) return;
    QFileInfo info(chemin);
@@ -1002,8 +979,7 @@ void MainWindow::save() //[slot]
 
 void MainWindow::open() //[slot]
 {
-
-   QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm)"));
+   QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("All supported (*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbm *.xpm *.gif *.pbm *.pgm);;Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm);;All (*)"));
 
    QFile f(chemin);
    if(f.exists())
@@ -1034,7 +1010,7 @@ void MainWindow::showHelp()
       QByteArray b( reinterpret_cast< const char* >( r.data() ), r.size() );
       help->setText(QString(b));
    }
-   displayWidget(tr("Aide Ardoise"), help);
+   DisplayWidget::create(tr("Aide Ardoise"), help);
 }
 
 void MainWindow::showOpts()
@@ -1179,9 +1155,7 @@ void MainWindow::checkUpdates(QNetworkReply * r)
       QString install;
       Array * dls;
 
-
-
-      //Pour l'instant, on cherche juste la dernière versiondiponible
+      //Pour l'instant, on cherche juste la dernière version diponible
 
       Value * root = Parser::parse(stream);
       if(!root) goto END;
@@ -1287,7 +1261,7 @@ void MainWindow::notifUpdate(const Version &v)
       .arg(v.install)
       .arg(tr("Description :"))
       .arg(v.desc));
-   displayWidget(tr("Une mise à jour est disponible"), txt, this);
+   DisplayWidget::create(tr("Une mise à jour est disponible"), txt, this);
 }
 
 

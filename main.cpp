@@ -24,7 +24,7 @@
 
 
 //TODO Rajouter la possibilité de dessiner des forme géométrique
-//TODO faire un nouveau sélecteur de mode avec un truc du genre Alt+tab
+//TODO Faire un nouveau sélecteur de mode avec un truc du genre Alt+tab
 
 
 QTranslator * translator;
