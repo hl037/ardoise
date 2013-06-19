@@ -187,6 +187,7 @@ void MainWindow::ini()
 #endif
    if(autoCheckUpdates->getValue().toBool()) fetchUpdates();
 }
+
 void MainWindow::setShortcuts()
 {
    new QShortcut(QKeySequence(QString("Ctrl+S")), this, SLOT(save()), 0, Qt::ApplicationShortcut);
@@ -207,7 +208,6 @@ MainWindow::MainWindow(QWidget *parent) :
    version_lab->setText(VERSION);
    FlowLayout * f1 = new FlowLayout;
    FlowLayout * f2 = new FlowLayout;
-   //QVBoxLayout * f3 = new QVBoxLayout;
    QVBoxLayout * f = new QVBoxLayout;
    ReleaseFocusFilter * focFilter = new ReleaseFocusFilter(this);
 
@@ -217,9 +217,6 @@ MainWindow::MainWindow(QWidget *parent) :
    f2->setMargin(2);
    f2->setHSpace(3);
    f->setMargin(0);
-
-
-
 
    f1->addWidget(couleur1_pb);
    w1_sb->installEventFilter(focFilter);
@@ -236,23 +233,15 @@ MainWindow::MainWindow(QWidget *parent) :
    f2->addWidget(update_pb);
    f2->addWidget(help_pb);
    f2->addWidget(showOpts_pb);
-   //f2->addWidget(zoomWheel);
 
    f->addItem(f1);
    f->addItem(f2);
-   //f->addItem(f3);
    f->addStretch(10000);
    f->addWidget(version_lab);
 
-   //doc->resize(doc->width(), 60);
-
-
    f1->setSizeConstraint(QLayout::SetMaximumSize);
    f2->setSizeConstraint(QLayout::SetMaximumSize);
-   //f3->setSizeConstraint(QLayout::SetFixedSize);
    f->setSizeConstraint(QLayout::SetMaximumSize);
-   //f->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Maximum));
-
 
    doc->widget()->setLayout(f);
 
@@ -596,7 +585,6 @@ void MainWindow::savePal(const QString & path)
 {
    QString ext = QFileInfo(path).suffix();
 
-   //Sauvegarde de la brosse actuelle
    brosses[26].w1 = w1_sb->value();
    brosses[26].w2 = w2_sb->value();
    brosses[26].col1 = col1;
@@ -668,7 +656,6 @@ void MainWindow::savePal(const QString & path)
 
 class XmlHandler : public QXmlDefaultHandler
 {
-   //Q_OBJECT
 protected:
    brosse * br;
    enum State
@@ -818,7 +805,6 @@ void MainWindow::clear()
    if(!confirm(tr("Réinitialiser le dessin"), tr("Êtes-vous sûr de vouloir effacer tout le dessin?"))) return;
    ardoise->clear();
 }
-
 
 void MainWindow::openPal(const QString & path)
 {
@@ -976,7 +962,6 @@ void MainWindow::save() //[slot]
    ardoise->getSelection().save(chemin,format,80);
 }
 
-
 void MainWindow::open() //[slot]
 {
    QString chemin=QFileDialog::getOpenFileName(this, tr("Ouvrir l'image"), QString(), QString("All supported (*.bmp *.jpg *.jpeg *.png *.ppm *.tiff *.xbm *.xpm *.gif *.pbm *.pgm);;Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm);;Graphic Interchange Format GIF (*.gif);;Portable Bitmap (*.pbm);;Portable Graymap (*.pgm);;All (*)"));
@@ -1129,7 +1114,6 @@ void MainWindow::fetchUpdates()
    }
 }
 
-
 void MainWindow::checkUpdates(QNetworkReply * r)
 {
 
@@ -1263,5 +1247,3 @@ void MainWindow::notifUpdate(const Version &v)
       .arg(v.desc));
    DisplayWidget::create(tr("Une mise à jour est disponible"), txt, this);
 }
-
-

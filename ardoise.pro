@@ -50,7 +50,8 @@ OTHER_FILES += COPYING.txt \
     help_fr.html \
     help_en.html \
     help.html \
-    linux/INSTALL.txt
+    linux/INSTALL.txt \
+    ardoise.json
 
 RESOURCES += icons.qrc \
     translations.qrc

@@ -47,7 +47,7 @@ protected:
 
 
 class RectSelection : public QWidget, private Ui::rectSelection {
-Q_OBJECT
+   Q_OBJECT
 public:
    RectSelection(Ardoise *parent);
 

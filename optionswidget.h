@@ -26,13 +26,11 @@
 #include <QHash>
 
 class Option;
-
 class QLabel;
 
 class OptionsWidget : public QDialog, private Ui::OptionsWidget
 {
    Q_OBJECT
-
 protected:
    struct FormRow
    {

@@ -16,7 +16,6 @@ void DisplayWidget::closeEvent(QCloseEvent * e)
    e->accept();
 }
 
-
 void DisplayWidget::create(const QString &title, QWidget *w, bool block)
 {
    if(w->parentWidget())

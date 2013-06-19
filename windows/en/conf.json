@@ -1,7 +1,7 @@
 {
     "auto-check-updates": true,
     "check-urls": [
-        "https://raw.github.com/hl037/ardoise/master/ardoise.json"
+        "http://gitorious.org/ardoise/ardoise/blobs/raw/master/ardoise.json"
     ],
     "lang": "en"
 }

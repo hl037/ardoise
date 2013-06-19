@@ -25,7 +25,7 @@
 
 class rBouton : public QPushButton
 {
-Q_OBJECT
+   Q_OBJECT
 public:
    explicit rBouton(QWidget *parent = 0);
 

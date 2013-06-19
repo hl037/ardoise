@@ -31,8 +31,6 @@
 #include "cursor.h"
 
 class RectSelection;
-
-
 class QPen;
 class QImage;
 
@@ -40,11 +38,11 @@ class QImage;
 
 class Ardoise : public QWidget
 {
+
 Q_OBJECT
 Q_PROPERTY(bool zoomWheel READ zoomWheel WRITE setZoomWheel)
 
 public:
-
    typedef ArdoiseGlobal::Mode Mode;
 
    explicit Ardoise(QWidget *parent = 0);
@@ -67,7 +65,6 @@ protected:
    TextInput * textInput;
    QPoint textPos;
    QPoint textOffset;
-
 
 protected:
    QCursor hiddenCur;
@@ -116,7 +113,6 @@ public:
    inline void setPen2(const QPen & newPen)
       {  pen2=newPen;   pen2.setCapStyle(Qt::RoundCap);   pen2.setJoinStyle(Qt::RoundJoin); }
 
-
    void beginText(const QPoint & pos);
    void printText();
 
@@ -127,6 +123,7 @@ public:
    /// Permet d'obtenir l'image contenue dans la sélection
    QImage getSelection();
    void setImage(const QImage & i);
+
 signals:
 
 public slots:

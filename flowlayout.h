@@ -34,7 +34,6 @@ public:
    FlowLayout(Qt::Orientation o = Qt::Horizontal, int hs = 0, int vs = 0, Qt::LayoutDirection d = Qt::LeftToRight, bool e=true);
    ~FlowLayout();
 
-
    void addItem(QLayoutItem * it);
    QLayoutItem * itemAt(int i) const;
    QLayoutItem * takeAt(int i);
@@ -59,7 +58,6 @@ public:
    int VSpace() const;
 
 protected:
-
    QSize doLayout(QRect rect, bool apply) const;
 
    QList<QLayoutItem*> items;
@@ -68,8 +66,6 @@ protected:
    int m_hs, m_vs;
    Qt::LayoutDirection m_d;
    bool m_e;
-
-
 };
 
 #endif

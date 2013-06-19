@@ -43,7 +43,9 @@ class QTextBrowser;
 class Version;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
-    Q_OBJECT
+
+Q_OBJECT
+
 protected:
    static MainWindow * mainWindow;
 public:
@@ -51,7 +53,6 @@ public:
    void * operator new(std::size_t s);
 
 public:
-
    static const char dtd[];
 
    void ini();

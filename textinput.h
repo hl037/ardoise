@@ -31,7 +31,6 @@ public:
    explicit TextInput(QWidget *parent = 0);
 
    int lineHeight();
-
 protected:
    void keyPressEvent(QKeyEvent * e);
    

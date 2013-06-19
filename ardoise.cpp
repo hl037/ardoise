@@ -36,7 +36,6 @@
 #define FAC 1.25
 #define FAC2 0.8
 
-
 Ardoise::Ardoise(QWidget *parent) :
    QWidget(parent),
    imgOffset(0,0),
@@ -260,7 +259,6 @@ void Ardoise::zoomTo(double fac, QPoint o)
    select->setGeometry(QRect(select->pos()*fac,select->size()*fac));
 }
 
-
 void Ardoise::paintEvent(QPaintEvent * e)
 {
    QPainter painter(this);
@@ -387,6 +385,10 @@ void Ardoise::affSelect(bool b) //[slot]
       moveCursor = 0;
       cur->hide();
       setCursor(Qt::ArrowCursor);
+      if(mode == ArdoiseGlobal::TEXT_MODE && typing)
+      {
+         textInput->hide();
+      }
    }
    else
    {
@@ -394,6 +396,11 @@ void Ardoise::affSelect(bool b) //[slot]
       moveCursor = 1;
       cur->show();
       setCursor(hiddenCur);
+      if(mode == ArdoiseGlobal::TEXT_MODE && typing)
+      {
+         textInput->show();
+         textInput->setFocus();
+      }
    }
 }
 
@@ -421,4 +428,3 @@ void Ardoise::setZoomWheel(bool activate)
 {
    m_zoomWheel = activate;
 }
-

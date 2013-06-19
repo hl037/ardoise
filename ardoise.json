@@ -11,7 +11,7 @@
                      "https://git.gitorious.org/ljsoncppp/ljsoncppp.git",
                      "git://gitorious.org/ljsoncppp/ljsoncppp.git"
                   ],
-                  "tag" : "v0.3.4.0"
+                  "tag" : "v0.4.0.0"
                }
             ],
             "archlinux" : [
@@ -31,8 +31,8 @@
             ]
          },
          "desc" : {
-            "fr" : "Ajouts:\n-Système d'options\n-Vérification des mises à jour\n\n",
-            "en" : "Adds:\n-Options system\n-updates checker\n\n"
+            "fr" : "Ajouts:<br/>-Système d'options<br/>-Vérification des mises à jour<br/><br/>",
+            "en" : "Adds:<br/>-Options system<br/>-updates checker<br/><br/>"
          }
       },
    
@@ -52,8 +52,8 @@
             ]
          },
          "desc" : {
-            "fr" : "Bugs Fixés:\n- Si on passait du mode text au mode dessin en cours de saisie, la zone de saisie ne disparaissait pas.\n- La zone de sélection pouvait totalement disparaître en la redimensionnant trop petite.\n- Changer la taille du pinceau en cours de saisie ne mettait pas à jour la taille de la zone.\n- La zone de dessin n'était pas complètement mise à jour lors d'une saisie plus longue que la zone de saisie",
-            "en" : "Fixed bugs:\n- When swap mode typing, the input area didn't hide.\n- Text input area diseapered definitively when resize it to 0\n- Text input area size didn't update when change pen size when typing\n- Drawing zone was not fully updated when print text longer than text input area"
+            "fr" : "Bugs Fixés:<br/>- Si on passait du mode text au mode dessin en cours de saisie, la zone de saisie ne disparaissait pas.<br/>- La zone de sélection pouvait totalement disparaître en la redimensionnant trop petite.<br/>- Changer la taille du pinceau en cours de saisie ne mettait pas à jour la taille de la zone.<br/>- La zone de dessin n'était pas complètement mise à jour lors d'une saisie plus longue que la zone de saisie",
+            "en" : "Fixed bugs:<br/>- When swap mode typing, the input area didn't hide.<br/>- Text input area diseapered definitively when resize it to 0<br/>- Text input area size didn't update when change pen size when typing<br/>- Drawing zone was not fully updated when print text longer than text input area"
          }
       },
       

@@ -28,7 +28,6 @@
 #include <QStringList>
 #include <QLocale>
 
-
 class OptionsWidget;
 class QLabel;
 class Options;

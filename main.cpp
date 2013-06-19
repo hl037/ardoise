@@ -22,10 +22,8 @@
 #include <QTranslator>
 #include "mainwindow.h"
 
-
 //TODO Rajouter la possibilité de dessiner des forme géométrique
 //TODO Faire un nouveau sélecteur de mode avec un truc du genre Alt+tab
-
 
 QTranslator * translator;
 

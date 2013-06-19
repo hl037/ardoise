@@ -5,9 +5,10 @@
 
 class DisplayWidget : public QWidget
 {
-   Q_OBJECT
-public:
 
+   Q_OBJECT
+
+public:
    static void create(const QString &title, QWidget *w, bool block = 0);
 
 protected:

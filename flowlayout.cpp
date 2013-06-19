@@ -19,9 +19,8 @@
  ********************************************/
 
 #include <QtGui>
-
-#include "flowlayout.h"
 #include <limits.h>
+#include "flowlayout.h"
 
 FlowLayout::FlowLayout(QWidget *parent, Qt::Orientation o, int hs, int vs, Qt::LayoutDirection d, bool e) :
 QLayout(parent), m_o(o), m_hs(hs), m_vs(vs), m_d(d), m_e(e)
@@ -174,7 +173,6 @@ QSize FlowLayout::doLayout(QRect rect, bool apply) const
    s.setHeight(y+h+bottom);
    return s;
 }
-
 
 Qt::LayoutDirection FlowLayout::layoutDirection() const
 {

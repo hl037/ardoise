@@ -43,6 +43,7 @@ class QGraphicsTextItem;
 
 class ACursor : public QWidget
 {
+
 Q_OBJECT
 
   typedef ArdoiseGlobal::Mode Mode;
@@ -56,7 +57,6 @@ protected:
    QPoint m_center;
    QGraphicsTextItem * t;
    QStyleOptionGraphicsItem opt;
-
 
 public:
 
