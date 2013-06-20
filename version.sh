@@ -17,6 +17,7 @@ echo $1 > VERSION.txt
 
 cd linux/archlinux/
 sed -i.old -e 's/^pkgver=.*$/pkgver='$datever'/' PKGBUILD
+sed -i.old -e 's/^pkgrel=.*$/pkgrel=1/' PKGBUILD
 cd ../..
 
 
