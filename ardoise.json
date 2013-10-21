@@ -2,6 +2,41 @@
    "Ardoise" :
    [
       {
+         "id" : "v0.4.0.1",
+         "dl" : {
+            "linux" : [
+               {
+                  "way" : "git",
+                  "repo" : [
+                     "https://git.gitorious.org/ljsoncppp/ljsoncppp.git",
+                     "git://gitorious.org/ljsoncppp/ljsoncppp.git"
+                  ],
+                  "tag" : "v0.4.0.1"
+               }
+            ],
+            "archlinux" : [
+               {
+                  "way" : "aur",
+                  "package" : "ardoise-git"
+               }
+            ],
+            "win32" : [
+               {
+                  "way" : "installer",
+                  "urls" : [
+                     "http://surfnet.dl.sourceforge.net/project/ama-ardoise/ardoise_win_mingw_x86_offline_installer.exe",
+                     "http://surfnet.dl.sourceforge.net/project/ama-ardoise/ardoise_v0.4.0.1_win_mingw_x86_offline_installer.exe"
+                  ]
+               }
+            ]
+         },
+         "desc" : {
+            "fr" : "Ajout de plusieurs boutons de sauvegarde permettant de choisir entre la fenetre, la sélection, ou tout le dessin, levant ainsi l'ambiguité",
+            "en" : "More save buttons appended to choose to save the window area, the selected area or the whole drawing."
+         }
+      },
+
+      {
          "id" : "v0.4.0.0",
          "dl" : {
             "linux" : [

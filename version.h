@@ -19,5 +19,5 @@
  ********************************************/
 
 #ifndef VERSION
-#define VERSION "v0.4.0.0"
+#define VERSION "v0.4.0.1"
 #endif
