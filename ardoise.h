@@ -57,6 +57,7 @@ public:
 protected:
    QGraphicsScene * graphicsScene;
 
+   ///Offset de l'image par rapport à la fenetre
    QPoint imgOffset;
 
    Mode mode;
@@ -101,7 +102,7 @@ protected:
 
 public:
    inline bool isTyping() { return typing; }
-   void moveViewBy(const QPoint & offset);
+   void moveImgBy(const QPoint & offset);
    void lineTo(QPoint p, const QPen & pen);
    void pointTo(QPoint p, const QPen &pen);
    inline const QPen & getPen1() const {return pen1;}
@@ -122,6 +123,8 @@ public:
 
    /// Permet d'obtenir l'image contenue dans la sélection
    QImage getSelection();
+
+   QImage getWindowImg();
    void setImage(const QImage & i);
 
 signals:

@@ -214,6 +214,15 @@ QImage Ardoise::getSelection()
    return i;
 }
 
+QImage Ardoise::getWindowImg()
+{
+   QImage i(size(),QImage::Format_RGB32);
+   i.fill(0xFFFFFFFF);
+   QPainter p(&i);
+   p.drawImage(i.rect(),*img,rect().translated(imgOffset));
+   return i;
+}
+
 void Ardoise::setImage(const QImage &i)
 {
    *img = i;
@@ -326,7 +335,7 @@ void Ardoise::mouseMoveEvent(QMouseEvent *e)
    {
       QPoint offset=e->pos()-mo;
       mo = e->pos();
-      moveViewBy(-offset);
+      moveImgBy(-offset);
    }
    e->ignore();
 }
@@ -357,7 +366,7 @@ void Ardoise::wheelEvent(QWheelEvent *)
    */
 }
 
-void Ardoise::moveViewBy(const QPoint &offset)
+void Ardoise::moveImgBy(const QPoint &offset)
 {
    imgOffset += offset;
    fill();

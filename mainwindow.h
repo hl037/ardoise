@@ -99,6 +99,10 @@ protected:
 
    QTextBrowser * help;
 
+protected:
+   /// NOTE : Hack temporaire pour l'ambiguité de la sauvegarde
+   void saveImg(const QImage &img);
+
 public slots:
    void setCol1();
    void setCol2();
@@ -109,6 +113,10 @@ public slots:
    void clear();
 
    void save();
+   inline void saveSelection(){saveImg(ardoise->getSelection());}
+   inline void saveWindow(){saveImg(ardoise->getWindowImg());}
+   inline void saveArdoise(){saveImg(ardoise->getImg());}
+
    void open();
 
    void swapMode();

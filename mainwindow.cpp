@@ -225,7 +225,9 @@ MainWindow::MainWindow(QWidget *parent) :
    w2_sb->installEventFilter(focFilter);
    f1->addWidget(w2_sb);
    f1->addWidget(statut_lab);
-   f2->addWidget(save_pb);
+   f2->addWidget(saveArdoise_pb);
+   f2->addWidget(saveWindow_pb);
+   f2->addWidget(saveSelection_pb);
    f2->addWidget(open_pb);
    f2->addWidget(dispSel_pb);
    f2->addWidget(erase_pb);
@@ -806,6 +808,29 @@ void MainWindow::clear()
    ardoise->clear();
 }
 
+void MainWindow::save()
+{
+   QHBoxLayout * l = new QHBoxLayout();
+   QDialog * d = new QDialog();
+   QPushButton * pb;
+   pb = new QPushButton(tr("Ardoise entière"));
+   connect(pb, SIGNAL(clicked()), this, SLOT(saveArdoise()));
+   l->addWidget(pb);
+   pb = new QPushButton(tr("Partie affichée dans la fenetre"));
+   connect(pb, SIGNAL(clicked()), this, SLOT(saveWindow()));
+   l->addWidget(pb);
+   pb = new QPushButton(tr("Sélection"));
+   connect(pb, SIGNAL(clicked()), this, SLOT(saveSelection()));
+   l->addWidget(pb);
+   pb = new QPushButton(tr("Annuler"));
+   connect(pb, SIGNAL(clicked()), d, SLOT(reject()));
+   l->addWidget(pb);
+
+   d->setLayout(l);
+   d->exec();
+   d->deleteLater();
+}
+
 void MainWindow::openPal(const QString & path)
 {
    QFileInfo info(path);
@@ -873,7 +898,7 @@ void MainWindow::openPal(const QString & path)
    restore(26);
 }
 
-void MainWindow::save() //[slot]
+void MainWindow::saveImg(const QImage & img)//[slot]
 {
    static QString filter = "Portable Network Graphics PNG (*.png)";
    QString chemin=QFileDialog::getSaveFileName(this, tr("Enregistrer l'image"), QString(), QString("Bitmap Windows (*.bmp);;Joint Photographic Experts Group JPEG (*.jpg *.jpeg);;Portable Network Graphics PNG (*.png);;Portable Pixmap (*.ppm);;Tagged Image File Format (*.tiff);;X11 Bitmap (*.xbm);;X11 Pixmap (*.xpm)"),&filter);
@@ -959,7 +984,7 @@ void MainWindow::save() //[slot]
 #ifndef ARDOSIE_AUTO_SUFFIXE
    }
 #endif
-   ardoise->getSelection().save(chemin,format,80);
+   img.save(chemin, format,80);
 }
 
 void MainWindow::open() //[slot]

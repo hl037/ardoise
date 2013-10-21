@@ -77,7 +77,7 @@ QSize FlowLayout::sizeHint() const
       w += s.width();
       if(h<s.height()) h = s.height();
    }
-   s.setWidth(w);
+   s.setWidth(w/4);
    s.setHeight(h);
 
    return s;
