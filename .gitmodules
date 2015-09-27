@@ -1,3 +1,3 @@
 [submodule "json"]
 	path = json
-	url = git://gitorious.org/ljsoncppp/ljsoncppp.git
+   url = git@github.com:hl037/ljsoncppp.git
