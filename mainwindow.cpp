@@ -1125,6 +1125,12 @@ Version Version::self(QString(VERSION));
 #elif defined(__linux__)
 #define SYSTEM "linux"
 
+#elif defined(__OSX__)
+#define SYSTEM "osx"
+
+#else
+#error Your system may not be supported by the original code, you should define SYSTEM to your system name to be able to compile
+
 #endif
 #endif
 
