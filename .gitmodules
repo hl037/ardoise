@@ -1,3 +1,6 @@
 [submodule "json"]
 	path = json
    url = https://github.com/hl037/ljsoncppp.git
+[submodule "aur"]
+	path = linux/archlinux
+   url = https://aur.archlinux.org/ardoise-git.git
